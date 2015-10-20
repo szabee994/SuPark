@@ -76,14 +76,15 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="99dp"
-                    android:layout_gravity="center_horizontal|top">
+                    android:layout_gravity="center_horizontal|top"
+                    android:id="@+id/topTextFrame">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/home_text"
-                        android:id="@+id/textView3"
+                        android:id="@+id/textWelcome"
                         android:layout_gravity="center" />
                 </FrameLayout>
 
