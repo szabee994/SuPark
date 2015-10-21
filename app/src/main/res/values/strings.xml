@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SuPark</string>
     <string name="app_name_long">Subotica Parking</string>
-    <string name="app_version">1.0</string>
+    <string name="app_version">0.2</string>
     <string name="button_park">Park</string>
     <string name="home_text">Type in or choose your car\'s license number</string>
 </resources>
