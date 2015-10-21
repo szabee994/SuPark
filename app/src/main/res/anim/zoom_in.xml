@@ -3,9 +3,9 @@
     <scale
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:interpolator="@android:anim/overshoot_interpolator"
-        android:duration="175"
-        android:fromXScale="0.85"
-        android:fromYScale="0.85"
+        android:duration="85"
+        android:fromXScale="0.9"
+        android:fromYScale="0.9"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1"
