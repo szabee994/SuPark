@@ -3,16 +3,12 @@ package com.awt.supark;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity  {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
@@ -104,7 +100,6 @@ public class MainActivity extends AppCompatActivity  {
             backDimmer.startAnimation(anim_fade_out);
 
             // At the end of the animation sets the dimming layers visibility to 'gone'
-
             anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {

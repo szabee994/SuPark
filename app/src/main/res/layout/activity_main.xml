@@ -20,141 +20,115 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/topBar"
-            android:layout_above="@+id/bottomBar"
-            android:weightSum="1">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tableContainer"
+            android:id="@+id/contentLinear">
 
-            <FrameLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0"
-                android:id="@+id/titleFrame"
-                android:visibility="visible">
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/app_name_long"
+                android:id="@+id/textView"
+                android:layout_gravity="left|center_vertical"
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentLeft="false"
+                android:layout_weight="3" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/app_name_long"
-                    android:id="@+id/textView"
-                    android:layout_gravity="left|center_vertical"
-                    android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/home_text"
+                android:id="@+id/textWelcome"
+                android:layout_gravity="center"
+                android:layout_below="@+id/textView"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1"
+                android:layout_marginTop="20dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/app_version"
-                    android:id="@+id/textView2"
-                    android:layout_gravity="right|center_vertical" />
-            </FrameLayout>
+            <AutoCompleteTextView
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/lincenseNumber"
+                android:layout_gravity="center"
+                android:layout_below="@+id/textWelcome"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="1" />
 
-            <FrameLayout
+            <ImageButton
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/parkingFrame"
-                android:layoutMode="clipBounds">
+                android:layout_height="100dp"
+                android:id="@+id/buttonPark"
+                android:layout_gravity="center|top"
+                android:src="@drawable/circle_button"
+                android:scaleType="fitCenter"
+                android:background="@null"
+                android:layout_above="@+id/gridLayout"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight="6"
+                android:layout_marginTop="70dp"
+                android:layout_marginBottom="30dp" />
 
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:id="@+id/buttonPark"
-                    android:layout_gravity="center_horizontal|bottom"
-                    android:src="@drawable/circle_button"
-                    android:scaleType="fitCenter"
-                    android:background="@null" />
-
-                <AutoCompleteTextView
-                    android:layout_width="190dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/lincenseNumber"
-                    android:layout_gravity="center" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="99dp"
-                    android:layout_gravity="center_horizontal|top"
-                    android:id="@+id/topTextFrame">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/home_text"
-                        android:id="@+id/textWelcome"
-                        android:layout_gravity="center" />
-                </FrameLayout>
-
-            </FrameLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="120dp"
+            android:id="@+id/tableContainer"
+            android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/bottomBar">
+            android:layout_alignParentStart="true">
 
-            <TableLayout
-                android:layout_width="match_parent"
+            <TableRow
+                android:id="@+id/tableRowButtonContainer"
+                android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/tableContainer"
-                android:orientation="horizontal">
+                android:layout_marginTop="57dp"
+                android:layout_marginBottom="5dp">
 
-                <TableRow
-                    android:id="@+id/tableRowButtonContainer"
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="80dp"
-                    android:layout_marginBottom="5dp">
+                <ImageButton
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonMap"
+                    android:src="@drawable/btn1"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1" />
 
-                    <ImageButton
-                        android:layout_width="90dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonMap"
-                        android:src="@drawable/btn1"
-                        android:background="@null"
-                        android:scaleType="fitCenter"
-                        android:layout_weight="1" />
+                <ImageButton
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonCars"
+                    android:src="@drawable/btn2"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1" />
 
-                    <ImageButton
-                        android:layout_width="90dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonCars"
-                        android:src="@drawable/btn2"
-                        android:background="@null"
-                        android:scaleType="fitCenter"
-                        android:layout_weight="1" />
+                <ImageButton
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonStatistics"
+                    android:src="@drawable/btn3"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1" />
 
-                    <ImageButton
-                        android:layout_width="90dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonStatistics"
-                        android:src="@drawable/btn3"
-                        android:background="@null"
-                        android:scaleType="fitCenter"
-                        android:layout_weight="1" />
+                <ImageButton
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonEtc"
+                    android:src="@drawable/btn4"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1" />
 
-                    <ImageButton
-                        android:layout_width="90dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonEtc"
-                        android:src="@drawable/btn4"
-                        android:background="@null"
-                        android:scaleType="fitCenter"
-                        android:layout_weight="1" />
-
-                </TableRow>
-            </TableLayout>
-        </LinearLayout>
+            </TableRow>
+        </TableLayout>
 
     </RelativeLayout>
 
