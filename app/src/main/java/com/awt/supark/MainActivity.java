@@ -17,17 +17,28 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity  {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
 
+    // Declaring the animation variables
+    Animation anim_fade_in;
+    Animation anim_fade_out;
+    Animation anim_zoom_in;
+    Animation anim_zoom_out;
+    ImageButton btnPark;
+    RelativeLayout backDimmer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Declaring the animations
-        final Animation anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
-        final Animation anim_zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        anim_zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        anim_fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
 
         // Declaring the UI elements
-        final ImageButton btnPark = (ImageButton) findViewById(R.id.buttonPark);
+        btnPark = (ImageButton) findViewById(R.id.buttonPark);
+        backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -78,13 +89,6 @@ public class MainActivity extends AppCompatActivity  {
 
     // Background dimming function (true = dimmed, false = normal)
     public void dimBackground(boolean turnOn) {
-        // Declaring the animations
-        final Animation anim_fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        final Animation anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-
-        // Declaring UI elements
-        final RelativeLayout backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
-
         if(turnOn == true) {
             // Sets the dim layer visible.
             backDimmer.setVisibility(View.VISIBLE);
@@ -100,6 +104,7 @@ public class MainActivity extends AppCompatActivity  {
             backDimmer.startAnimation(anim_fade_out);
 
             // At the end of the animation sets the dimming layers visibility to 'gone'
+
             anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
