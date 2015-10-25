@@ -5,6 +5,9 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.renderscript.Sampler;
 import android.support.annotation.LayoutRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,12 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullup = false;
 
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity  {
     ImageButton btnStatistics;
     ImageButton btnEtc;
     RelativeLayout backDimmer;
-    RelativeLayout otherContent;
+    FrameLayout otherContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity  {
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
         contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
         tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
-        otherContent = (RelativeLayout) findViewById(R.id.otherContent);
+        otherContent = (FrameLayout) findViewById(R.id.otherContent);
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity  {
 
     // Background dimming function (true = dimmed, false = normal)
     public void dimBackground(boolean turnOn) {
-        if(turnOn == true) {
+        if (turnOn == true) {
             // Sets the dim layer visible.
             backDimmer.setVisibility(View.VISIBLE);
 
@@ -116,8 +120,7 @@ public class MainActivity extends AppCompatActivity  {
 
             // Sets the dim visibility indicator variable to true
             dimActive = true;
-        }
-        else {
+        } else {
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
 
@@ -145,20 +148,32 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     //includes views from xml depending on which button was pressed
-    public void otherContentHandler(View view){
-        @LayoutRes int include = R.layout.map_layout;
-        switch (view.getId()){
-            case R.id.buttonMap: include = R.layout.map_layout; break;
-            case R.id.buttonStatistics: include = R.layout.stats_layout; break;
-            case R.id.buttonCars: include = R.layout.cars_layout; break;
-            case R.id.buttonEtc: include = R.layout.etc_layout; break;
+    public void otherContentHandler(View view) {
+        Fragment fragment = null;
+        switch (view.getId()) {
+            case R.id.buttonMap:
+                fragment = new MapFragment();
+                break;
+            case R.id.buttonStatistics:
+                fragment = new StatsFragment();
+                break;
+            case R.id.buttonCars:
+                fragment = new CarsFragment();
+                break;
+            case R.id.buttonEtc:
+                fragment = new EtcFragment();
+                break;
         }
-        LayoutInflater layoutInflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        otherContent.addView(layoutInflater.inflate(include,null,false),0); //adds views from selected xml
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.otherContent, fragment);
+            fragmentTransaction.commit();
+        }
     }
 
-    public void smallButtonPressed(final View view){
-        if(!pullup) { //if it isn't already up
+    public void smallButtonPressed(final View view) {
+        if (!pullup) { //if it isn't already up
             ValueAnimator animation = ValueAnimator.ofFloat(1f, 0f);
             animation.setDuration(300);
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -167,10 +182,18 @@ public class MainActivity extends AppCompatActivity  {
                     float value = (float) animation.getAnimatedValue();
                     //fades out contentLinear and all buttons, except the one that is pressed
                     contentLinear.setAlpha(value);
-                    if (view.getId() != R.id.buttonMap) {btnMap.setAlpha(value);}
-                    if (view.getId() != R.id.buttonCars) {btnCars.setAlpha(value);}
-                    if (view.getId() != R.id.buttonStatistics) {btnStatistics.setAlpha(value);}
-                    if (view.getId() != R.id.buttonEtc) {btnEtc.setAlpha(value);}
+                    if (view.getId() != R.id.buttonMap) {
+                        btnMap.setAlpha(value);
+                    }
+                    if (view.getId() != R.id.buttonCars) {
+                        btnCars.setAlpha(value);
+                    }
+                    if (view.getId() != R.id.buttonStatistics) {
+                        btnStatistics.setAlpha(value);
+                    }
+                    if (view.getId() != R.id.buttonEtc) {
+                        btnEtc.setAlpha(value);
+                    }
                 }
             });
             animation.addListener(new Animator.AnimatorListener() {
@@ -231,13 +254,13 @@ public class MainActivity extends AppCompatActivity  {
                 }
             });
             animation.start();
-        }else{
+        } else {
             pulldown(); //if already pulled up
         }
     }
 
     //same thing backwards
-    public void pulldown(){
+    public void pulldown() {
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
         animation.setDuration(300);
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -294,12 +317,12 @@ public class MainActivity extends AppCompatActivity  {
 
         // If the dimming layer is visible then makes invisible, otherwise
         // triggers the default action of back button.
-        if(dimActive) {
+        if (dimActive) {
             // Deactivates the dimming
             dimBackground(false);
-        }else if(pullup) {
+        } else if (pullup) {
             pulldown();
-        }else{
+        } else {
             // Default action
             finish();
         }

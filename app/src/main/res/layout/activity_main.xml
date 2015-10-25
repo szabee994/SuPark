@@ -1,156 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wrapper"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/wrapper">
+    tools:context=".MainActivity">
 
     <TableLayout
-        android:fitsSystemWindows="true"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false"
-        android:id="@+id/content"
         android:layout_centerInParent="true"
+        android:fitsSystemWindows="true"
         android:weightSum="1">
 
         <TableRow
             android:id="@+id/tableRowTopHalf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:gravity="center">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/contentLinear"
-            android:alpha="1">
+            <LinearLayout
+                android:id="@+id/contentLinear"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:alpha="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/app_name_long"
-                android:id="@+id/textView"
-                android:layout_gravity="left|center_vertical"
-                android:textStyle="bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentBottom="false"
-                android:layout_alignParentLeft="false"
-                android:layout_weight="3" />
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="false"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_weight="3"
+                    android:text="@string/app_name_long"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="@string/home_text"
-                android:id="@+id/textWelcome"
-                android:layout_gravity="center"
-                android:layout_below="@+id/textView"
-                android:layout_centerHorizontal="true"
-                android:layout_weight="1"
-                android:layout_marginTop="20dp" />
+                <TextView
+                    android:id="@+id/textWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/home_text"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <AutoCompleteTextView
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/lincenseNumber"
-                android:layout_gravity="center"
-                android:layout_below="@+id/textWelcome"
-                android:layout_centerHorizontal="true"
-                android:layout_weight="1" />
+                <AutoCompleteTextView
+                    android:id="@+id/lincenseNumber"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textWelcome"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_weight="1" />
 
-            <ImageButton
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:id="@+id/buttonPark"
-                android:layout_gravity="center|top"
-                android:src="@drawable/circle_button"
-                android:scaleType="fitCenter"
-                android:background="@null"
-                android:layout_above="@+id/gridLayout"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="6"
-                android:layout_marginTop="70dp"
-                android:layout_marginBottom="30dp" />
+                <ImageButton
+                    android:id="@+id/buttonPark"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_above="@+id/gridLayout"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="center|top"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="70dp"
+                    android:layout_weight="6"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/circle_button" />
 
-        </LinearLayout>
+            </LinearLayout>
 
         </TableRow>
+
         <TableRow
             android:id="@+id/tableRowBottomHalf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="0"
-            android:baselineAligned="false">
+            android:baselineAligned="false"
+            android:gravity="center">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="120dp"
+                android:orientation="horizontal"
                 android:weightSum="4">
 
                 <ImageButton
                     android:id="@+id/buttonMap"
-                    android:src="@drawable/btn1"
-                    android:background="@null"
-                    android:scaleType="fitStart"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:onClick="smallButtonPressed" />
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="smallButtonPressed"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/btn1" />
 
                 <ImageButton
                     android:id="@+id/buttonCars"
-                    android:src="@drawable/btn2"
-                    android:background="@null"
-                    android:scaleType="fitStart"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:onClick="smallButtonPressed" />
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="smallButtonPressed"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/btn2" />
 
                 <ImageButton
                     android:id="@+id/buttonStatistics"
-                    android:src="@drawable/btn3"
-                    android:background="@null"
-                    android:scaleType="fitStart"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:onClick="smallButtonPressed" />
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="smallButtonPressed"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/btn3" />
 
                 <ImageButton
                     android:id="@+id/buttonEtc"
-                    android:src="@drawable/btn4"
-                    android:background="@null"
-                    android:scaleType="fitStart"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="15dp"
-                    android:onClick="smallButtonPressed" />
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:onClick="smallButtonPressed"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/btn4" />
             </LinearLayout>
 
 
         </TableRow>
 
-        <RelativeLayout
+        <FrameLayout
+            android:id="@+id/otherContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:id="@+id/otherContent"
             android:visibility="gone">
 
-        </RelativeLayout>
+        </FrameLayout>
 
     </TableLayout>
 
@@ -159,8 +160,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#C0000000"
-        android:visibility="gone"
-        android:clickable="true" >
-    </RelativeLayout>
+        android:clickable="true"
+        android:visibility="gone"></RelativeLayout>
 
 </RelativeLayout>
