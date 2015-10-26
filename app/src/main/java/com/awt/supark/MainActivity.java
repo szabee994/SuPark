@@ -2,16 +2,12 @@ package com.awt.supark;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.renderscript.Sampler;
-import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,40 +21,46 @@ import android.widget.TableRow;
 
 public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
-    boolean pullup = false;
+    boolean pullUp = false;  // Is there any layout pulled up
 
-    // Declaring the animation variables
+    // Animation variables
     Animation anim_fade_in;
     Animation anim_fade_out;
     Animation anim_zoom_in;
     Animation anim_zoom_out;
-    LinearLayout contentLinear;
-    TableRow tableRowTopHalf;
+
+    // UI elements
     ImageButton btnPark;
     ImageButton btnMap;
     ImageButton btnCars;
     ImageButton btnStatistics;
     ImageButton btnEtc;
+
+    // Layouts
     RelativeLayout backDimmer;
     FrameLayout otherContent;
+    LinearLayout contentLinear;
+    TableRow tableRowTopHalf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Declaring the animations
+        // Animations
         anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
         anim_zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
         anim_fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
 
-        // Declaring the UI elements
+        // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
         btnCars = (ImageButton) findViewById(R.id.buttonCars);
         btnStatistics = (ImageButton) findViewById(R.id.buttonStatistics);
         btnEtc = (ImageButton) findViewById(R.id.buttonEtc);
         btnMap = (ImageButton) findViewById(R.id.buttonMap);
+
+        // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
         contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
         tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
@@ -97,21 +99,13 @@ public class MainActivity extends AppCompatActivity {
                 // If the user clicked the parking button we should dim the background
                 // by setting the dimming layer visible.
                 dimBackground(true);
-
-                // TODO:
-                // * Bring the parking button above any other
-                //   layers (at the current state it is below
-                //   the dimming layer).
-                //
-                // * Cleanup small button animation codes
-
             }
         });
     }
 
     // Background dimming function (true = dimmed, false = normal)
     public void dimBackground(boolean turnOn) {
-        if (turnOn == true) {
+        if (turnOn) {
             // Sets the dim layer visible.
             backDimmer.setVisibility(View.VISIBLE);
 
@@ -120,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Sets the dim visibility indicator variable to true
             dimActive = true;
-        } else {
+        }
+        else {
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
 
@@ -147,9 +142,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //includes views from xml depending on which button was pressed
+    // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
         Fragment fragment = null;
+
+        // Gets the pressed buttons ID
         switch (view.getId()) {
             case R.id.buttonMap:
                 fragment = new MapFragment();
@@ -164,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new EtcFragment();
                 break;
         }
+
+        // If there's no fragment (?)
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -173,14 +172,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void smallButtonPressed(final View view) {
-        if (!pullup) { //if it isn't already up
+        if (!pullUp) { // If it isn't already up
+            // Declaring animator
             ValueAnimator animation = ValueAnimator.ofFloat(1f, 0f);
+
+            // Sets the animation properties
             animation.setDuration(300);
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float value = (float) animation.getAnimatedValue();
-                    //fades out contentLinear and all buttons, except the one that is pressed
+
+                    // Fades out contentLinear and all buttons, except the one that is pressed
                     contentLinear.setAlpha(value);
                     if (view.getId() != R.id.buttonMap) {
                         btnMap.setAlpha(value);
@@ -196,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+
             animation.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -204,20 +208,27 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    //sets the visibility of the other layout and contentlinear
+                    // Sets the visibility of the other layout and contentlinear
                     contentLinear.setVisibility(View.GONE);
                     otherContent.setVisibility(View.VISIBLE);
+                    otherContent.startAnimation(anim_fade_in);
+
+                    // Declaring animator
                     ValueAnimator nextanimation = ValueAnimator.ofFloat(1f, 0f);
+
+                    // Sets the animation properties
                     nextanimation.setDuration(300);
                     nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             float value = (float) animation.getAnimatedValue();
-                            //sets weight of the 2 layouts, this makes one smaller and the other bigger.
+
+                            // Sets weight of the two layouts, this makes one smaller and the other bigger
                             tableRowTopHalf.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, value));
                             otherContent.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1 - value));
                         }
                     });
+
                     nextanimation.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
@@ -226,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            otherContentHandler(view); //takes care of including new views
+                            otherContentHandler(view); // Takes care of including new views
                         }
 
                         @Override
@@ -240,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     nextanimation.start();
-                    pullup = true; //pulled up
+                    pullUp = true; // Changing the pull up status indicator
                 }
 
                 @Override
@@ -254,14 +265,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             animation.start();
-        } else {
-            pulldown(); //if already pulled up
+        }
+        else {
+            pullDown(); // If there is a layout already pulled up we have to pull it down
         }
     }
 
-    //same thing backwards
-    public void pulldown() {
+    // Same as smallButtonPressed just backwards
+    public void pullDown() {
+        // Declaring animator
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
+
+        // Sets the animation properties
         animation.setDuration(300);
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -274,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
                 btnEtc.setAlpha(value);
             }
         });
+
         animation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -284,7 +300,11 @@ public class MainActivity extends AppCompatActivity {
             public void onAnimationEnd(Animator animation) {
                 contentLinear.setVisibility(View.VISIBLE);
                 otherContent.removeAllViews();
+
+                // Declaring animator
                 ValueAnimator nextanimation = ValueAnimator.ofFloat(0f, 1f);
+
+                // Sets the animation properties
                 nextanimation.setDuration(300);
                 nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -294,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 nextanimation.start();
-                pullup = false;
+                pullUp = false;
             }
 
             @Override
@@ -320,9 +340,12 @@ public class MainActivity extends AppCompatActivity {
         if (dimActive) {
             // Deactivates the dimming
             dimBackground(false);
-        } else if (pullup) {
-            pulldown();
-        } else {
+        }
+        else if (pullUp) {
+            // If there is an activity pulled up, pulls down
+            pullDown();
+        }
+        else {
             // Default action
             finish();
         }
