@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_slide_up_fade_in;
     Animation anim_slide_down_fade_out;
     Animation anim_center_open_up;
+    Animation anim_anticipate_rotate_zoom_out;
+    Animation anim_anticipate_rotate_zoom_in;
 
     // UI elements
     ImageButton btnPark;
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         anim_slide_up_fade_in = AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in);
         anim_slide_down_fade_out = AnimationUtils.loadAnimation(this, R.anim.slide_down_fade_out);
         anim_center_open_up = AnimationUtils.loadAnimation(this, R.anim.center_open_up);
+        anim_anticipate_rotate_zoom_out = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_out);
+        anim_anticipate_rotate_zoom_in = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -108,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Initializes the parking
                 parkingInit(true);
+                view.startAnimation(anim_anticipate_rotate_zoom_out);
+                anim_anticipate_rotate_zoom_out.setFillAfter(true);
             }
         });
     }
@@ -175,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onAnimationEnd(Animation animation) {
                     backDimmer.setVisibility(View.GONE);
                     parkingBackground.setVisibility(View.INVISIBLE);
+                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
                 }
 
                 @Override
@@ -267,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Sets the animation properties
                     nextanimation.setDuration(300);
+                    nextanimation.setInterpolator(new AccelerateDecelerateInterpolator());
 
                     nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
@@ -333,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Sets the animation properties
         animation.setDuration(300);
+        animation.setInterpolator(new AccelerateDecelerateInterpolator());
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
