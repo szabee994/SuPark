@@ -22,12 +22,15 @@ import android.widget.TableRow;
 public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
+    boolean animInProgress = false;
 
     // Animation variables
     Animation anim_fade_in;
     Animation anim_fade_out;
     Animation anim_zoom_in;
     Animation anim_zoom_out;
+    Animation anim_slide_up_fade_in;
+    Animation anim_slide_down_fade_out;
 
     // UI elements
     ImageButton btnPark;
@@ -52,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         anim_zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
         anim_fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        anim_slide_up_fade_in = AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in);
+        anim_slide_down_fade_out = AnimationUtils.loadAnimation(this, R.anim.slide_down_fade_out);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -176,8 +181,10 @@ public class MainActivity extends AppCompatActivity {
             // Declaring animator
             ValueAnimator animation = ValueAnimator.ofFloat(1f, 0f);
 
+            // ****** UI ELEMENTS FADING OUT ANIMATION ******
             // Sets the animation properties
-            animation.setDuration(300);
+            animation.setDuration(200);
+
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -211,13 +218,14 @@ public class MainActivity extends AppCompatActivity {
                     // Sets the visibility of the other layout and contentlinear
                     contentLinear.setVisibility(View.GONE);
                     otherContent.setVisibility(View.VISIBLE);
-                    otherContent.startAnimation(anim_fade_in);
 
+                    // ****** BUTTON PULL UP ANIMATION ******
                     // Declaring animator
                     ValueAnimator nextanimation = ValueAnimator.ofFloat(1f, 0f);
 
                     // Sets the animation properties
                     nextanimation.setDuration(300);
+
                     nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
@@ -229,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    // ****** LAYOUT PULL UP ANIMATION ******
                     nextanimation.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
@@ -238,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             otherContentHandler(view); // Takes care of including new views
+                            otherContent.startAnimation(anim_slide_up_fade_in); // Animates the new activity
                         }
 
                         @Override
@@ -273,6 +283,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Same as smallButtonPressed just backwards
     public void pullDown() {
+        animInProgress = true;
+
+        // ****** BUTTON AND LAYOUT PULL DOWN ANIMATION
         // Declaring animator
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
 
@@ -293,6 +306,11 @@ public class MainActivity extends AppCompatActivity {
         animation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                // Starts layout pull down and fade out animation
+                otherContent.startAnimation(anim_slide_down_fade_out);
+                anim_slide_down_fade_out.setFillAfter(true);
+
+                // Makes layout invisible
                 otherContent.setVisibility(View.GONE);
             }
 
@@ -301,11 +319,12 @@ public class MainActivity extends AppCompatActivity {
                 contentLinear.setVisibility(View.VISIBLE);
                 otherContent.removeAllViews();
 
+                // ****** UI ELEMENTS FADE IN ANIMATION ******
                 // Declaring animator
                 ValueAnimator nextanimation = ValueAnimator.ofFloat(0f, 1f);
 
                 // Sets the animation properties
-                nextanimation.setDuration(300);
+                nextanimation.setDuration(150);
                 nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
@@ -314,7 +333,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 nextanimation.start();
+
                 pullUp = false;
+                animInProgress = false;
             }
 
             @Override
@@ -341,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
             // Deactivates the dimming
             dimBackground(false);
         }
-        else if (pullUp) {
+        else if (pullUp && !animInProgress) {
             // If there is an activity pulled up, pulls down
             pullDown();
         }

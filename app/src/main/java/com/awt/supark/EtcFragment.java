@@ -19,7 +19,7 @@ public class EtcFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.etc_layout, container, false);
-        Log.d("EtcFregmanet", "Show");
+        Log.d("EtcFragment", "Etc activity started");
         return view;
     }
 }

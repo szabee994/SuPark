@@ -19,7 +19,7 @@ public class StatsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.stats_layout, container, false);
-        Log.d("StatsFregmanet", "Show");
+        Log.d("StatsFragment", "Stats activity started");
         return view;
     }
 }

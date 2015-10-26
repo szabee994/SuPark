@@ -102,7 +102,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="120dp"
+                android:layout_height="80dp"
                 android:orientation="horizontal"
                 android:weightSum="4">
 
@@ -110,45 +110,49 @@
                     android:id="@+id/buttonMap"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:onClick="smallButtonPressed"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/btn1" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn1"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
 
                 <ImageButton
                     android:id="@+id/buttonCars"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:onClick="smallButtonPressed"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/btn2" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn2"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
 
                 <ImageButton
                     android:id="@+id/buttonStatistics"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:onClick="smallButtonPressed"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/btn3" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn3"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
 
                 <ImageButton
                     android:id="@+id/buttonEtc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:onClick="smallButtonPressed"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/btn4" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn4"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
             </LinearLayout>
 
 

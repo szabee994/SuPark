@@ -19,7 +19,7 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.map_layout, container, false);
-        Log.d("MapFregmanet", "Show");
+        Log.d("MapFragment", "Map activity started");
         return view;
     }
 }
