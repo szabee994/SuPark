@@ -75,12 +75,12 @@
 
                 <ImageButton
                     android:id="@+id/buttonPark"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     android:layout_above="@+id/gridLayout"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_gravity="center|top"
+                    android:layout_gravity="center_horizontal|top"
                     android:layout_marginBottom="30dp"
                     android:layout_marginTop="70dp"
                     android:layout_weight="6"
