@@ -4,4 +4,5 @@
     <string name="app_version">0.2</string>
     <string name="button_park">Park</string>
     <string name="home_text">Type in or choose your car\'s license number</string>
+    <string name="please_wait">Parking in progress.\nPlease wait...</string>
 </resources>

@@ -6,4 +6,5 @@
 
     <color name="darkerWhite">#f2f2f2</color>
     <color name="foreignLayoutBackground">#6e6e6e</color>
+    <color name="parkingShapeBackground">#2f4fa1</color>
 </resources>

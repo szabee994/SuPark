@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_zoom_out;
     Animation anim_slide_up_fade_in;
     Animation anim_slide_down_fade_out;
+    Animation anim_center_open_up;
 
     // UI elements
     ImageButton btnPark;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout otherContent;
     LinearLayout contentLinear;
     TableRow tableRowTopHalf;
+    LinearLayout parkingBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         anim_slide_up_fade_in = AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in);
         anim_slide_down_fade_out = AnimationUtils.loadAnimation(this, R.anim.slide_down_fade_out);
+        anim_center_open_up = AnimationUtils.loadAnimation(this, R.anim.center_open_up);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
         tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
         otherContent = (FrameLayout) findViewById(R.id.otherContent);
+        parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -101,28 +106,63 @@ public class MainActivity extends AppCompatActivity {
         btnPark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // If the user clicked the parking button we should dim the background
-                // by setting the dimming layer visible.
-                dimBackground(true);
+                // Initializes the parking
+                parkingInit(true);
             }
         });
     }
 
+    public void park(String action) {
+        if(action == "send") {
+            Log.i("MainActivity", "Parking started");
+            parkingBackgroundShow();  // Makes the parking process layout visible
+        }
+        else if (action == "cancel"){
+            // TODO:
+            // If the user cancels the action
+            Log.i("MainActivity", "Parking cancelled");
+            Toast.makeText(getApplicationContext(), "Parking cancelled...", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void parkingBackgroundShow() {
+        if(dimActive) {  // Only works when the dimming layer is visible
+            parkingBackground.setVisibility(View.VISIBLE);  // Turns on the parking background layout
+            parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
+        }
+    }
+
     // Background dimming function (true = dimmed, false = normal)
-    public void dimBackground(boolean turnOn) {
+    // Also starts the parking procedure
+    public void parkingInit(boolean turnOn) {
         if (turnOn) {
-            // Sets the dim layer visible.
-            backDimmer.setVisibility(View.VISIBLE);
+            backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
+            backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
 
-            // Starts a fade in animation on the dimming layer
-            backDimmer.startAnimation(anim_fade_in);
+            anim_fade_in.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    park("send");  // Calls the parking function
+                }
 
-            // Sets the dim visibility indicator variable to true
-            dimActive = true;
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            dimActive = true;  // Sets the dim visibility indicator variable to true
         }
         else {
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
+            park("cancel");
 
             // At the end of the animation sets the dimming layers visibility to 'gone'
             anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
@@ -134,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     backDimmer.setVisibility(View.GONE);
+                    parkingBackground.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
@@ -144,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Sets the dim visibility indicator variable to false
             dimActive = false;
+
         }
     }
 
@@ -354,13 +396,13 @@ public class MainActivity extends AppCompatActivity {
     // Android back key function
     @Override
     public void onBackPressed() {
-        Log.i("SuPark", "Back pressed.");
+        Log.i("MainActivity", "Back pressed");
 
         // If the dimming layer is visible then makes invisible, otherwise
         // triggers the default action of back button.
         if (dimActive) {
             // Deactivates the dimming
-            dimBackground(false);
+            parkingInit(false);
         }
         else if (pullUp && !animInProgress) {
             // If there is an activity pulled up, pulls down
@@ -371,5 +413,4 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
-
 }
