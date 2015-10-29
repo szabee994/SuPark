@@ -14,7 +14,8 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.AnticipateOvershootInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean animInProgress = false;
+
+    // Sample string database stuff
+    String[] licenseNumberDb = {"su074gi", "sa001ba", "bc345ui", "fos", "pisa"};
 
     // Animation variables
     Animation anim_fade_in;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton btnCars;
     ImageButton btnStatistics;
     ImageButton btnEtc;
+    AutoCompleteTextView licenseNumber;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -51,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout contentLinear;
     TableRow tableRowTopHalf;
     LinearLayout parkingBackground;
+
+    // License number database adapter
+    ArrayAdapter<String> licenseNumberDbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
         tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
         otherContent = (FrameLayout) findViewById(R.id.otherContent);
         parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
+
+        // -----------------------------------------------------------------------------------------------------------------
+
+        // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
+        licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
+        licenseNumber = (AutoCompleteTextView) findViewById(R.id.lincenseNumber);
+        licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
+        licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
+
+        // -----------------------------------------------------------------------------------------------------------------
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -230,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
     public void smallButtonPressed(final View view) {
         if (!pullUp) { // If it isn't already up
             // Declaring animator
-            ValueAnimator animation = ValueAnimator.ofFloat(1f, 0f);
+            ValueAnimator animation = ValueAnimator.ofFloat(1f, 0.17f);
 
             // ****** UI ELEMENTS FADING OUT ANIMATION ******
             // Sets the animation properties
@@ -272,13 +290,13 @@ public class MainActivity extends AppCompatActivity {
 
                     // ****** BUTTON PULL UP ANIMATION ******
                     // Declaring animator
-                    ValueAnimator nextanimation = ValueAnimator.ofFloat(1f, 0f);
+                    ValueAnimator nextAnimation = ValueAnimator.ofFloat(1f, 0f);
 
                     // Sets the animation properties
-                    nextanimation.setDuration(300);
-                    nextanimation.setInterpolator(new AccelerateDecelerateInterpolator());
+                    nextAnimation.setDuration(300);
+                    nextAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
 
-                    nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             float value = (float) animation.getAnimatedValue();
@@ -290,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     // ****** LAYOUT PULL UP ANIMATION ******
-                    nextanimation.addListener(new Animator.AnimatorListener() {
+                    nextAnimation.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
 
@@ -312,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });
-                    nextanimation.start();
+                    nextAnimation.start();
                     pullUp = true; // Changing the pull up status indicator
                 }
 
@@ -374,18 +392,18 @@ public class MainActivity extends AppCompatActivity {
 
                 // ****** UI ELEMENTS FADE IN ANIMATION ******
                 // Declaring animator
-                ValueAnimator nextanimation = ValueAnimator.ofFloat(0f, 1f);
+                ValueAnimator nextAnimation = ValueAnimator.ofFloat(0.17f, 1f);
 
                 // Sets the animation properties
-                nextanimation.setDuration(150);
-                nextanimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                nextAnimation.setDuration(150);
+                nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         float value = (float) animation.getAnimatedValue();
                         contentLinear.setAlpha(value);
                     }
                 });
-                nextanimation.start();
+                nextAnimation.start();
 
                 pullUp = false;
                 animInProgress = false;
