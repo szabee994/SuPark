@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean animInProgress = false;
+    int openedLayout; // ID of the current opened otherContent
 
     // Sample string database stuff
     String[] licenseNumberDb = {"su074gi", "sa001ba", "bc345ui", "fos", "pisa"};
@@ -138,29 +139,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void park(String action) {
-        if(action == "send") {
-            Log.i("MainActivity", "Parking started");
-            parkingBackgroundShow();  // Makes the parking process layout visible
-        }
-        else if (action == "cancel"){
-            // TODO:
-            // If the user cancels the action
-            Log.i("MainActivity", "Parking cancelled");
-            Toast.makeText(getApplicationContext(), "Parking cancelled...", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    public void parkingBackgroundShow() {
-        if(dimActive) {  // Only works when the dimming layer is visible
-            parkingBackground.setVisibility(View.VISIBLE);  // Turns on the parking background layout
-            parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
-        }
-    }
-
-    // Background dimming function (true = dimmed, false = normal)
-    // Also starts the parking procedure
+    // -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------
+    //
+    // First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
+    // It has two states: true = dims the screen and calls parking function, false = normal or returns to normal mode
     public void parkingInit(boolean turnOn) {
         if (turnOn) {
             backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
@@ -182,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-
             dimActive = true;  // Sets the dim visibility indicator variable to true
         }
         else {
@@ -209,10 +190,34 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-
-            // Sets the dim visibility indicator variable to false
             dimActive = false;
+        }
+    }
 
+    // This is the actual parking function. You can call it with one of the next parameters:
+    // 1. send - With this parameter the parking function will send a parking query
+    // 2. cancel - Cancels the parking query
+    // 3. ...
+    // 4. ...
+    public void park(String action) {
+        if(action == "send") {
+            Log.i("MainActivity", "Parking started");
+            parkingBackgroundShow();  // Makes the parking process layout visible
+        }
+        else if (action == "cancel"){
+            // TODO:
+            // If the user cancels the action
+            Log.i("MainActivity", "Parking cancelled");
+            Toast.makeText(getApplicationContext(), "Parking cancelled...", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
+
+    public void parkingBackgroundShow() {
+        if(dimActive) {  // Only works when the dimming layer is visible
+            parkingBackground.setVisibility(View.VISIBLE);  // Turns on the parking background layout
+            parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
         }
     }
 
@@ -273,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
                     if (view.getId() != R.id.buttonEtc) {
                         btnEtc.setAlpha(value);
                     }
+                    openedLayout = view.getId();  // Sets the openedLayout variable so we know which one of the foreign layout was opened
                 }
             });
 
@@ -346,9 +352,34 @@ public class MainActivity extends AppCompatActivity {
             });
             animation.start();
         }
-        else {
+        else if (view.getId() == openedLayout){
             pullDown(); // If there is a layout already pulled up we have to pull it down
         }
+        else if (pullUp && (openedLayout != 0)) {
+            //Log.i("enye", "view:" + view.getId() + ", int:" + openedLayout);
+
+            // Fades out current layout
+            otherContent.startAnimation(anim_fade_out);
+            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    otherContentHandler(view);  // Switches the layout to the new one
+                    openedLayout = view.getId();  // Sets the corresponding variable
+                    otherContent.startAnimation(anim_slide_up_fade_in); // Fades in the new layout
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+
     }
 
     // Same as smallButtonPressed just backwards
