@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean animInProgress = false;
     int openedLayout = 0; // ID of the current opened otherContent
     // Sample string database stuff
-    String[] licenseNumberDb = {"su074gi", "sa001ba", "bc345ui", "fos", "pisa"};
+    String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
 
     // Animation variables
     Animation anim_fade_in;
