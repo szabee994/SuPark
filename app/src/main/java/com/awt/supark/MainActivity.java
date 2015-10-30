@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
     int openedLayout = 0; // ID of the current opened otherContent
-
     // Sample string database stuff
     String[] licenseNumberDb = {"su074gi", "sa001ba", "bc345ui", "fos", "pisa"};
 
