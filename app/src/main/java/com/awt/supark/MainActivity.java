@@ -3,6 +3,7 @@ package com.awt.supark;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -23,11 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
+    boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
-    int openedLayout; // ID of the current opened otherContent
+    int openedLayout = 0; // ID of the current opened otherContent
 
     // Sample string database stuff
     String[] licenseNumberDb = {"su074gi", "sa001ba", "bc345ui", "fos", "pisa"};
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
+
+    // Fragment manager
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
         licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
         licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
 
+        fragmentManager = getSupportFragmentManager();
+
         // -----------------------------------------------------------------------------------------------------------------
 
         // Setting up a listener to track the touch/release events for the parking button
@@ -131,10 +138,14 @@ public class MainActivity extends AppCompatActivity {
         btnPark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Initializes the parking
-                parkingInit(true);
-                view.startAnimation(anim_anticipate_rotate_zoom_out);
-                anim_anticipate_rotate_zoom_out.setFillAfter(true);
+                if(!pullUpStarted) {
+                    pullUpStarted = true;
+                    // Initializes the parking
+                    parkingInit(true);
+                    view.startAnimation(anim_anticipate_rotate_zoom_out);
+                    anim_anticipate_rotate_zoom_out.setFillAfter(true);
+                    pullUpStarted=false;
+                }
             }
         });
     }
@@ -243,15 +254,16 @@ public class MainActivity extends AppCompatActivity {
 
         // If there's no fragment (?)
         if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
+            openedLayout = view.getId();  // Sets the openedLayout variable so we know which one of the foreign layout was opened
         }
     }
 
     public void smallButtonPressed(final View view) {
-        if (!pullUp) { // If it isn't already up
+        if (!pullUp && !pullUpStarted) { // If it isn't already up
+            pullUpStarted = true;
             // Declaring animator
             ValueAnimator animation = ValueAnimator.ofFloat(1f, 0.17f);
 
@@ -278,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
                     if (view.getId() != R.id.buttonEtc) {
                         btnEtc.setAlpha(value);
                     }
-                    openedLayout = view.getId();  // Sets the openedLayout variable so we know which one of the foreign layout was opened
                 }
             });
 
@@ -324,6 +335,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onAnimationEnd(Animator animation) {
                             otherContentHandler(view); // Takes care of including new views
                             otherContent.startAnimation(anim_slide_up_fade_in); // Animates the new activity
+                            pullUp = true; // Changing the pull up status indicator
+                            pullUpStarted = false;
                         }
 
                         @Override
@@ -337,7 +350,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     nextAnimation.start();
-                    pullUp = true; // Changing the pull up status indicator
                 }
 
                 @Override
@@ -355,8 +367,22 @@ public class MainActivity extends AppCompatActivity {
         else if (view.getId() == openedLayout){
             pullDown(); // If there is a layout already pulled up we have to pull it down
         }
-        else if (pullUp && (openedLayout != 0)) {
+        else if (pullUp && (openedLayout != 0) && !pullUpStarted) {
+            pullUpStarted=true; //To prevent more than one highlight
             //Log.i("enye", "view:" + view.getId() + ", int:" + openedLayout);
+
+            //Changing highlight from previous to current button
+            ValueAnimator animation = ValueAnimator.ofFloat(0.17f, 1f);
+            animation.setDuration(150);
+            animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float value = (float) animation.getAnimatedValue();
+                    findViewById(view.getId()).setAlpha(value);
+                    findViewById(openedLayout).setAlpha(1.17f - value);
+                }
+            });
+            animation.start();
 
             // Fades out current layout
             otherContent.startAnimation(anim_fade_out);
@@ -369,8 +395,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     otherContentHandler(view);  // Switches the layout to the new one
-                    openedLayout = view.getId();  // Sets the corresponding variable
                     otherContent.startAnimation(anim_slide_up_fade_in); // Fades in the new layout
+                    pullUpStarted=false;
                 }
 
                 @Override
@@ -419,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 contentLinear.setVisibility(View.VISIBLE);
-                otherContent.removeAllViews();
 
                 // ****** UI ELEMENTS FADE IN ANIMATION ******
                 // Declaring animator
@@ -437,6 +462,7 @@ public class MainActivity extends AppCompatActivity {
                 nextAnimation.start();
 
                 pullUp = false;
+                openedLayout = 0;
                 animInProgress = false;
             }
 
