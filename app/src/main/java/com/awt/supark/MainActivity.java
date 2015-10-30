@@ -340,7 +340,8 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
-
+                            pullUpStarted = false;
+                            otherContent.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -463,6 +464,9 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
                 pullUp = false;
                 openedLayout = 0;
                 animInProgress = false;
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.remove(fragmentManager.findFragmentById(R.id.otherContent));
+                transaction.commit();
             }
 
             @Override
@@ -489,7 +493,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
             // Deactivates the dimming
             parkingInit(false);
         }
-        else if (pullUp && !animInProgress) {
+        else if ((pullUp || pullUpStarted) && !animInProgress) {
             // If there is an activity pulled up, pulls down
             pullDown();
         }

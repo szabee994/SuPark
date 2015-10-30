@@ -14,12 +14,9 @@
         android:layout_alignParentStart="false"
         android:fitsSystemWindows="true"
         android:weightSum="1"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_vertical_margin"
-        android:paddingTop="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/activity_horizontal_margin"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:focusable="false">
 
         <TableRow
             android:id="@+id/tableRowTopHalf"
@@ -99,7 +96,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:baselineAligned="false"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
