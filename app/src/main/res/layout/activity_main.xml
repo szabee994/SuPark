@@ -62,28 +62,67 @@
                     android:text="@string/home_text"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
+                <AutoCompleteTextView
+                    android:id="@+id/lincenseNumber"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textWelcome"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_weight="1" />
+
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="45dp"
                     android:layout_weight="1"
-                    android:layout_gravity="center_horizontal">
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/layoutZoneChanger">
 
-                    <AutoCompleteTextView
-                        android:id="@+id/lincenseNumber"
-                        android:layout_width="190dp"
+                    <ImageButton
+                        android:layout_width="45dp"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/textWelcome"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center"
-                        android:layout_weight="1" />
+                        android:id="@+id/buttonZone1"
+                        android:src="@drawable/zone1"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:onClick="zoneChangeButtonPressed" />
 
-                    <Spinner
-                        android:layout_width="100dp"
+                    <ImageButton
+                        android:layout_width="45dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/spinner"
-                        android:layout_gravity="center"
-                        android:entries="@array/parking_zones" />
+                        android:id="@+id/buttonZone2"
+                        android:src="@drawable/zone2"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:onClick="zoneChangeButtonPressed" />
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/buttonZone3"
+                        android:src="@drawable/zone3"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:onClick="zoneChangeButtonPressed" />
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/buttonZone4"
+                        android:src="@drawable/zone4"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:onClick="zoneChangeButtonPressed" />
                 </LinearLayout>
 
                 <ImageButton
@@ -95,7 +134,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_gravity="center_horizontal|top"
                     android:layout_marginBottom="30dp"
-                    android:layout_marginTop="70dp"
+                    android:layout_marginTop="30dp"
                     android:layout_weight="6"
                     android:background="@null"
                     android:scaleType="fitCenter"

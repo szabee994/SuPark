@@ -2,8 +2,8 @@ package com.awt.supark;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.renderscript.Sampler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -21,14 +21,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.Toast;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
+    int currentZone = 1;
     int openedLayout = 0; // ID of the current opened otherContent
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
@@ -43,6 +47,8 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     Animation anim_center_open_up;
     Animation anim_anticipate_rotate_zoom_out;
     Animation anim_anticipate_rotate_zoom_in;
+    Animation anim_zone_fade_in;
+    Animation anim_zone_fade_out;
 
     // UI elements
     ImageButton btnPark;
@@ -51,6 +57,10 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     ImageButton btnStatistics;
     ImageButton btnEtc;
     AutoCompleteTextView licenseNumber;
+    ImageButton btnZone1;
+    ImageButton btnZone2;
+    ImageButton btnZone3;
+    ImageButton btnZone4;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -80,6 +90,8 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         anim_center_open_up = AnimationUtils.loadAnimation(this, R.anim.center_open_up);
         anim_anticipate_rotate_zoom_out = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_out);
         anim_anticipate_rotate_zoom_in = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
+        anim_zone_fade_in = AnimationUtils.loadAnimation(this, R.anim.zone_fade_in);
+        anim_zone_fade_out = AnimationUtils.loadAnimation(this, R.anim.zone_fade_out);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -87,6 +99,11 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         btnStatistics = (ImageButton) findViewById(R.id.buttonStatistics);
         btnEtc = (ImageButton) findViewById(R.id.buttonEtc);
         btnMap = (ImageButton) findViewById(R.id.buttonMap);
+        btnZone1 = (ImageButton) findViewById(R.id.buttonZone1);
+        btnZone2 = (ImageButton) findViewById(R.id.buttonZone2);
+        btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
+        btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
+
 
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
@@ -480,6 +497,56 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
             }
         });
         animation.start();
+    }
+
+    int previousZone;
+    public void zoneChangeButtonPressed(View view) {
+        previousZone = currentZone;
+        switch(view.getId()) {
+            case R.id.buttonZone1:
+                currentZone = 1;
+                break;
+            case R.id.buttonZone2:
+                currentZone = 2;
+                break;
+            case R.id.buttonZone3:
+                currentZone = 3;
+                break;
+            case R.id.buttonZone4:
+                currentZone = 4;
+                break;
+        }
+        setZoneButtonActive(currentZone);
+    }
+
+    public void setZoneButtonActive(int zoneNumber) {
+        switch(zoneNumber) {
+            case 1:
+                btnZone1.startAnimation(anim_zone_fade_in);
+                btnZone2.startAnimation(anim_zone_fade_out);
+                btnZone3.startAnimation(anim_zone_fade_out);
+                btnZone4.startAnimation(anim_zone_fade_out);
+                break;
+            case 2:
+                btnZone1.startAnimation(anim_zone_fade_out);
+                btnZone2.startAnimation(anim_zone_fade_in);
+                btnZone3.startAnimation(anim_zone_fade_out);
+                btnZone4.startAnimation(anim_zone_fade_out);
+                break;
+            case 3:
+                btnZone1.startAnimation(anim_zone_fade_out);
+                btnZone2.startAnimation(anim_zone_fade_out);
+                btnZone3.startAnimation(anim_zone_fade_in);
+                btnZone4.startAnimation(anim_zone_fade_out);
+                break;
+            case 4:
+                btnZone1.startAnimation(anim_zone_fade_out);
+                btnZone2.startAnimation(anim_zone_fade_out);
+                btnZone3.startAnimation(anim_zone_fade_out);
+                btnZone4.startAnimation(anim_zone_fade_in);
+                break;
+        }
+
     }
 
     // Android back key function
