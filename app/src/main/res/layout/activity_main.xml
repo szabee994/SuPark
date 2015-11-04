@@ -4,7 +4,8 @@
     android:id="@+id/wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/windowBackground">
 
     <TableLayout
         android:id="@+id/content"
@@ -63,7 +64,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <AutoCompleteTextView
-                    android:id="@+id/lincenseNumber"
+                    android:id="@+id/licenseNumber"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/textWelcome"

@@ -1,8 +1,11 @@
 package com.awt.supark;
 
 import android.animation.Animator;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.renderscript.Sampler;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,18 +24,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.Toast;
-
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
-    int currentZone = 1;
+    int currentZone = 0;
     int openedLayout = 0; // ID of the current opened otherContent
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     LinearLayout contentLinear;
     TableRow tableRowTopHalf;
     LinearLayout parkingBackground;
+    RelativeLayout wrapper;
 
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
@@ -104,6 +105,10 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
         btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
 
+        btnZone1.setAlpha(0.3f);
+        btnZone2.setAlpha(0.3f);
+        btnZone3.setAlpha(0.3f);
+        btnZone4.setAlpha(0.3f);
 
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
@@ -111,18 +116,21 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
         otherContent = (FrameLayout) findViewById(R.id.otherContent);
         parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
+        wrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
         // -----------------------------------------------------------------------------------------------------------------
 
         // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
         licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
-        licenseNumber = (AutoCompleteTextView) findViewById(R.id.lincenseNumber);
+        licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
         licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
         licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
 
         fragmentManager = getSupportFragmentManager();
 
         // -----------------------------------------------------------------------------------------------------------------
+
+        getZone();
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -499,54 +507,47 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         animation.start();
     }
 
-    int previousZone;
     public void zoneChangeButtonPressed(View view) {
-        previousZone = currentZone;
         switch(view.getId()) {
             case R.id.buttonZone1:
                 currentZone = 1;
+                appBackgroundColorChange(255, 60, 21);  // Color of red zone (RGB)
                 break;
             case R.id.buttonZone2:
                 currentZone = 2;
+                appBackgroundColorChange(252, 254, 94);  // Color of yellow zone (RGB)
                 break;
             case R.id.buttonZone3:
                 currentZone = 3;
+                appBackgroundColorChange(43, 174, 40);  // Color of green zone (RGB)
                 break;
             case R.id.buttonZone4:
                 currentZone = 4;
+                appBackgroundColorChange(63, 95, 255);  // Color of blue zone (RGB)
                 break;
         }
-        setZoneButtonActive(currentZone);
+        Log.i("SuPark", "Current zone: " + currentZone);
     }
 
-    public void setZoneButtonActive(int zoneNumber) {
-        switch(zoneNumber) {
-            case 1:
-                btnZone1.startAnimation(anim_zone_fade_in);
-                btnZone2.startAnimation(anim_zone_fade_out);
-                btnZone3.startAnimation(anim_zone_fade_out);
-                btnZone4.startAnimation(anim_zone_fade_out);
-                break;
-            case 2:
-                btnZone1.startAnimation(anim_zone_fade_out);
-                btnZone2.startAnimation(anim_zone_fade_in);
-                btnZone3.startAnimation(anim_zone_fade_out);
-                btnZone4.startAnimation(anim_zone_fade_out);
-                break;
-            case 3:
-                btnZone1.startAnimation(anim_zone_fade_out);
-                btnZone2.startAnimation(anim_zone_fade_out);
-                btnZone3.startAnimation(anim_zone_fade_in);
-                btnZone4.startAnimation(anim_zone_fade_out);
-                break;
-            case 4:
-                btnZone1.startAnimation(anim_zone_fade_out);
-                btnZone2.startAnimation(anim_zone_fade_out);
-                btnZone3.startAnimation(anim_zone_fade_out);
-                btnZone4.startAnimation(anim_zone_fade_in);
-                break;
-        }
+    public void getZone() {
+        // TODO:
+        // Get parking zone via GPS
 
+        currentZone = 0; // Failed to get zone
+        Log.i("SuPark", "Failed to get zone info via GPS.");
+        Log.i("SuPark", "Current zone: " + currentZone);
+    }
+
+    public void appBackgroundColorChange(int r, int g, int b) {
+        ColorDrawable wBack = (ColorDrawable) wrapper.getBackground();
+        int color = wBack.getColor();
+        int r1 = Color.red(color);
+        int g1 = Color.green(color);
+        int b1 = Color.blue(color);
+
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(wrapper, "backgroundColor", new ArgbEvaluator(), Color.argb(255, r1, g1, b1), Color.argb(255, r, g, b));
+        colorFade.setDuration(1000);
+        colorFade.start();
     }
 
     // Android back key function
