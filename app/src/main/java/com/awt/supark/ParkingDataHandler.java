@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -46,13 +47,10 @@ public class ParkingDataHandler {
                 "  `region_id` int(3) NOT NULL,\n" +
                 "  `zone_id` int(2) NOT NULL,\n" +
                 "  `name` varchar(100) NOT NULL,\n" +
-                "  `lat1` double NOT NULL,\n" +
-                "  `lon1` double NOT NULL,\n" +
-                "  `lat2` double NOT NULL,\n" +
-                "  `lon2` double NOT NULL,\n" +
+                "  `location_poly` varchar(1000) NOT NULL,\n" +
                 "  PRIMARY KEY (`region_id`)\n" +
                 ")");
-        sharedprefs = context.getSharedPreferences("ParkingPrefs",Context.MODE_PRIVATE);
+        sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastupdate = sharedprefs.getInt("lastupdate",0);
         Log.i("lastupdate",Integer.toString(lastupdate));
     }
@@ -97,7 +95,7 @@ public class ParkingDataHandler {
             try {
                 String timestamp = Long.toString(System.currentTimeMillis() / 1000L);
                 String token = timestamp + "$up4rK";
-                String url = "http://192.168.1.150/index.php?do="+params[0]+"&token="+md5(token)+"&timestamp="+timestamp; //+"&gzip";
+                String url = "http://supark.host-ed.me/index.php?do="+params[0]+"&token="+md5(token)+"&timestamp="+timestamp; //+"&gzip";
                 Log.i("url",url);
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -153,16 +151,14 @@ public class ParkingDataHandler {
                         values_temp.put("region_id",regions_temp.getInt("region_id"));
                         values_temp.put("zone_id",regions_temp.getInt("zone_id"));
                         values_temp.put("name",regions_temp.getString("name"));
-                        values_temp.put("lat1",regions_temp.getDouble("lat1"));
-                        values_temp.put("lon1",regions_temp.getDouble("lon1"));
-                        values_temp.put("lat2",regions_temp.getDouble("lat2"));
-                        values_temp.put("lon2", regions_temp.getDouble("lon2"));
+                        values_temp.put("location_poly",regions_temp.getString("location_poly"));
                         db.insert("regions",null,values_temp);
                     }
                     int lastupd = data.getJSONObject("lastupdate").getInt("time");
-                    sharedprefs.edit().putInt("lastupdate",lastupd);
-                    sharedprefs.edit().apply();
-                    lastupdate = lastupd;
+                    SharedPreferences.Editor editor = sharedprefs.edit();
+                    editor.putInt("lastupdate", lastupd);
+                    editor.commit();
+                    lastupdate = sharedprefs.getInt("lastupdate",0);
                 }
             }catch (Exception e){
                 Log.i("Error",e.toString());

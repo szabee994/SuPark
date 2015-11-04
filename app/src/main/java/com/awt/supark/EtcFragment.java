@@ -20,6 +20,8 @@ public class EtcFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.etc_layout, container, false);
         Log.d("EtcFragment", "Etc activity started");
+        ParkingDataHandler parkhandler = new ParkingDataHandler(getActivity().getApplicationContext());
+        parkhandler.checkForUpdate();
         return view;
     }
 }
