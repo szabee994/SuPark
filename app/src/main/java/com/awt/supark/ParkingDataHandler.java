@@ -3,10 +3,28 @@ package com.awt.supark;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,16 +38,27 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 /**
  * Created by Doctor on 27/10/2015.
  */
-public class ParkingDataHandler {
+public class ParkingDataHandler implements LocationListener{
     SQLiteDatabase db;
     SharedPreferences sharedprefs;
+    LocationManager locationManager;
     int lastupdate;
     Context context;
+    ArrayList<LatLng> polyLoc[];
+    int polyzone[];
+    int region[];
+    int polynum = 0;
+    Handler mHandler;
+
+    public void throwHandler(Handler mHandl){ //Handler init for communication with MainActivity
+        mHandler = mHandl;
+    }
 
     public ParkingDataHandler(Context cont){
         context = cont;
@@ -53,6 +82,134 @@ public class ParkingDataHandler {
         sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastupdate = sharedprefs.getInt("lastupdate",0);
         Log.i("lastupdate",Integer.toString(lastupdate));
+    }
+
+   public boolean getPolys() { //Method to load polygons into array for zone detection
+        try {
+            db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+            Cursor d = db.rawQuery("SELECT * FROM regions", null);
+            String[] poly = new String[d.getCount()];
+            polyzone = new int[d.getCount()];
+            region = new int[d.getCount()];
+            polyLoc = new ArrayList[d.getCount()];
+            for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+                int regionidindex = d.getColumnIndex("region_id");
+                int polyindex = d.getColumnIndex("location_poly");
+                int zoneindex = d.getColumnIndex("zone_id");
+                poly[polynum] = d.getString(polyindex);
+                polyzone[polynum] = d.getInt(zoneindex);
+                region[polynum] = d.getInt(regionidindex);
+                polynum++;
+            }
+            for (int i = 0; i < polynum; i++) { //Boring string operations and throwing into LatLng arraylist
+                poly[i] = poly[i].replace("POLYGON((", "");
+                poly[i] = poly[i].replace("))", "");
+                String vertices[] = poly[i].split(",");
+                polyLoc[i] = new ArrayList<LatLng>(vertices.length);
+                Log.i("Length",Integer.toString(vertices.length));
+                for (int j = 0; j < vertices.length; j++) {
+                    String verticelatlng[] = vertices[j].split(" ");
+                    polyLoc[i].add(j,new LatLng(Double.valueOf(verticelatlng[0]),Double.valueOf(verticelatlng[1])));
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, "Update DB! (Open ETC Fragment to update!)", Toast.LENGTH_SHORT).show();
+            Log.i("Exception", e.toString());
+            return false;
+        }
+        return true;
+    }
+
+    //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths.
+    public boolean inRegion(LatLng location, ArrayList<LatLng> polyLoc){
+        if (location==null)
+            return false;
+
+        LatLng lastPoint = polyLoc.get(polyLoc.size()-1);
+        boolean isInside = false;
+        double x = location.longitude;
+
+        for(LatLng point: polyLoc)
+        {
+            double x1 = lastPoint.longitude;
+            double x2 = point.longitude;
+            double dx = x2 - x1;
+
+            if (Math.abs(dx) > 180.0)
+            {
+                // we have, most likely, just jumped the dateline (could do further validation to this effect if needed).  normalise the numbers.
+                if (x > 0)
+                {
+                    while (x1 < 0)
+                        x1 += 360;
+                    while (x2 < 0)
+                        x2 += 360;
+                }
+                else
+                {
+                    while (x1 > 0)
+                        x1 -= 360;
+                    while (x2 > 0)
+                        x2 -= 360;
+                }
+                dx = x2 - x1;
+            }
+
+            if ((x1 <= x && x2 > x) || (x1 >= x && x2 < x))
+            {
+                double grad = (point.latitude - lastPoint.latitude) / dx;
+                double intersectAtLat = lastPoint.latitude + ((x - x1) * grad);
+
+                if (intersectAtLat > location.latitude)
+                    isInside = !isInside;
+            }
+            lastPoint = point;
+        }
+
+        return isInside;
+    }
+
+    //Method to be called from MainActivity
+    public void getZone(){
+        polynum = 0;
+        if(getPolys()) {
+            Log.i("Polys","loaded");
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            try {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+            } catch (SecurityException e) {
+                Log.i("SecurityException", e.toString());
+            }
+        }else{
+            Log.i("Polys","load failed");
+        }
+    }
+
+    @Override //Method that gets called on every location change
+    public void onLocationChanged(Location location) {
+        Log.i("Location",Double.toString(location.getLatitude())+", "+Double.toString(location.getLongitude()));
+        LatLng latlng = new LatLng(location.getLatitude(),location.getLongitude());
+        for(int i = 0; i < polynum; i++){
+            if(inRegion(latlng,polyLoc[i])){
+                mHandler.obtainMessage(0,polyzone[i],region[i]).sendToTarget();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
 
     public String md5(String pass) throws Exception //MD5 snippet for token generation

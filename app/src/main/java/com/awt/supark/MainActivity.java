@@ -6,6 +6,8 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
     int currentZone = 0;
+    int currentregion = -1;
     int openedLayout = 0; // ID of the current opened otherContent
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
@@ -75,6 +78,16 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
 
     // Fragment manager
     FragmentManager fragmentManager;
+
+    // Thread msg handler
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:currentregion = msg.arg2; changeZone(msg.arg1);  break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +143,10 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
-        getZone();
+        ParkingDataHandler parkhandler = new ParkingDataHandler(this);
+        parkhandler.checkForUpdate();
+        parkhandler.throwHandler(mHandler);
+        parkhandler.getZone();
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -529,13 +545,30 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         Log.i("SuPark", "Current zone: " + currentZone);
     }
 
-    public void getZone() {
-        // TODO:
-        // Get parking zone via GPS
-
-        currentZone = 0; // Failed to get zone
-        Log.i("SuPark", "Failed to get zone info via GPS.");
+    public void colorSwitch(int zone) {
+        switch(zone) {
+            case 1:
+                appBackgroundColorChange(255, 60, 21);  // Color of red zone (RGB)
+                break;
+            case 2:
+                appBackgroundColorChange(252, 254, 94);  // Color of yellow zone (RGB)
+                break;
+            case 3:
+                appBackgroundColorChange(43, 174, 40);  // Color of green zone (RGB)
+                break;
+            case 4:
+                appBackgroundColorChange(63, 95, 255);  // Color of blue zone (RGB)
+                break;
+        }
         Log.i("SuPark", "Current zone: " + currentZone);
+    }
+
+    public void changeZone(int zone) {
+        if(currentZone != zone){
+            currentZone = zone;
+            colorSwitch(currentZone);
+            Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentregion);
+        }
     }
 
     public void appBackgroundColorChange(int r, int g, int b) {
