@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     int currentZone = 0;
     int currentregion = -1;
     int openedLayout = 0; // ID of the current opened otherContent
+    boolean locationFound = false;
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
 
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     ImageButton btnZone2;
     ImageButton btnZone3;
     ImageButton btnZone4;
+    TextView locationInfo;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -84,7 +87,16 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
-                case 0:currentregion = msg.arg2; changeZone(msg.arg1);  break;
+                case 0:
+                    currentregion = msg.arg2;
+                    changeZone(msg.arg1);
+                    locationFound = true;
+                    updateLocationText();
+                    break;
+                case 1:
+                    locationFound = true;
+                    updateLocationText();
+                    break;
             }
         }
     };
@@ -117,6 +129,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         btnZone2 = (ImageButton) findViewById(R.id.buttonZone2);
         btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
         btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
+        locationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
 
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);
@@ -132,6 +145,8 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
         // -----------------------------------------------------------------------------------------------------------------
+
+        updateLocationText();
 
         // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
         licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
@@ -203,6 +218,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
                 @Override
                 public void onAnimationStart(Animation animation) {
                     park("send");  // Calls the parking function
+                    Log.i("SuPark", "Current zone: " + currentZone);
                 }
 
                 @Override
@@ -583,6 +599,31 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         colorFade.start();
     }
 
+    public void updateLocationText() {
+        if(locationFound) {
+            switch(currentZone) {
+                case 0:
+                    locationInfo.setText("You're not in any parking zones.");
+                    break;
+                case 1:
+                    locationInfo.setText("You are in Zone 1.");
+                    break;
+                case 2:
+                    locationInfo.setText("You are in Zone 2.");
+                    break;
+                case 3:
+                    locationInfo.setText("You are in Zone 3.");
+                    break;
+                case 4:
+                    locationInfo.setText("You are in Zone 4.");
+                    break;
+            }
+        }
+        else {
+            locationInfo.setText("Searching for your location...");
+        }
+    }
+
     // Android back key function
     @Override
     public void onBackPressed() {
@@ -604,3 +645,4 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         }
     }
 }
+

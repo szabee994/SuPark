@@ -188,6 +188,7 @@ public class ParkingDataHandler implements LocationListener{
     @Override //Method that gets called on every location change
     public void onLocationChanged(Location location) {
         Log.i("Location",Double.toString(location.getLatitude())+", "+Double.toString(location.getLongitude()));
+        mHandler.obtainMessage(1).sendToTarget();
         LatLng latlng = new LatLng(location.getLatitude(),location.getLongitude());
         for(int i = 0; i < polynum; i++){
             if(inRegion(latlng,polyLoc[i])){
@@ -195,6 +196,7 @@ public class ParkingDataHandler implements LocationListener{
                 break;
             }
         }
+
     }
 
     @Override
