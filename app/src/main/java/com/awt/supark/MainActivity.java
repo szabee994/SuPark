@@ -548,16 +548,16 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     public void colorSwitch(int zone) {
         switch(zone) {
             case 1:
-                appBackgroundColorChange(255, 60, 21);  // Color of red zone (RGB)
+                appBackgroundColorChange(183, 28, 28);  // Color of red zone (RGB)
                 break;
             case 2:
-                appBackgroundColorChange(252, 254, 94);  // Color of yellow zone (RGB)
+                appBackgroundColorChange(249, 168, 37);  // Color of yellow zone (RGB)
                 break;
             case 3:
-                appBackgroundColorChange(43, 174, 40);  // Color of green zone (RGB)
+                appBackgroundColorChange(56, 142, 60);  // Color of green zone (RGB)
                 break;
             case 4:
-                appBackgroundColorChange(63, 95, 255);  // Color of blue zone (RGB)
+                appBackgroundColorChange(13, 71, 161);  // Color of blue zone (RGB)
                 break;
         }
         Log.i("SuPark", "Current zone: " + currentZone);
