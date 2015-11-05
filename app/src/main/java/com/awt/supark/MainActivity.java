@@ -30,15 +30,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
+public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
-    int currentZone = 0;
-    int currentregion = -1;
-    int openedLayout = 0; // ID of the current opened otherContent
-    boolean locationFound = false;
+    boolean locationFound = false;  // True if the location has found by GPS signal
+    int currentZone = 0;  // User's current zone
+    int currentRegion = -1;  // Current region
+    int openedLayout = 0;  // ID of the current opened otherContent
+
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
 
@@ -82,18 +83,23 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
     // Fragment manager
     FragmentManager fragmentManager;
 
-    // Thread msg handler
+    // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    currentregion = msg.arg2;
+                    // If the device is in a polygon receives the region and zone info
+                    currentRegion = msg.arg2;
                     changeZone(msg.arg1);
                     locationFound = true;
                     updateLocationText();
                     break;
                 case 1:
+                    // This occurs every time the user moves. Because the locationFound
+                    // is changes to true but the currentZone remains in it's initial
+                    // state (0), the program will know that the user is not in any
+                    // parking zone.
                     locationFound = true;
                     updateLocationText();
                     break;
@@ -101,10 +107,14 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         }
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Declaring stuff
 
         // Animations
         anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
@@ -148,6 +158,8 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
 
         updateLocationText();
 
+        // -----------------------------------------------------------------------------------------------------------------
+
         // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
         licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
         licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
@@ -158,10 +170,13 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
-        ParkingDataHandler parkhandler = new ParkingDataHandler(this);
-        parkhandler.checkForUpdate();
-        parkhandler.throwHandler(mHandler);
-        parkhandler.getZone();
+        ParkingDataHandler parkHandler = new ParkingDataHandler(this);
+
+        parkHandler.checkForUpdate();  // Checks that the local database is up to date
+        parkHandler.throwHandler(mHandler);  // Initializes the message handler
+        parkHandler.getZone();  // Gets zone info
+
+        // -----------------------------------------------------------------------------------------------------------------
 
         // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -279,7 +294,6 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         }
 
     }
-    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
 
     public void parkingBackgroundShow() {
         if(dimActive) {  // Only works when the dimming layer is visible
@@ -287,7 +301,13 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
             parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
         }
     }
+    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
 
+
+
+
+    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
+    //
     // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
         Fragment fragment = null;
@@ -308,7 +328,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
                 break;
         }
 
-        // If there's no fragment (?)
+        // If there's no fragment
         if (fragment != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.otherContent, fragment);
@@ -425,10 +445,9 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
             pullDown(); // If there is a layout already pulled up we have to pull it down
         }
         else if (pullUp && (openedLayout != 0) && !pullUpStarted) {
-            pullUpStarted=true; //To prevent more than one highlight
-            //Log.i("enye", "view:" + view.getId() + ", int:" + openedLayout);
+            pullUpStarted = true; // To prevent more than one highlight
 
-            //Changing highlight from previous to current button
+            // Changing highlight from previous to current button
             ValueAnimator animation = ValueAnimator.ofFloat(0.17f, 1f);
             animation.setDuration(150);
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -538,29 +557,35 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         });
         animation.start();
     }
+    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION ENDS HERE ------------------------------------------
 
+    // -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
+    //
+    // Every time the user press a zone changer button this will be called
     public void zoneChangeButtonPressed(View view) {
+        // Gets the pressed buttons ID
         switch(view.getId()) {
             case R.id.buttonZone1:
                 currentZone = 1;
-                appBackgroundColorChange(183, 28, 28);  // Color of red zone (RGB)
+                colorSwitch(1);
                 break;
             case R.id.buttonZone2:
                 currentZone = 2;
-                appBackgroundColorChange(249, 168, 37);  // Color of yellow zone (RGB)
+                colorSwitch(2);
                 break;
             case R.id.buttonZone3:
                 currentZone = 3;
-                appBackgroundColorChange(56, 142, 60);  // Color of green zone (RGB)
+                colorSwitch(3);
                 break;
             case R.id.buttonZone4:
                 currentZone = 4;
-                appBackgroundColorChange(13, 71, 161);  // Color of blue zone (RGB)
+                colorSwitch(4);
                 break;
         }
         Log.i("SuPark", "Current zone: " + currentZone);
     }
 
+    // Background color switcher
     public void colorSwitch(int zone) {
         switch(zone) {
             case 1:
@@ -579,14 +604,17 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         Log.i("SuPark", "Current zone: " + currentZone);
     }
 
+    // Zone updater
     public void changeZone(int zone) {
         if(currentZone != zone){
             currentZone = zone;
             colorSwitch(currentZone);
-            Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentregion);
+
+            Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
         }
     }
 
+    // Background color changer function
     public void appBackgroundColorChange(int r, int g, int b) {
         ColorDrawable wBack = (ColorDrawable) wrapper.getBackground();
         int color = wBack.getColor();
@@ -599,6 +627,9 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
         colorFade.start();
     }
 
+    // Updates location info textView to let the user know where is he
+    // TODO:
+    // Push these to strings.xml and create a link to them
     public void updateLocationText() {
         if(locationFound) {
             switch(currentZone) {
@@ -623,6 +654,7 @@ public class MainActivity extends AppCompatActivity { //Needs FragmentActivity
             locationInfo.setText("Searching for your location...");
         }
     }
+    // -------------------------------------- ZONE CONTROLLING FUNCTIONS ENDS HERE ---------------------------------------------
 
     // Android back key function
     @Override
