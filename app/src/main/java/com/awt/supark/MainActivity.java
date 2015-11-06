@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -44,6 +45,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
+
+    // Context
+
+    Context cont;
 
     // Animation variables
     Animation anim_fade_in;
@@ -87,29 +92,40 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // Fragment manager
     FragmentManager fragmentManager;
 
+    // Parking Data handler
+    ParkingDataHandler parkHandler;
+
     // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (!locationLocked) {
-                switch (msg.what) {
-                    case 0:
-                        // If the device is in a polygon receives the region and zone info
+            switch (msg.what) {
+                case 0:
+                    // If the device is in a polygon receives the region and zone info
+                    if(!locationLocked) {
                         currentRegion = msg.arg2;
                         changeZone(msg.arg1);
                         locationFound = true;
                         updateLocationTextGps();
-                        break;
-                    case 1:
-                        // This occurs every time the user moves. Because the locationFound
-                        // changes to true but the currentZone remains in it's initial
-                        // state (0), the program will know that the user is not in any
-                        // parking zone.
-                        currentZone = 0;
-                        locationFound = true;
-                        updateLocationTextGps();
-                        break;
-                }
+                    }
+                    break;
+                case 1:
+                    // This occurs every time the user moves. Because the locationFound
+                    // changes to true but the currentZone remains in it's initial
+                    // state (0), the program will know that the user is not in any
+                    // parking zone.
+                    locationFound = true;
+                    //updateLocationTextGps();
+                    break;
+                case 3:
+                    //Occurs when parking data has been sent to server
+                    if (msg.arg1 == 1) {
+                        parkingInit("finish");
+                    } else if (msg.arg1 == 2) {
+                        parkingInit("error");
+                        Toast.makeText(cont, "Error occured while sending parkdata", Toast.LENGTH_LONG).show();
+                    }
+                    break;
             }
         }
     };
@@ -120,6 +136,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        cont = this;
 
         // Declaring stuff
 
@@ -179,7 +196,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
-        ParkingDataHandler parkHandler = new ParkingDataHandler(this);
+        parkHandler = new ParkingDataHandler(this);
 
         parkHandler.checkForUpdate();  // Checks that the local database is up to date
         parkHandler.throwHandler(mHandler);  // Initializes the message handler
@@ -220,10 +237,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 if(!pullUpStarted) {
                     pullUpStarted = true;
                     // Initializes the parking
-                    parkingInit(true);
-                    view.startAnimation(anim_anticipate_rotate_zoom_out);
-                    anim_anticipate_rotate_zoom_out.setFillAfter(true);
-                    pullUpStarted=false;
+                    parkingInit("start");
                 }
             }
         });
@@ -233,21 +247,55 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     //
     // First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
     // It has two states: true = dims the screen and calls parking function, false = normal or returns to normal mode
-    public void parkingInit(boolean turnOn) {
-        if (turnOn) {
-            backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
-            backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
+    public void parkingInit(String state) {
+        if (state.equals("start")) {
+            if(currentZone == 0){
+                Toast.makeText(cont,"Wait for zone or select zone from selector!",Toast.LENGTH_LONG).show();
+            }else {
+                btnPark.startAnimation(anim_anticipate_rotate_zoom_out);
+                anim_anticipate_rotate_zoom_out.setFillAfter(true);
+                pullUpStarted=false;
 
-            anim_fade_in.setAnimationListener(new Animation.AnimationListener() {
+                backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
+                backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
+
+                anim_fade_in.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        park("send");  // Calls the parking function
+                        Log.i("SuPark", "Current zone: " + currentZone);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                dimActive = true;  // Sets the dim visibility indicator variable to true
+            }
+        }
+        else if(state.equals("cancel")) {
+            // Fades out the dimming layer
+            backDimmer.startAnimation(anim_fade_out);
+            park("cancel");
+
+            // At the end of the animation sets the dimming layers visibility to 'gone'
+            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    park("send");  // Calls the parking function
-                    Log.i("SuPark", "Current zone: " + currentZone);
+
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-
+                    backDimmer.setVisibility(View.GONE);
+                    parkingBackground.setVisibility(View.INVISIBLE);
+                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
                 }
 
                 @Override
@@ -255,12 +303,38 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 }
             });
-            dimActive = true;  // Sets the dim visibility indicator variable to true
+            dimActive = false;
         }
-        else {
+        else if(state.equals("finish")){
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
-            park("cancel");
+            park("finish");
+
+            // At the end of the animation sets the dimming layers visibility to 'gone'
+            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    backDimmer.setVisibility(View.GONE);
+                    parkingBackground.setVisibility(View.INVISIBLE);
+                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            dimActive = false;
+        }
+        else if(state.equals("error")){
+            // Fades out the dimming layer
+            backDimmer.startAnimation(anim_fade_out);
+            park("error");
 
             // At the end of the animation sets the dimming layers visibility to 'gone'
             anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
@@ -294,12 +368,19 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         if(action == "send") {
             Log.i("MainActivity", "Parking started");
             parkingBackgroundShow();  // Makes the parking process layout visible
+            parkHandler.postPark(currentRegion,currentZone,60);
         }
         else if (action == "cancel"){
             // TODO:
             // If the user cancels the action
             Log.i("MainActivity", "Parking cancelled");
-            Toast.makeText(getApplicationContext(), "Parking cancelled...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(cont, "Parking cancelled...", Toast.LENGTH_SHORT).show();
+        }else if(action == "finish"){
+            Log.i("MainActivity","Parking finished");
+            Toast.makeText(cont, "Parking completed successfully", Toast.LENGTH_LONG).show();
+        }else if(action == "error"){
+            Log.i("MainActivity","Parking error");
+
         }
 
     }
@@ -594,11 +675,17 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         updateLocationTextButton();
 
         locationLocked = true;  // If one of the zone changer buttons has been pressed we must lock the zone
+        currentRegion = -1;
 
         imageLocation.clearAnimation();  // Stopping the blinking location icon...
-        imageLocation.setVisibility(View.INVISIBLE);  // ...and making it invisible
+        //imageLocation.setVisibility(View.INVISIBLE);  // ...and making it invisible
 
-        Log.i("SuPark", "Current zone: " + currentZone);
+        Log.i("ZoneChangeButton", "Current zone: " + currentZone);
+    }
+
+    public void getGPSzone(View v){
+        imageLocation.startAnimation(anim_blink);
+        locationLocked = false;
     }
 
     // Background color switcher
@@ -617,7 +704,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 appBackgroundColorChange(13, 71, 161);  // Color of blue zone (RGB)
                 break;
         }
-        Log.i("SuPark", "Current zone: " + currentZone);
     }
 
     // Zone updater
@@ -625,7 +711,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         if(currentZone != zone){
             currentZone = zone;
             colorSwitch(currentZone);
-
             Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
         }
     }
@@ -700,7 +785,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         // triggers the default action of back button.
         if (dimActive) {
             // Deactivates the dimming
-            parkingInit(false);
+            parkingInit("cancel");
         }
         else if ((pullUp || pullUpStarted) && !animInProgress) {
             // If there is an activity pulled up, pulls down

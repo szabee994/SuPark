@@ -64,7 +64,9 @@
                         android:src="@mipmap/ic_location_on_white_36dp"
                         android:layout_gravity="center"
                         android:scaleType="fitEnd"
-                        android:visibility="visible" />
+                        android:visibility="visible"
+                        android:clickable="true"
+                        android:onClick="getGPSzone" />
                 </LinearLayout>
 
                 <TextView

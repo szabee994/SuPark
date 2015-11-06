@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -31,14 +32,21 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -55,6 +63,7 @@ public class ParkingDataHandler implements LocationListener{
     int region[];
     int polynum = 0;
     Handler mHandler;
+    Location currloc;
 
     public void throwHandler(Handler mHandl){ //Handler init for communication with MainActivity
         mHandler = mHandl;
@@ -175,8 +184,11 @@ public class ParkingDataHandler implements LocationListener{
         if(getPolys()) {
             Log.i("Polys","loaded");
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            Criteria crit = new Criteria();
+            crit.setAccuracy(Criteria.ACCURACY_FINE);
+            String best = locationManager.getBestProvider(crit,false);
             try {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+                locationManager.requestLocationUpdates(best, 1000, 0, this);
             } catch (SecurityException e) {
                 Log.i("SecurityException", e.toString());
             }
@@ -187,7 +199,7 @@ public class ParkingDataHandler implements LocationListener{
 
     @Override //Method that gets called on every location change
     public void onLocationChanged(Location location) {
-        Log.i("Location",Double.toString(location.getLatitude())+", "+Double.toString(location.getLongitude()));
+        currloc = location;
         mHandler.obtainMessage(1).sendToTarget();
 
         LatLng latlng = new LatLng(location.getLatitude(),location.getLongitude());
@@ -245,6 +257,79 @@ public class ParkingDataHandler implements LocationListener{
     public void checkForUpdate() {
         retrieveJSON retrieve = new retrieveJSON();
         retrieve.execute("latest");
+    }
+
+    public void postPark(int region, int zone, int parktime){
+        JSONObject parkdata = new JSONObject();
+        Class<?> c;
+        String serial = "";
+        try {
+            c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            serial = (String) get.invoke(c, "ro.serialno");
+        } catch (Exception e) {
+           Log.i("SerialEx",e.toString());
+        }
+        try {
+            long timestamp = System.currentTimeMillis() / 1000L;
+            parkdata.put("uuid", serial);
+            parkdata.put("time_parked",timestamp);
+            parkdata.put("estimated_leave_time",timestamp+parktime*60);
+            parkdata.put("parking_region",region);
+            parkdata.put("parking_zone",zone);
+            parkdata.put("lat",currloc.getLatitude());
+            parkdata.put("lon",currloc.getLongitude());
+        }catch (Exception e){
+            Log.i("JSONException",e.toString());
+        }
+        Log.i("JSON",parkdata.toString());
+        postJSON postpark = new postJSON();
+        postpark.execute(parkdata);
+    }
+
+    public class postJSON extends AsyncTask<JSONObject,Void,String>{
+        String JSONString = "";
+        @Override
+        protected String doInBackground(JSONObject... params) {
+            StringBuffer response = new StringBuffer();
+            try {
+                String timestamp = Long.toString(System.currentTimeMillis() / 1000L);
+                String token = timestamp + "$up4rK";
+                String url = "http://supark.host-ed.me/index.php?do=addpark&token="+md5(token)+"&timestamp="+timestamp; //+"&gzip";
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                String urlParameters = "data=" + URLEncoder.encode(params[0].toString(), "UTF-8");
+                wr.writeBytes(urlParameters);
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+            }catch (Exception e) {
+                Log.i("Exception", e.toString());
+            }
+            //Log.i("Response",response.toString());
+            //return unzipString(response.toString());
+            return response.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(result.equals("done")){
+                mHandler.obtainMessage(3,1,0).sendToTarget();
+                Log.i("Done", result);
+            }else {
+                mHandler.obtainMessage(3,2,0).sendToTarget();
+                Log.i("Done", result);
+            }
+
+            super.onPostExecute(result);
+        }
     }
 
     public class retrieveJSON extends AsyncTask<String,Void,String>{
