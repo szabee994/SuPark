@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
     boolean locationFound = false;  // True if the location has found by GPS signal
+    boolean locationLocked = false;
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
     int openedLayout = 0;  // ID of the current opened otherContent
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     Animation anim_anticipate_rotate_zoom_in;
     Animation anim_zone_fade_in;
     Animation anim_zone_fade_out;
+    Animation anim_blink;
 
     // UI elements
     ImageButton btnPark;
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     ImageButton btnZone3;
     ImageButton btnZone4;
     TextView locationInfo;
+    ImageView imageLocation;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -87,22 +91,25 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
-                    // If the device is in a polygon receives the region and zone info
-                    currentRegion = msg.arg2;
-                    changeZone(msg.arg1);
-                    locationFound = true;
-                    updateLocationText();
-                    break;
-                case 1:
-                    // This occurs every time the user moves. Because the locationFound
-                    // is changes to true but the currentZone remains in it's initial
-                    // state (0), the program will know that the user is not in any
-                    // parking zone.
-                    locationFound = true;
-                    updateLocationText();
-                    break;
+            if (!locationLocked) {
+                switch (msg.what) {
+                    case 0:
+                        // If the device is in a polygon receives the region and zone info
+                        currentRegion = msg.arg2;
+                        changeZone(msg.arg1);
+                        locationFound = true;
+                        updateLocationTextGps();
+                        break;
+                    case 1:
+                        // This occurs every time the user moves. Because the locationFound
+                        // changes to true but the currentZone remains in it's initial
+                        // state (0), the program will know that the user is not in any
+                        // parking zone.
+                        currentZone = 0;
+                        locationFound = true;
+                        updateLocationTextGps();
+                        break;
+                }
             }
         }
     };
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         anim_anticipate_rotate_zoom_in = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
         anim_zone_fade_in = AnimationUtils.loadAnimation(this, R.anim.zone_fade_in);
         anim_zone_fade_out = AnimationUtils.loadAnimation(this, R.anim.zone_fade_out);
+        anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -140,6 +148,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
         btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
         locationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
+        imageLocation = (ImageView) findViewById(R.id.imageLocation);
 
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);
@@ -156,7 +165,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
-        updateLocationText();
+        updateLocationTextGps();
 
         // -----------------------------------------------------------------------------------------------------------------
 
@@ -582,6 +591,13 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 colorSwitch(4);
                 break;
         }
+        updateLocationTextButton();
+
+        locationLocked = true;  // If one of the zone changer buttons has been pressed we must lock the zone
+
+        imageLocation.clearAnimation();  // Stopping the blinking location icon...
+        imageLocation.setVisibility(View.INVISIBLE);  // ...and making it invisible
+
         Log.i("SuPark", "Current zone: " + currentZone);
     }
 
@@ -630,28 +646,47 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // Updates location info textView to let the user know where is he
     // TODO:
     // Push these to strings.xml and create a link to them
-    public void updateLocationText() {
+    public void updateLocationTextGps() {
         if(locationFound) {
+            imageLocation.clearAnimation();  // Stops the blinking GPS image
             switch(currentZone) {
                 case 0:
-                    locationInfo.setText("You're not in any parking zones.");
+                    locationInfo.setText(getResources().getString(R.string.nozone_auto));
                     break;
                 case 1:
-                    locationInfo.setText("You are in Zone 1.");
+                    locationInfo.setText(getResources().getString(R.string.zone1auto));
                     break;
                 case 2:
-                    locationInfo.setText("You are in Zone 2.");
+                    locationInfo.setText(getResources().getString(R.string.zone2auto));
                     break;
                 case 3:
-                    locationInfo.setText("You are in Zone 3.");
+                    locationInfo.setText(getResources().getString(R.string.zone3auto));
                     break;
                 case 4:
-                    locationInfo.setText("You are in Zone 4.");
+                    locationInfo.setText(getResources().getString(R.string.zone4auto));
                     break;
             }
         }
         else {
-            locationInfo.setText("Searching for your location...");
+            imageLocation.startAnimation(anim_blink);
+            locationInfo.setText(getResources().getString(R.string.locating));
+        }
+    }
+
+    public void updateLocationTextButton() {
+        switch(currentZone) {
+            case 1:
+                locationInfo.setText(getResources().getString(R.string.zone1selected));
+                break;
+            case 2:
+                locationInfo.setText(getResources().getString(R.string.zone2selected));
+                break;
+            case 3:
+                locationInfo.setText(getResources().getString(R.string.zone3selected));
+                break;
+            case 4:
+                locationInfo.setText(getResources().getString(R.string.zone4selected));
+                break;
         }
     }
     // -------------------------------------- ZONE CONTROLLING FUNCTIONS ENDS HERE ---------------------------------------------

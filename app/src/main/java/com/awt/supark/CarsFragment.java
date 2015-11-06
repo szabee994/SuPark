@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * Created by Mark on 2015.10.25..
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 public class CarsFragment extends Fragment {
 
     View view;
+    Button btn1;
 
     @Nullable
     @Override

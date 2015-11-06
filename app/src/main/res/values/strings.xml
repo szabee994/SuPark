@@ -5,4 +5,44 @@
     <string name="button_park">Park</string>
     <string name="home_text">Type in or choose your car\'s license number</string>
     <string name="please_wait">Parking in progress.\nPlease wait...</string>
+
+    <!-- Zone/Location selector stuff -->
+    <string name="locating">Locating in progress...</string>
+    <string name="zone1auto">You are in Zone 1</string>
+    <string name="zone2auto">You are in Zone 2</string>
+    <string name="zone3auto">You are in Zone 3</string>
+    <string name="zone4auto">You are in Zone 4</string>
+    <string name="nozone_auto">You\'re not in any parking zones</string>
+    <string name="zone1selected">You have selected Zone 1</string>
+    <string name="zone2selected">You have selected Zone 2</string>
+    <string name="zone3selected">You have selected Zone 3</string>
+    <string name="zone4selected">You have selected Zone 4</string>
+
+    <!-- Settings elements -->
+    <string name="settings_title_languages">Languages</string>
+    <string name="settings_phones_lang">Automatic</string>
+    <string name="settings_english">English</string>
+    <string name="settings_hungarian">Magyar</string>
+    <string name="settings_serbian">Srpski</string>
+
+    <string name="settings_title_general">General</string>
+    <string name="settings_auto_zone">Automatically locate zone</string>
+    <string name="settings_remember_license">Remember last license number</string>
+
+    <string name="settings_title_about">About</string>
+    <string name="settings_about_text1">Developed by ALPHA WOLF TEAM</string>
+    <string name="settings_about_frontend">Application frontend programming:</string>
+    <string name="settings_about_backend">Application backend programming:</string>
+    <string name="settings_about_server">Server backend programming:</string>
+    <string name="settings_about_graphics">Graphics:</string>
+    <string name="settings_about_test">Testing:</string>
+    <string name="settings_about_managing">Managing:</string>
+    <string name="borsos">Daniel Borsos</string>
+    <string name="mark">Mark Marcikic</string>
+    <string name="sebok">Szabolcs Sebok</string>
+    <string name="guci">David Guci</string>
+    <string name="feri">Ferenc Onozo</string>
+    <string name="takacs">David Takacs</string>
+    <string name="andrea">Andrea Rafai</string>
+
 </resources>

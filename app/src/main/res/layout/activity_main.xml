@@ -34,22 +34,38 @@
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/activity_vertical_margin"
                 android:paddingRight="@dimen/activity_vertical_margin"
-                android:paddingTop="@dimen/activity_horizontal_margin"
                 android:paddingBottom="@dimen/activity_horizontal_margin">
 
-                <TextView
-                    android:id="@+id/textView"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="false"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="left|center_vertical"
+                    android:layout_gravity="center_vertical|left"
                     android:layout_weight="3"
-                    android:text="@string/app_name_long"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
+                    android:id="@+id/layoutTitleBar">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentTop="true"
+                        android:layout_gravity="center_vertical|left"
+                        android:text="@string/app_name_long"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageLocation"
+                        android:src="@mipmap/ic_location_on_white_36dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitEnd"
+                        android:visibility="visible" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/textWelcome"
