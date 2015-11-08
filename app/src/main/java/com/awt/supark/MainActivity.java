@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     Animation anim_center_open_up;
     Animation anim_anticipate_rotate_zoom_out;
     Animation anim_anticipate_rotate_zoom_in;
-    Animation anim_zone_fade_in;
-    Animation anim_zone_fade_out;
     Animation anim_blink;
+    Animation anim_car_enter;
+    Animation anim_car_leave;
 
     // UI elements
     ImageButton btnPark;
@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     ImageButton btnZone4;
     TextView locationInfo;
     ImageView imageLocation;
+    ImageView imageCar;
+    TextView textParkingScreen;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -118,12 +120,13 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     //updateLocationTextGps();
                     break;
                 case 3:
-                    //Occurs when parking data has been sent to server
+                    // Occurs when parking data has been sent to server
                     if (msg.arg1 == 1) {
                         parkingInit("finish");
-                    } else if (msg.arg1 == 2) {
+                    }
+                    else if (msg.arg1 == 2) {
                         parkingInit("error");
-                        Toast.makeText(cont, "Error occured while sending parkdata", Toast.LENGTH_LONG).show();
+                        Toast.makeText(cont, "Error occurred while sending parkdata", Toast.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -150,10 +153,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         anim_center_open_up = AnimationUtils.loadAnimation(this, R.anim.center_open_up);
         anim_anticipate_rotate_zoom_out = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_out);
         anim_anticipate_rotate_zoom_in = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
-        anim_zone_fade_in = AnimationUtils.loadAnimation(this, R.anim.zone_fade_in);
-        anim_zone_fade_out = AnimationUtils.loadAnimation(this, R.anim.zone_fade_out);
         anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
-
+        anim_car_enter = AnimationUtils.loadAnimation(this, R.anim.car_enter);
+        anim_car_leave = AnimationUtils.loadAnimation(this, R.anim.car_leave);
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
         btnCars = (ImageButton) findViewById(R.id.buttonCars);
@@ -166,6 +168,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
         locationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
         imageLocation = (ImageView) findViewById(R.id.imageLocation);
+        imageCar = (ImageView) findViewById(R.id.imageCar);
+        textParkingScreen = (TextView) findViewById(R.id.textParkingScreen);
 
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);
@@ -249,26 +253,38 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // It has two states: true = dims the screen and calls parking function, false = normal or returns to normal mode
     public void parkingInit(String state) {
         if (state.equals("start")) {
-            if(currentZone == 0){
-                Toast.makeText(cont,"Wait for zone or select zone from selector!",Toast.LENGTH_LONG).show();
-            }else {
+            if(currentZone == 0) {
+                Toast.makeText(cont, "Wait for zone detection or choose one by hand!", Toast.LENGTH_LONG).show();
+            }
+            else {
+                parkingBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                textParkingScreen.setText(getResources().getString(R.string.please_wait));
+
                 btnPark.startAnimation(anim_anticipate_rotate_zoom_out);
                 anim_anticipate_rotate_zoom_out.setFillAfter(true);
-                pullUpStarted=false;
+
+                pullUpStarted = false;
 
                 backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
                 backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
+                dimActive = true;  // Sets the dim visibility indicator variable to true
 
-                anim_fade_in.setAnimationListener(new Animation.AnimationListener() {
+                // 1. Making the layout visible
+                parkingBackgroundShow();
+                // 2. Car enters
+                imageCar.startAnimation(anim_car_enter);
+                anim_car_enter.setFillAfter(true);
+
+                anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-                        park("send");  // Calls the parking function
-                        Log.i("SuPark", "Current zone: " + currentZone);
+
                     }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-
+                        park("send");  // Calls the parking function
+                        Log.i("SuPark", "Current zone: " + currentZone);
                     }
 
                     @Override
@@ -276,7 +292,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                     }
                 });
-                dimActive = true;  // Sets the dim visibility indicator variable to true
+
             }
         }
         else if(state.equals("cancel")) {
@@ -307,11 +323,16 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         }
         else if(state.equals("finish")){
             // Fades out the dimming layer
-            backDimmer.startAnimation(anim_fade_out);
+
             park("finish");
+            appBackgroundColorChange(parkingBackground, 300, 46, 125, 50);
+            textParkingScreen.setText(getResources().getString(R.string.success));
+
+            imageCar.startAnimation(anim_car_leave);
+            anim_car_leave.setFillAfter(true);
 
             // At the end of the animation sets the dimming layers visibility to 'gone'
-            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
+            anim_car_leave.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
@@ -319,9 +340,28 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    backDimmer.setVisibility(View.GONE);
-                    parkingBackground.setVisibility(View.INVISIBLE);
-                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
+                    backDimmer.startAnimation(anim_fade_out);
+                    anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            backDimmer.setVisibility(View.GONE);
+                            dimActive = false;
+                            parkingBackground.setVisibility(View.INVISIBLE);
+                            btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
                 }
 
                 @Override
@@ -329,7 +369,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 }
             });
-            dimActive = false;
+            //dimActive = false;
         }
         else if(state.equals("error")){
             // Fades out the dimming layer
@@ -367,22 +407,30 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     public void park(String action) {
         if(action == "send") {
             Log.i("MainActivity", "Parking started");
-            parkingBackgroundShow();  // Makes the parking process layout visible
-            parkHandler.postPark(currentRegion,currentZone,60);
+
+
+
+            // Server stuff
+            parkHandler.postPark(currentRegion, currentZone, 60);
         }
         else if (action == "cancel"){
             // TODO:
             // If the user cancels the action
             Log.i("MainActivity", "Parking cancelled");
             Toast.makeText(cont, "Parking cancelled...", Toast.LENGTH_SHORT).show();
-        }else if(action == "finish"){
-            Log.i("MainActivity","Parking finished");
+        }
+        else if(action == "finish"){
+            Log.i("MainActivity", "Parking finished");
+
+            // GUI stuff
+            // 3. Car leaves
+
             Toast.makeText(cont, "Parking completed successfully", Toast.LENGTH_LONG).show();
-        }else if(action == "error"){
-            Log.i("MainActivity","Parking error");
+        }
+        else if(action == "error"){
+            Log.i("MainActivity", "Parking error");
 
         }
-
     }
 
     public void parkingBackgroundShow() {
@@ -690,18 +738,19 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // Background color switcher
     public void colorSwitch(int zone) {
+        int fadeTime = 1000;
         switch(zone) {
             case 1:
-                appBackgroundColorChange(183, 28, 28);  // Color of red zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 183, 28, 28);  // Color of red zone (RGB)
                 break;
             case 2:
-                appBackgroundColorChange(249, 168, 37);  // Color of yellow zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 249, 168, 37);  // Color of yellow zone (RGB)
                 break;
             case 3:
-                appBackgroundColorChange(56, 142, 60);  // Color of green zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 56, 142, 60);  // Color of green zone (RGB)
                 break;
             case 4:
-                appBackgroundColorChange(13, 71, 161);  // Color of blue zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 13, 71, 161);  // Color of blue zone (RGB)
                 break;
         }
     }
@@ -716,15 +765,15 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     }
 
     // Background color changer function
-    public void appBackgroundColorChange(int r, int g, int b) {
-        ColorDrawable wBack = (ColorDrawable) wrapper.getBackground();
+    public void appBackgroundColorChange(View view, int time, int r, int g, int b) {
+        ColorDrawable wBack = (ColorDrawable) view.getBackground();
         int color = wBack.getColor();
         int r1 = Color.red(color);
         int g1 = Color.green(color);
         int b1 = Color.blue(color);
 
-        ObjectAnimator colorFade = ObjectAnimator.ofObject(wrapper, "backgroundColor", new ArgbEvaluator(), Color.argb(255, r1, g1, b1), Color.argb(255, r, g, b));
-        colorFade.setDuration(1000);
+        ObjectAnimator colorFade = ObjectAnimator.ofObject(view, "backgroundColor", new ArgbEvaluator(), Color.argb(255, r1, g1, b1), Color.argb(255, r, g, b));
+        colorFade.setDuration(time);
         colorFade.start();
     }
 
