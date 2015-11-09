@@ -41,7 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|left"
-                    android:layout_weight="3"
+                    android:layout_weight="1"
                     android:id="@+id/layoutTitleBar">
 
                     <TextView
@@ -154,13 +154,13 @@
 
                 <ImageButton
                     android:id="@+id/buttonPark"
-                    android:layout_width="wrap_content"
+                    android:layout_width="200dp"
                     android:layout_height="100dp"
                     android:layout_above="@+id/gridLayout"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_gravity="center_horizontal|top"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginBottom="1dp"
                     android:layout_marginTop="30dp"
                     android:layout_weight="6"
                     android:background="@null"
@@ -196,8 +196,8 @@
                     android:onClick="smallButtonPressed"
                     android:scaleType="fitCenter"
                     android:src="@drawable/btn1"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />
 
                 <ImageButton
                     android:id="@+id/buttonCars"
@@ -208,8 +208,8 @@
                     android:onClick="smallButtonPressed"
                     android:scaleType="fitCenter"
                     android:src="@drawable/btn2"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />
 
                 <ImageButton
                     android:id="@+id/buttonStatistics"
@@ -220,8 +220,8 @@
                     android:onClick="smallButtonPressed"
                     android:scaleType="fitCenter"
                     android:src="@drawable/btn3"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />
 
                 <ImageButton
                     android:id="@+id/buttonEtc"
@@ -232,8 +232,8 @@
                     android:onClick="smallButtonPressed"
                     android:scaleType="fitCenter"
                     android:src="@drawable/btn4"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp" />
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />
             </LinearLayout>
 
 

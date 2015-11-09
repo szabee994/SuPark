@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean animInProgress = false;
     boolean locationFound = false;  // True if the location has found by GPS signal
     boolean locationLocked = false;
+
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
     int openedLayout = 0;  // ID of the current opened otherContent
@@ -46,8 +47,11 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
 
-    // Context
+    //                         sebők             dani              andi             mark
+    // Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4
+    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"};
 
+    // Context
     Context cont;
 
     // Animation variables
@@ -96,11 +100,13 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // Parking Data handler
     ParkingDataHandler parkHandler;
+    ParkingSmsSender smsHandler;
 
     // Edit Boolean
     boolean edit = false;
 
     // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
+    // Zone finder handler
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -120,20 +126,47 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     // state (0), the program will know that the user is not in any
                     // parking zone.
                     locationFound = true;
-                    //updateLocationTextGps();
+                    // updateLocationTextGps();
                     break;
                 case 3:
                     // Occurs when parking data has been sent to server
                     if (msg.arg1 == 1) {
-                        parkingInit("finish");
+                        // parkingInit("finish");
+                        Toast.makeText(cont, "Parking data successfully uploaded", Toast.LENGTH_SHORT).show();
                     }
                     else if (msg.arg1 == 2) {
-                        parkingInit("error");
-                        Toast.makeText(cont, "Error occurred while sending parkdata", Toast.LENGTH_LONG).show();
+                        // parkingInit("error");
+                        Toast.makeText(cont, "Can't send parking data to the server", Toast.LENGTH_LONG).show();
                     }
                     break;
             }
         }
+    };
+
+
+    // SMS sender handler
+    private final Handler smsResponse = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0: // SMS sent
+                    Toast.makeText(getApplicationContext(), "SMS sent", Toast.LENGTH_SHORT).show();
+                    break;
+                case 1: // SMS delivered
+                    Toast.makeText(getApplicationContext(), "SMS delivered", Toast.LENGTH_SHORT).show();
+                    parkingInit("finish");
+                    break;
+                case 2: // Error generic
+                    Toast.makeText(getApplicationContext(), "Error occurred! SMS not sent...", Toast.LENGTH_LONG).show();
+                    parkingInit("error");
+                    break;
+                case 3: // Error radio off
+                    Toast.makeText(getApplicationContext(), "Please turn off airplane mode and try again", Toast.LENGTH_LONG).show();
+                    parkingInit("error");
+                    break;
+            }
+        }
+
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -159,6 +192,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
         anim_car_enter = AnimationUtils.loadAnimation(this, R.anim.car_enter);
         anim_car_leave = AnimationUtils.loadAnimation(this, R.anim.car_leave);
+
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
         btnCars = (ImageButton) findViewById(R.id.buttonCars);
@@ -203,11 +237,14 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
+        // Setting up the handlers
         parkHandler = new ParkingDataHandler(this);
-
         parkHandler.checkForUpdate();  // Checks that the local database is up to date
         parkHandler.throwHandler(mHandler);  // Initializes the message handler
         parkHandler.getZone();  // Gets zone info
+
+        smsHandler = new ParkingSmsSender(this);
+        smsHandler.throwHandler(smsResponse);  // Initializes the message handler
 
         // -----------------------------------------------------------------------------------------------------------------
 
@@ -253,11 +290,23 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------
     //
     // First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
-    // It has two states: true = dims the screen and calls parking function, false = normal or returns to normal mode
+    // States:
+    // 1. start
+    //   * Initializes parking sequence by checking the zone number
+    //   * Starts the parking animations
+    //   * Calls the parking function
+    // 2. cancel
+    //   * Cancels the parking
+    //   * Rolls back every changes
+    // 3. finish
+    //   * Tells the user that the parking process was successfull
+    //   * Removes every parking layer
+    // 4. error
     public void parkingInit(String state) {
         if (state.equals("start")) {
             if(currentZone == 0) {
                 Toast.makeText(cont, "Wait for zone detection or choose one by hand!", Toast.LENGTH_LONG).show();
+                pullUpStarted = false;
             }
             else {
                 parkingBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -295,7 +344,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                     }
                 });
-
             }
         }
         else if(state.equals("cancel")) {
@@ -325,9 +373,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             dimActive = false;
         }
         else if(state.equals("finish")){
-            // Fades out the dimming layer
-
             park("finish");
+
             appBackgroundColorChange(parkingBackground, 300, 46, 125, 50);
             textParkingScreen.setText(getResources().getString(R.string.success));
 
@@ -389,6 +436,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     backDimmer.setVisibility(View.GONE);
+                    dimActive = false;
                     parkingBackground.setVisibility(View.INVISIBLE);
                     btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
                 }
@@ -398,22 +446,39 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 }
             });
-            dimActive = false;
         }
+    }
+
+    // Selects the right sms number according to the current zone
+    public String zoneSmsNumSelector() {
+        String num = "0";
+
+        switch (currentZone) {
+            case 1:
+                num = zoneSmsNumDb[0];
+                break;
+            case 2:
+                num = zoneSmsNumDb[1];
+                break;
+            case 3:
+                num = zoneSmsNumDb[2];
+                break;
+            case 4:
+                num = zoneSmsNumDb[3];
+                break;
+        }
+        return num;
     }
 
     // This is the actual parking function. You can call it with one of the next parameters:
     // 1. send - With this parameter the parking function will send a parking query
     // 2. cancel - Cancels the parking query
-    // 3. ...
-    // 4. ...
+    // 3. error
     public void park(String action) {
         if(action == "send") {
             Log.i("MainActivity", "Parking started");
 
-
-
-            // Server stuff
+            smsHandler.sendSms(zoneSmsNumSelector(), currentZone);
             parkHandler.postPark(currentRegion, currentZone, 60);
         }
         else if (action == "cancel"){
@@ -424,9 +489,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         }
         else if(action == "finish"){
             Log.i("MainActivity", "Parking finished");
-
-            // GUI stuff
-            // 3. Car leaves
 
             Toast.makeText(cont, "Parking completed successfully", Toast.LENGTH_LONG).show();
         }
@@ -743,19 +805,20 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // Background color switcher
     public void colorSwitch(int zone) {
-        int fadeTime = 1000;
+        int fadeTime = 600;
         switch(zone) {
             case 1:
                 appBackgroundColorChange(wrapper, fadeTime, 183, 28, 28);  // Color of red zone (RGB)
                 break;
             case 2:
-                appBackgroundColorChange(wrapper, fadeTime, 249, 168, 37);  // Color of yellow zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 255, 160, 0);  // Color of yellow zone (RGB)
                 break;
             case 3:
-                appBackgroundColorChange(wrapper, fadeTime, 56, 142, 60);  // Color of green zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 0, 121, 107);  // Color of green zone (RGB)
+                //appBackgroundColorChange(wrapper, fadeTime, 46, 125, 50);  // Color of green zone (RGB)
                 break;
             case 4:
-                appBackgroundColorChange(wrapper, fadeTime, 13, 71, 161);  // Color of blue zone (RGB)
+                appBackgroundColorChange(wrapper, fadeTime, 1, 87, 155);  // Color of blue zone (RGB)
                 break;
         }
     }
