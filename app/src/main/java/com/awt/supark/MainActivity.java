@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // Parking Data handler
     ParkingDataHandler parkHandler;
 
+    // Edit Boolean
+    boolean edit = false;
+
     // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
     private final Handler mHandler = new Handler() {
         @Override
@@ -471,7 +474,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
-            openedLayout = view.getId();  // Sets the openedLayout variable so we know which one of the foreign layout was opened
+            openedLayout = view.getId();
+            edit = false;
+            // Sets the openedLayout variable so we know which one of the foreign layout was opened
         }
     }
 
@@ -845,5 +850,19 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             finish();
         }
     }
-}
+
+    public void openCarFragment(final View view){
+        Fragment fragment = new EditCar();
+        if(edit == true) {
+            fragment = new CarsFragment();
+        }
+
+            if (fragment != null) {
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.otherContent, fragment);
+                        fragmentTransaction.commit();
+                         edit = !edit;
+            }
+        }
+    }
 

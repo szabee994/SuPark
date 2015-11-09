@@ -46,4 +46,7 @@
     <string name="takacs">David Takacs</string>
     <string name="andrea">Andrea Rafai</string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

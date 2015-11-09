@@ -27,9 +27,10 @@
 
             <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent" android:layout_height="match_parent">
-                <fragment class="com.awt.supark.CarListFragment"
-                    android:id="@+id/cars"
-                    android:layout_width="match_parent" android:layout_height="match_parent" />
+                <fragment
+                    android:id="@+id/carDetails"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    class="com.awt.supark.car_details" />
             </FrameLayout>
 
         </TableRow>
@@ -48,11 +49,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
                 android:orientation="horizontal"
-                android:weightSum="1">
+                android:weightSum="2">
 
 
                 <ImageButton
-                    android:id="@+id/buttonAdd"
+                    android:id="@+id/CancelButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -60,7 +61,19 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/btn4"
                     android:onClick="openCarFragment"
-                    android:layout_marginLeft="200dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp" />
+
+
+                <ImageButton
+                    android:id="@+id/DoneButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn4"
+                    android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp" />
             </LinearLayout>
 
