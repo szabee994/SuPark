@@ -45,6 +45,8 @@ public class CarListFragment extends Fragment {
             carArray.add(car);
         }
         adapter = new CarListAdapter(getActivity(), carArray);
+        listview.setDivider(null);
+        listview.setDividerHeight(0);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
