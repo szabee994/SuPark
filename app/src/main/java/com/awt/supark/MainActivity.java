@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -70,10 +71,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // UI elements
     ImageButton btnPark;
-    ImageButton btnMap;
-    ImageButton btnCars;
-    ImageButton btnStatistics;
-    ImageButton btnEtc;
+    ImageButton btnMap1;
+    ImageButton btnCars1;
+    ImageButton btnStatistics1;
+    ImageButton btnEtc1;
     AutoCompleteTextView licenseNumber;
     ImageButton btnZone1;
     ImageButton btnZone2;
@@ -83,6 +84,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     ImageView imageLocation;
     ImageView imageCar;
     TextView textParkingScreen;
+    FloatingActionButton btnMap;
+    FloatingActionButton btnCars;
+    FloatingActionButton btnStatistics;
+    FloatingActionButton btnEtc;
 
     // Layouts
     RelativeLayout backDimmer;
@@ -195,10 +200,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
-        btnCars = (ImageButton) findViewById(R.id.buttonCars);
-        btnStatistics = (ImageButton) findViewById(R.id.buttonStatistics);
-        btnEtc = (ImageButton) findViewById(R.id.buttonEtc);
-        btnMap = (ImageButton) findViewById(R.id.buttonMap);
+        //btnCars = (ImageButton) findViewById(R.id.buttonCars);
+        //btnStatistics = (ImageButton) findViewById(R.id.buttonStatistics);
+        //btnEtc = (ImageButton) findViewById(R.id.buttonEtc);
+        //btnMap = (ImageButton) findViewById(R.id.buttonMap);
         btnZone1 = (ImageButton) findViewById(R.id.buttonZone1);
         btnZone2 = (ImageButton) findViewById(R.id.buttonZone2);
         btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
@@ -207,6 +212,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         imageLocation = (ImageView) findViewById(R.id.imageLocation);
         imageCar = (ImageView) findViewById(R.id.imageCar);
         textParkingScreen = (TextView) findViewById(R.id.textParkingScreen);
+        btnCars = (FloatingActionButton) findViewById(R.id.buttonCars);
+        btnStatistics = (FloatingActionButton) findViewById(R.id.buttonStatistics);
+        btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
+        btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
 
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);

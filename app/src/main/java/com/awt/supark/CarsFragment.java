@@ -1,8 +1,10 @@
 package com.awt.supark;
 
 import android.app.FragmentTransaction;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,12 +22,16 @@ public class CarsFragment extends Fragment {
 
     View view;
     ImageButton btn1;
+    FloatingActionButton btnAdd;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.cars_layout, container, false);
         Log.d("CarsFragment", "Cars activity started");
+
+
 
        /* btn1 = (ImageButton) view.findViewById(R.id.buttonAdd);
         btn1.setOnClickListener(new View.OnClickListener() {

@@ -1,122 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TableLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="false"
-        android:fitsSystemWindows="true"
-        android:weightSum="1"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:focusable="false">
-
-        <TableRow
-            android:id="@+id/tableRowTopHalf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent" android:layout_height="match_parent">
-                <fragment class="com.awt.supark.CarListFragment"
-                    android:id="@+id/cars"
-                    android:layout_width="match_parent" android:layout_height="match_parent" />
-            </FrameLayout>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRowBottomHalf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:baselineAligned="false"
-            android:gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-
-                <ImageButton
-                    android:id="@+id/buttonAdd"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn4"
-                    android:onClick="openCarFragment"
-                    android:layout_marginLeft="200dp"
-                    android:layout_marginRight="15dp" />
-            </LinearLayout>
-
-
-        </TableRow>
-
-        <FrameLayout
-            android:id="@+id/otherContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-        </FrameLayout>
-
-    </TableLayout>
-
     <RelativeLayout
-        android:id="@+id/back_dimmer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#C0000000"
-        android:clickable="true"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_centerInParent="true"
-            android:background="@color/colorPrimaryDark"
-            android:id="@+id/parkingBackground"
-            android:visibility="gone"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_vertical_margin"
-            android:paddingRight="@dimen/activity_vertical_margin">
+        <fragment class="com.awt.supark.CarListFragment"
+            android:id="@+id/cars"
+            android:layout_width="fill_parent" android:layout_height="fill_parent" />
 
-            <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:id="@+id/imageView"
-                android:src="@drawable/car"
-                android:contentDescription="Car"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="2" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/please_wait"
-                android:id="@+id/textView6"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_weight="3" />
-        </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:src="@mipmap/ic_add_black_48dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:onClick="openCarFragment"
+            android:id="@+id/floatingButtonAdd"
+            app:backgroundTint="#ffffff" />
     </RelativeLayout>
 
 </RelativeLayout>
