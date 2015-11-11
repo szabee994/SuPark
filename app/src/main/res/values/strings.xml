@@ -1,4 +1,5 @@
 <resources>
+    <!-- General -->
     <string name="app_name">SuPark</string>
     <string name="app_name_long">Subotica Parking</string>
     <string name="app_version">0.2</string>
@@ -20,7 +21,7 @@
     <string name="zone4selected">You have selected Zone 4</string>
 
     <!-- Settings elements -->
-    <string name="settings_title_languages">Languages</string>
+    <string name="settings_title_languages">Language</string>
     <string name="settings_phones_lang">Automatic</string>
     <string name="settings_english">English</string>
     <string name="settings_hungarian">Magyar</string>
@@ -49,7 +50,18 @@
     <!-- Map activity -->
     <string name="description">Here you can see the exact place of the parking zones or view where you last parked your car.</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- Toasts -->
+    <string name="parking_data_uploaded">Parking data successfully uploaded</string>
+    <string name="parking_data_fail">Can\'t send parking data to the server</string>
+    <string name="sms_sent">SMS sent</string>
+    <string name="sms_delivered">SMS delivered</string>
+    <string name="sms_error_generic">Error occurred! SMS not sent...</string>
+    <string name="sms_error_radio">Please turn off airplane mode and try again</string>
+    <string name="wait_for_zone">Wait for zone detection or choose one manually</string>
+    <string name="parking_success">Parking completed successfully</string>
+    <string name="parking_cancelled">Parking cancelled</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

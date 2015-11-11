@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/windowBackground">
+    android:background="@color/windowBackground"
+    android:fitsSystemWindows="false">
 
     <TableLayout
         android:id="@+id/content"
@@ -18,7 +19,9 @@
         android:weightSum="1"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:focusable="false">
+        android:focusable="false"
+        android:layout_below="@+id/layoutTitleBar"
+        android:layout_marginTop="-25dp">
 
         <TableRow
             android:id="@+id/tableRowTopHalf"
@@ -37,39 +40,6 @@
                 android:paddingRight="@dimen/activity_vertical_margin"
                 android:paddingBottom="@dimen/activity_horizontal_margin"
                 android:layout_weight="1">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|left"
-                    android:layout_weight="1"
-                    android:id="@+id/layoutTitleBar">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="false"
-                        android:layout_alignParentLeft="false"
-                        android:layout_alignParentTop="true"
-                        android:layout_gravity="center_vertical|left"
-                        android:text="@string/app_name_long"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textStyle="bold"
-                        android:visibility="visible" />
-
-                    <ImageView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/imageLocation"
-                        android:src="@mipmap/ic_location_on_white_36dp"
-                        android:layout_gravity="center"
-                        android:scaleType="fitEnd"
-                        android:visibility="visible"
-                        android:clickable="true"
-                        android:onClick="getGPSzone" />
-                </LinearLayout>
 
                 <TextView
                     android:id="@+id/textWelcome"
@@ -100,60 +70,6 @@
                     android:id="@+id/textViewLocationInfo"
                     android:layout_gravity="center_horizontal" />
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/layoutZoneChanger">
-
-                    <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonZone1"
-                        android:src="@drawable/zone1"
-                        android:scaleType="fitCenter"
-                        android:background="@null"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:onClick="zoneChangeButtonPressed" />
-
-                    <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonZone2"
-                        android:src="@drawable/zone2"
-                        android:scaleType="fitCenter"
-                        android:background="@null"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:onClick="zoneChangeButtonPressed" />
-
-                    <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonZone3"
-                        android:src="@drawable/zone3"
-                        android:scaleType="fitCenter"
-                        android:background="@null"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:onClick="zoneChangeButtonPressed" />
-
-                    <ImageButton
-                        android:layout_width="45dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/buttonZone4"
-                        android:src="@drawable/zone4"
-                        android:scaleType="fitCenter"
-                        android:background="@null"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:onClick="zoneChangeButtonPressed" />
-                </LinearLayout>
-
                 <ImageButton
                     android:id="@+id/buttonPark"
                     android:layout_width="200dp"
@@ -180,12 +96,12 @@
             android:layout_weight="0"
             android:baselineAligned="false"
             android:gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
+            android:layout_marginBottom="@dimen/table_bottom_margin_bottom"
+            android:layout_marginTop="@dimen/table_bottom_margin_top">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="@dimen/table_bottom_height"
                 android:orientation="horizontal"
                 android:weightSum="4"
                 android:gravity="center">
@@ -196,11 +112,11 @@
                     android:clickable="true"
                     android:src="@mipmap/ic_place_black_48dp"
                     android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="@dimen/small_button_margin_left"
+                    android:layout_marginRight="@dimen/small_button_margin_right"
                     app:backgroundTint="#FFFFFF"
-                    app:elevation="3dp"
-                    android:elevation="3dp"
+                    app:elevation="@dimen/small_button_elevation"
+                    android:elevation="@dimen/small_button_elevation"
                     android:id="@+id/buttonMap"
                     android:onClick="smallButtonPressed"
                     android:visibility="visible"
@@ -212,11 +128,11 @@
                     android:clickable="true"
                     android:src="@mipmap/ic_directions_car_black_48dp"
                     android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="@dimen/small_button_margin_left"
+                    android:layout_marginRight="@dimen/small_button_margin_right"
                     app:backgroundTint="#FFFFFF"
-                    app:elevation="3dp"
-                    android:elevation="3dp"
+                    app:elevation="@dimen/small_button_elevation"
+                    android:elevation="@dimen/small_button_elevation"
                     android:id="@+id/buttonCars"
                     android:onClick="smallButtonPressed"
                     android:visibility="visible"
@@ -228,11 +144,11 @@
                     android:clickable="true"
                     android:src="@mipmap/ic_trending_up_black_48dp"
                     android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="@dimen/small_button_margin_left"
+                    android:layout_marginRight="@dimen/small_button_margin_right"
                     app:backgroundTint="#FFFFFF"
-                    app:elevation="3dp"
-                    android:elevation="3dp"
+                    app:elevation="@dimen/small_button_elevation"
+                    android:elevation="@dimen/small_button_elevation"
                     android:id="@+id/buttonStatistics"
                     android:onClick="smallButtonPressed"
                     android:visibility="visible"
@@ -244,68 +160,17 @@
                     android:clickable="true"
                     android:src="@mipmap/ic_more_horiz_black_48dp"
                     android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="@dimen/small_button_margin_left"
+                    android:layout_marginRight="@dimen/small_button_margin_right"
                     app:backgroundTint="#FFFFFF"
-                    app:elevation="3dp"
-                    android:elevation="3dp"
+                    app:elevation="@dimen/small_button_elevation"
+                    android:elevation="@dimen/small_button_elevation"
                     android:id="@+id/buttonEtc"
                     android:onClick="smallButtonPressed"
                     android:visibility="visible"
                     android:layout_gravity="center_vertical" />
 
 
-                <ImageButton
-                    android:id="@+id/buttonMap1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="smallButtonPressed"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn1"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:visibility="gone" />
-
-                <ImageButton
-                    android:id="@+id/buttonCars1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="smallButtonPressed"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn2"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:visibility="gone" />
-
-                <ImageButton
-                    android:id="@+id/buttonStatistics2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="smallButtonPressed"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn3"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:visibility="gone" />
-
-                <ImageButton
-                    android:id="@+id/buttonEtc1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:onClick="smallButtonPressed"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn4"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:visibility="gone" />
             </LinearLayout>
 
 
@@ -320,6 +185,88 @@
         </FrameLayout>
 
     </TableLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="81dp"
+        android:layout_gravity="center_vertical|left"
+        android:layout_weight="1"
+        android:id="@+id/layoutTitleBar"
+        android:background="#32000000"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="10dp"
+        android:fitsSystemWindows="false" >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_vertical|left"
+            android:text="@string/app_name_long"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="bottom|left"
+            android:id="@+id/layoutZoneChanger">
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonZone1"
+                android:src="@drawable/zone1"
+                android:scaleType="fitStart"
+                android:background="@null"
+                android:onClick="zoneChangeButtonPressed" />
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonZone2"
+                android:src="@drawable/zone2"
+                android:scaleType="fitStart"
+                android:background="@null"
+                android:onClick="zoneChangeButtonPressed" />
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonZone3"
+                android:src="@drawable/zone3"
+                android:scaleType="fitStart"
+                android:background="@null"
+                android:onClick="zoneChangeButtonPressed" />
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonZone4"
+                android:src="@drawable/zone4"
+                android:scaleType="fitStart"
+                android:background="@null"
+                android:onClick="zoneChangeButtonPressed" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageLocation"
+            android:src="@mipmap/ic_location_on_white_36dp"
+            android:layout_gravity="bottom"
+            android:scaleType="fitEnd"
+            android:visibility="visible"
+            android:clickable="true"
+            android:onClick="getGPSzone" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/back_dimmer"

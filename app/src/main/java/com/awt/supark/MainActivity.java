@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean animInProgress = false;
     boolean locationFound = false;  // True if the location has found by GPS signal
     boolean locationLocked = false;
+    boolean backDisabled = false;
 
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
@@ -137,11 +138,11 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     // Occurs when parking data has been sent to server
                     if (msg.arg1 == 1) {
                         // parkingInit("finish");
-                        Toast.makeText(cont, "Parking data successfully uploaded", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
                     }
                     else if (msg.arg1 == 2) {
                         // parkingInit("error");
-                        Toast.makeText(cont, "Can't send parking data to the server", Toast.LENGTH_LONG).show();
+                        Toast.makeText(cont, getResources().getString(R.string.parking_data_fail), Toast.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -155,18 +156,18 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0: // SMS sent
-                    Toast.makeText(getApplicationContext(), "SMS sent", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_sent), Toast.LENGTH_SHORT).show();
                     break;
                 case 1: // SMS delivered
-                    Toast.makeText(getApplicationContext(), "SMS delivered", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show();
                     parkingInit("finish");
                     break;
                 case 2: // Error generic
-                    Toast.makeText(getApplicationContext(), "Error occurred! SMS not sent...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_error_generic), Toast.LENGTH_LONG).show();
                     parkingInit("error");
                     break;
                 case 3: // Error radio off
-                    Toast.makeText(getApplicationContext(), "Please turn off airplane mode and try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_error_radio), Toast.LENGTH_LONG).show();
                     parkingInit("error");
                     break;
             }
@@ -200,10 +201,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
-        //btnCars = (ImageButton) findViewById(R.id.buttonCars);
-        //btnStatistics = (ImageButton) findViewById(R.id.buttonStatistics);
-        //btnEtc = (ImageButton) findViewById(R.id.buttonEtc);
-        //btnMap = (ImageButton) findViewById(R.id.buttonMap);
         btnZone1 = (ImageButton) findViewById(R.id.buttonZone1);
         btnZone2 = (ImageButton) findViewById(R.id.buttonZone2);
         btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
@@ -216,11 +213,12 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         btnStatistics = (FloatingActionButton) findViewById(R.id.buttonStatistics);
         btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
         btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
-
+        /*
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);
         btnZone3.setAlpha(0.3f);
         btnZone4.setAlpha(0.3f);
+        */
 
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
@@ -311,10 +309,11 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     //   * Tells the user that the parking process was successfull
     //   * Removes every parking layer
     // 4. error
+
     public void parkingInit(String state) {
         if (state.equals("start")) {
             if(currentZone == 0) {
-                Toast.makeText(cont, "Wait for zone detection or choose one by hand!", Toast.LENGTH_LONG).show();
+                Toast.makeText(cont, getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
                 pullUpStarted = false;
             }
             else {
@@ -369,6 +368,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    backDisabled = false;
                     backDimmer.setVisibility(View.GONE);
                     parkingBackground.setVisibility(View.INVISIBLE);
                     btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
@@ -412,6 +412,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                             dimActive = false;
                             parkingBackground.setVisibility(View.INVISIBLE);
                             btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
+                            backDisabled = false;
 
                         }
 
@@ -448,6 +449,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     dimActive = false;
                     parkingBackground.setVisibility(View.INVISIBLE);
                     btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
+                    backDisabled = false;
                 }
 
                 @Override
@@ -486,7 +488,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     public void park(String action) {
         if(action == "send") {
             Log.i("MainActivity", "Parking started");
-
+            backDisabled = true;
             smsHandler.sendSms(zoneSmsNumSelector(), currentZone);
             parkHandler.postPark(currentRegion, currentZone, 60);
         }
@@ -494,12 +496,12 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             // TODO:
             // If the user cancels the action
             Log.i("MainActivity", "Parking cancelled");
-            Toast.makeText(cont, "Parking cancelled...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(cont, getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
         }
         else if(action == "finish"){
             Log.i("MainActivity", "Parking finished");
 
-            Toast.makeText(cont, "Parking completed successfully", Toast.LENGTH_LONG).show();
+            Toast.makeText(cont, getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
         }
         else if(action == "error"){
             Log.i("MainActivity", "Parking error");
@@ -906,20 +908,19 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     @Override
     public void onBackPressed() {
         Log.i("MainActivity", "Back pressed");
-
-        // If the dimming layer is visible then makes invisible, otherwise
-        // triggers the default action of back button.
-        if (dimActive) {
-            // Deactivates the dimming
-            parkingInit("cancel");
-        }
-        else if ((pullUp || pullUpStarted) && !animInProgress) {
-            // If there is an activity pulled up, pulls down
-            pullDown();
-        }
-        else {
-            // Default action
-            finish();
+        if(!backDisabled) {
+            // If the dimming layer is visible then makes invisible, otherwise
+            // triggers the default action of back button.
+            if (dimActive) {
+                // Deactivates the dimming
+                parkingInit("cancel");
+            } else if ((pullUp || pullUpStarted) && !animInProgress) {
+                // If there is an activity pulled up, pulls down
+                pullDown();
+            } else {
+                // Default action
+                finish();
+            }
         }
     }
 
