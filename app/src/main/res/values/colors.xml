@@ -6,6 +6,7 @@
     <color name="colorPrimaryText">#FFFFFF</color>
     <color name="colorAccent">#00BCD4</color>
     <color name="windowBackground">#546E7A</color>
+    <color name="colorControls">#7f000000</color>
 
     <color name="darkerWhite">#f2f2f2</color>
     <color name="foreignLayoutBackground">#28000000</color>

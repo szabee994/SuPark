@@ -26,4 +26,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.android.support:cardview-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
+    compile 'com.github.rahatarmanahmed:circularprogressview:2.4.0'
 }

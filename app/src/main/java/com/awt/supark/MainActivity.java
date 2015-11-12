@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     // state (0), the program will know that the user is not in any
                     // parking zone.
                     locationFound = true;
+                    locationLocked = true;
                     // updateLocationTextGps();
                     break;
                 case 3:
