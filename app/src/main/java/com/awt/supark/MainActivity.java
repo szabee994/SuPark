@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
 
-    // Sample string database stuff
-    String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
+    // String database
+    String[] licenseNumberDb = {"sample", "sample2", "sample3"};
 
     //                         sebők             dani              andi             mark
     // Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4
@@ -84,10 +84,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // UI elements
     ImageButton btnPark;
-    ImageButton btnMap1;
-    ImageButton btnCars1;
-    ImageButton btnStatistics1;
-    ImageButton btnEtc1;
     AutoCompleteTextView licenseNumber;
     ImageButton btnZone1;
     ImageButton btnZone2;
@@ -955,7 +951,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     // ----------------------------- Set License to autoCorrect array--------------------------------
     SQLiteDatabase db;
-    private void setLicenseToArray(){
+    public void setLicenseToArray(){
 
         db = SQLiteDatabase.openDatabase(this.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
@@ -970,6 +966,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
         String[] cars = new String[d.getCount()];
         numberOfCars = d.getCount();
+
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
             int carlicenseindex = d.getColumnIndex("car_license");
             licenseNumberDb[carlicenseindex] = d.getString(carlicenseindex);
