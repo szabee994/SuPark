@@ -48,6 +48,7 @@ public class CarListFragment extends Fragment {
         listview = (ListView) view.findViewById(R.id.listview);
         //csak a szimulalaskent
 
+        // Ez azért kellett, mert ha ezt nyitja meg elsőnek akkor ne fagyjon ki az app. De úgy sem hajtja végre, ha már létezik az adatbázis.
         db = SQLiteDatabase.openDatabase(getContext().getFilesDir().getPath()+"/carDB.db",null, SQLiteDatabase.CREATE_IF_NECESSARY);
         db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
                 "  `car_id` int(2) NOT NULL ,\n" +
@@ -56,6 +57,8 @@ public class CarListFragment extends Fragment {
                 "  PRIMARY KEY (`car_id`)\n" +
                 ")");
 
+
+        //------------------------Set car name and license to list---------------------------
         int numberOfCars;
 
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
@@ -66,8 +69,8 @@ public class CarListFragment extends Fragment {
             int carnameindex = d.getColumnIndex("car_name");
             int carlicenseindex = d.getColumnIndex("car_license");
             Car car = new Car();
-            car.setName(d.getString(carnameindex));
-            car.setLicens(d.getString(carlicenseindex));
+            car.setName(d.getString(carnameindex)); // set name
+            car.setLicens(d.getString(carlicenseindex)); // set license
             carArray.add(car);
         }
 

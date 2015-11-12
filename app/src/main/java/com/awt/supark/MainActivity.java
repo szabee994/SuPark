@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
         // -----------------------------------------------------------------------------------------------------------------
 
-        setLicenseToArray();
+        setLicenseToArray(); // Call the function setLicenseToArray
 
         // -----------------------------------------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------------------------------------
@@ -946,6 +946,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             }
         }
 
+    // ----------------------------- Set License to autoCorrect array--------------------------------
     SQLiteDatabase db;
     private void setLicenseToArray(){
 
