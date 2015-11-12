@@ -127,6 +127,18 @@ public class MapFragment extends Fragment {
         LatLng location = new LatLng(latitude,longitude);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,13f));
         getPolys();
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                ParkingDataHandler parkdata = new ParkingDataHandler(context);
+                int region = parkdata.getRegion(latLng.latitude,latLng.longitude);
+                MainActivity main = new MainActivity();
+                ((MainActivity)getActivity()).currentRegion = region;
+                ((MainActivity)getActivity()).locationFound = true;
+                ((MainActivity)getActivity()).changeZone(parkdata.getZoneByRegion(region));
+                ((MainActivity)getActivity()).updateLocationTextGps();
+            }
+        });
     }
 
     /**** The mapfragment's id must be removed from the FragmentManager

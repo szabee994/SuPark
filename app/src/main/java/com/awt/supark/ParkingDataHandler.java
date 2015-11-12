@@ -133,19 +133,19 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public int getRegion(double lat, double lng){
-        for(int i = 0; i < polynum; i++){
-            if(inRegionFromDouble(lat,lng,polyLoc[i])){
-                if(mHandler != null)
-                mHandler.obtainMessage(0,polyzone[i],region[i]).sendToTarget();
-                break;
+        if(getPolys()) {
+            for (int i = 0; i < polynum; i++) {
+                if (inRegionFromDouble(lat, lng, polyLoc[i])) {
+                    return region[i];
+                }
             }
         }
-        return 0;
+        return -1;
     }
 
     public boolean inRegionFromDouble(double lat, double lng, ArrayList<LatLng> polyloc){
-        Location loc = new Location("");
-        return true;
+        LatLng loc = new LatLng(lat,lng);
+        return inRegion(loc,polyloc);
     }
 
     //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths.
@@ -195,6 +195,16 @@ public class ParkingDataHandler implements LocationListener{
         }
 
         return isInside;
+    }
+
+    public int getZoneByRegion(int region){
+        int zone = -1;
+        Cursor d = db.rawQuery("SELECT zone_id FROM regions WHERE region_id = "+region,null);
+        if(d.getCount() > 0) {
+            d.moveToFirst();
+            zone = d.getInt(d.getColumnIndex("zone_id"));
+        }
+        return zone;
     }
 
     //Method to be called from MainActivity
