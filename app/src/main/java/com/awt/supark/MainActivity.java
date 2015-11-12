@@ -220,12 +220,12 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         btnStatistics = (FloatingActionButton) findViewById(R.id.buttonStatistics);
         btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
         btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
-        /*
+
         btnZone1.setAlpha(0.3f);
         btnZone2.setAlpha(0.3f);
         btnZone3.setAlpha(0.3f);
         btnZone4.setAlpha(0.3f);
-        */
+
 
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
