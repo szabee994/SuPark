@@ -34,17 +34,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
+    // Animation
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;
-    boolean locationFound = false;  // True if the location has found by GPS signal
-    boolean locationLocked = false;
-    boolean backDisabled = false;
+    int openedLayout = 0;  // ID of the current opened otherContent
+    int layoutFadeOutDuration = 150;
+    int layoutFadeInDuration = 150;
+    int layoutPullUpDuration = 300;
+    int smallButtonHighlightChangeDuration = 150;
 
+
+    // Location
+    boolean locationFound = false;  // True if the location has found by GPS signal
+    boolean locationLocked = false;  // True if the location must not change anymore
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
-    int openedLayout = 0;  // ID of the current opened otherContent
+
+    boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
 
     // Sample string database stuff
     String[] licenseNumberDb = {"sample1", "sample2", "sample3", "sample4", "sample5"};
@@ -138,11 +146,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 case 3:
                     // Occurs when parking data has been sent to server
                     if (msg.arg1 == 1) {
-                        // parkingInit("finish");
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
                     }
                     else if (msg.arg1 == 2) {
-                        // parkingInit("error");
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_fail), Toast.LENGTH_LONG).show();
                     }
                     break;
@@ -330,9 +336,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
                 dimActive = true;  // Sets the dim visibility indicator variable to true
 
-                // 1. Making the layout visible
+                // Making the layout visible
                 parkingBackgroundShow();
-                // 2. Car enters
+
+                // Car enters
                 imageCar.startAnimation(anim_car_enter);
                 anim_car_enter.setFillAfter(true);
 
@@ -562,7 +569,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
             // ****** UI ELEMENTS FADING OUT ANIMATION ******
             // Sets the animation properties
-            animation.setDuration(200);
+            animation.setDuration(layoutFadeOutDuration);
 
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
@@ -603,7 +610,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     ValueAnimator nextAnimation = ValueAnimator.ofFloat(1f, 0f);
 
                     // Sets the animation properties
-                    nextAnimation.setDuration(300);
+                    nextAnimation.setDuration(layoutPullUpDuration);
                     nextAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
 
                     nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -666,7 +673,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
             // Changing highlight from previous to current button
             ValueAnimator animation = ValueAnimator.ofFloat(0.17f, 1f);
-            animation.setDuration(150);
+            animation.setDuration(smallButtonHighlightChangeDuration);
             animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -710,7 +717,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
 
         // Sets the animation properties
-        animation.setDuration(300);
+        animation.setDuration(layoutPullUpDuration);
         animation.setInterpolator(new AccelerateDecelerateInterpolator());
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -744,7 +751,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 ValueAnimator nextAnimation = ValueAnimator.ofFloat(0.17f, 1f);
 
                 // Sets the animation properties
-                nextAnimation.setDuration(150);
+                nextAnimation.setDuration(layoutFadeInDuration);
                 nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {

@@ -198,7 +198,7 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public int getZoneByRegion(int region){
-        int zone = -1;
+        int zone = 0;
         Cursor d = db.rawQuery("SELECT zone_id FROM regions WHERE region_id = "+region,null);
         if(d.getCount() > 0) {
             d.moveToFirst();
