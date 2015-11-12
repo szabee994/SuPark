@@ -40,7 +40,7 @@ public class CarListFragment extends Fragment {
     LocationManager locationManager;
     SQLiteDatabase db;
 
-    // Csak mert nem ment el a COMMIT
+    // Csak mert nem ment el a COMMIT ÚJRA
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
