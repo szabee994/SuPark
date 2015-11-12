@@ -132,6 +132,22 @@ public class ParkingDataHandler implements LocationListener{
         return true;
     }
 
+    public int getRegion(double lat, double lng){
+        for(int i = 0; i < polynum; i++){
+            if(inRegionFromDouble(lat,lng,polyLoc[i])){
+                if(mHandler != null)
+                mHandler.obtainMessage(0,polyzone[i],region[i]).sendToTarget();
+                break;
+            }
+        }
+        return 0;
+    }
+
+    public boolean inRegionFromDouble(double lat, double lng, ArrayList<LatLng> polyloc){
+        Location loc = new Location("");
+        return true;
+    }
+
     //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths.
     public boolean inRegion(LatLng location, ArrayList<LatLng> polyLoc){
         if (location==null)
@@ -203,11 +219,13 @@ public class ParkingDataHandler implements LocationListener{
     @Override //Method that gets called on every location change
     public void onLocationChanged(Location location) {
         currloc = location;
+        if(mHandler != null)
         mHandler.obtainMessage(1).sendToTarget();
 
         LatLng latlng = new LatLng(location.getLatitude(),location.getLongitude());
         for(int i = 0; i < polynum; i++){
             if(inRegion(latlng,polyLoc[i])){
+                if(mHandler != null)
                 mHandler.obtainMessage(0,polyzone[i],region[i]).sendToTarget();
                 break;
             }
@@ -329,9 +347,11 @@ public class ParkingDataHandler implements LocationListener{
         @Override
         protected void onPostExecute(String result) {
             if(result.equals("done")){
+                if(mHandler != null)
                 mHandler.obtainMessage(3,1,0).sendToTarget();
                 Log.i("Done", result);
             }else {
+                if(mHandler != null)
                 mHandler.obtainMessage(3,2,0).sendToTarget();
                 Log.i("Done", result);
             }
@@ -359,10 +379,11 @@ public class ParkingDataHandler implements LocationListener{
                     response.append(inputLine);
                 }
                 in.close();
+                if(mHandler != null)
                 mHandler.obtainMessage(10,0,0).sendToTarget();
             }catch (Exception e) {
                 Log.i("Exception", e.toString());
-                mHandler.obtainMessage(10, 1, 0).sendToTarget();
+                if(mHandler != null){mHandler.obtainMessage(10, 1, 0).sendToTarget();}
             }
             //Log.i("Response",response.toString());
             //return unzipString(response.toString());
@@ -423,8 +444,10 @@ public class ParkingDataHandler implements LocationListener{
                         db.update("regions",values_temp,"region_id = "+regions_temp.getInt("region_id"),null);
                     }
                 }
+                if(mHandler != null)
                 mHandler.obtainMessage(10,2,0).sendToTarget();
             }catch (Exception e){
+                if(mHandler != null)
                 mHandler.obtainMessage(10,3,0).sendToTarget();
                 Log.i("Error",e.toString());
             }
