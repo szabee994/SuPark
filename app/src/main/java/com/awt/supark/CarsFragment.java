@@ -30,23 +30,6 @@ public class CarsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.cars_layout, container, false);
         Log.d("CarsFragment", "Cars activity started");
-
-
-
-       /* btn1 = (ImageButton) view.findViewById(R.id.buttonAdd);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                foo();
-            }
-        });*/
-
-
         return view;
     }
-
-   /* public void foo() {
-        Fragment fragment = new EditCar();
-        Toast.makeText(getActivity(), "ADD NEW CAR", Toast.LENGTH_LONG).show();
-    }*/
 }

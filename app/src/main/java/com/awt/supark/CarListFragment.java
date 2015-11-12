@@ -4,10 +4,15 @@ package com.awt.supark;
  * Created by Mark on 11/4/2015.
  */
 
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +32,13 @@ public class CarListFragment extends Fragment {
 
     View view;
     ListView listview;
-    //ezt a tÃ¶mbÃ¶t tÃ¶ltitek majd fel, szervertÅ‘l, vagy filebÃ³l, model alapjÃ¡n van lÃ©trehozva
     public ArrayList<Car> carArray = new ArrayList<>();
     CarListAdapter adapter;
+
+    SQLiteDatabase cardb;
+    SharedPreferences sharedprefs;
+    LocationManager locationManager;
+    SQLiteDatabase db;
 
 
     @Nullable
@@ -38,12 +47,30 @@ public class CarListFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_list_layout, container, false);
         listview = (ListView) view.findViewById(R.id.listview);
         //csak a szimulalaskent
-        for (int i = 0; i < 10; i++) {
+
+        db = SQLiteDatabase.openDatabase(getContext().getFilesDir().getPath()+"/carDB.db",null, SQLiteDatabase.CREATE_IF_NECESSARY);
+        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
+                "  `car_id` int(2) NOT NULL ,\n" +
+                "  `car_name` varchar(100) NOT NULL,\n" +
+                "  `car_license` varchar(100) NOT NULL,\n" +
+                "  PRIMARY KEY (`car_id`)\n" +
+                ")");
+
+        int numberOfCars;
+
+        Cursor d = db.rawQuery("SELECT * FROM cars", null);
+        String[] cars = new String[d.getCount()];
+        numberOfCars = d.getCount();
+        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+            int caridindex = d.getColumnIndex("car_id");
+            int carnameindex = d.getColumnIndex("car_name");
+            int carlicenseindex = d.getColumnIndex("car_license");
             Car car = new Car();
-            car.setName("BMW" + String.valueOf(i));
-            car.setLicens("ISD" + String.valueOf(i));
+            car.setName(d.getString(carnameindex));
+            car.setLicens(d.getString(carlicenseindex));
             carArray.add(car);
         }
+
         adapter = new CarListAdapter(getActivity(), carArray);
         listview.setDivider(null);
         listview.setDividerHeight(0);

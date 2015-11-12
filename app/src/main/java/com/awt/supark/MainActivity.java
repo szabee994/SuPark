@@ -5,6 +5,8 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -32,6 +34,8 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.awt.supark.Model.Car;
 
 public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
@@ -228,7 +232,11 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         otherContent = (FrameLayout) findViewById(R.id.otherContent);
         parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
+        // -----------------------------------------------------------------------------------------------------------------
 
+        setLicenseToArray();
+
+        // -----------------------------------------------------------------------------------------------------------------
         // -----------------------------------------------------------------------------------------------------------------
 
         updateLocationTextGps();
@@ -930,7 +938,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         if(edit == true) {
             fragment = new CarsFragment();
         }
-
             if (fragment != null) {
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.otherContent, fragment);
@@ -938,5 +945,27 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                          edit = !edit;
             }
         }
+
+    SQLiteDatabase db;
+    private void setLicenseToArray(){
+
+        db = SQLiteDatabase.openDatabase(this.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
+                "  `car_id` int(2) NOT NULL ,\n" +
+                "  `car_name` varchar(100) NOT NULL,\n" +
+                "  `car_license` varchar(100) NOT NULL,\n" +
+                "  PRIMARY KEY (`car_id`)\n" +
+                ")");
+
+        int numberOfCars;
+
+        Cursor d = db.rawQuery("SELECT * FROM cars", null);
+        String[] cars = new String[d.getCount()];
+        numberOfCars = d.getCount();
+        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+            int carlicenseindex = d.getColumnIndex("car_license");
+            licenseNumberDb[carlicenseindex] = d.getString(carlicenseindex);
+        }
     }
+}
 
