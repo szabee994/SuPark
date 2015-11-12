@@ -87,6 +87,8 @@ public class ParkingDataHandler implements LocationListener{
                 "  `zone_id` int(2) NOT NULL,\n" +
                 "  `name` varchar(100) NOT NULL,\n" +
                 "  `location_poly` varchar(1000) NOT NULL,\n" +
+                "  `stats_max` INT(2),\n" +
+                "  `stats_current` INT(2),\n" +
                 "  PRIMARY KEY (`region_id`)\n" +
                 ")");
         sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -260,6 +262,11 @@ public class ParkingDataHandler implements LocationListener{
         retrieve.execute("latest");
     }
 
+    public void updateStats() {
+        retrieveJSON retrieve = new retrieveJSON();
+        retrieve.execute("getstats");
+    }
+
     public void postPark(int region, int zone, int parktime){
         JSONObject parkdata = new JSONObject();
         Class<?> c;
@@ -352,8 +359,10 @@ public class ParkingDataHandler implements LocationListener{
                     response.append(inputLine);
                 }
                 in.close();
+                mHandler.obtainMessage(10,0,0).sendToTarget();
             }catch (Exception e) {
                 Log.i("Exception", e.toString());
+                mHandler.obtainMessage(10, 1, 0).sendToTarget();
             }
             //Log.i("Response",response.toString());
             //return unzipString(response.toString());
@@ -375,8 +384,7 @@ public class ParkingDataHandler implements LocationListener{
                     } else {
                         Log.i("Needsupdate", "No");
                     }
-                }
-                if(data.has("zones")){
+                }else if(data.has("zones")){
                     JSONArray zones = data.getJSONArray("zones");
                     JSONArray regions = data.getJSONArray("regions");
                     db.execSQL("DELETE FROM zones");
@@ -405,8 +413,19 @@ public class ParkingDataHandler implements LocationListener{
                     editor.putInt("lastupdate", lastupd);
                     editor.commit();
                     lastupdate = sharedprefs.getInt("lastupdate",0);
+                }else if(data.has("regionstats")) {
+                    JSONArray regions = data.getJSONArray("regionstats");
+                    for(i = 0; i < regions.length(); i++){
+                        JSONObject regions_temp = regions.getJSONObject(i);
+                        ContentValues values_temp = new ContentValues();
+                        values_temp.put("stats_max",regions_temp.getInt("max"));
+                        values_temp.put("stats_current",regions_temp.getInt("current"));
+                        db.update("regions",values_temp,"region_id = "+regions_temp.getInt("region_id"),null);
+                    }
                 }
+                mHandler.obtainMessage(10,2,0).sendToTarget();
             }catch (Exception e){
+                mHandler.obtainMessage(10,3,0).sendToTarget();
                 Log.i("Error",e.toString());
             }
             Log.i("lastupdate",Integer.toString(lastupdate));
