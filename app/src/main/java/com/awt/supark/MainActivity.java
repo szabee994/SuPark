@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     // state (0), the program will know that the user is not in any
                     // parking zone.
                     locationFound = true;
-                    locationLocked = true;
+                    //locationLocked = true;
                     // updateLocationTextGps();
                     break;
                 case 3:
@@ -933,7 +933,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     public void openAddCarFragment(final View view){
         Bundle args = new Bundle();
-        args.putInt("editid",-1);
+        args.putInt("editid", -1);
         Fragment fragment = new EditCar();
         if (fragment != null) {
             fragment.setArguments(args);
@@ -945,13 +945,23 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
     public void openCarFragment(final View view, int editid){
         Bundle args = new Bundle();
-        args.putInt("editid",editid);
+        args.putInt("editid", editid);
         Fragment fragment = new EditCar();
         if(editid == -1) {
             fragment = new CarsFragment();
         }
         if (fragment != null) {
             fragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.otherContent, fragment);
+            fragmentTransaction.commit();
+        }
+    }
+
+    public void openCarFragment(final View view){
+        Fragment fragment;
+        fragment = new CarsFragment();
+        if (fragment != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
