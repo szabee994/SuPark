@@ -69,7 +69,6 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/licens"
-            android:onClick="openCarFragment"
             android:background="@null"
             android:scaleType="fitCenter"
             android:layout_marginTop="10dp"

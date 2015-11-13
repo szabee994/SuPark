@@ -1,12 +1,15 @@
 package com.awt.supark.Adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.awt.supark.MainActivity;
 import com.awt.supark.R;
 import com.awt.supark.Model.Car;
 
@@ -45,6 +48,7 @@ public class CarListAdapter extends BaseAdapter {
 
     public class ViewHolder {
         TextView name, licens;
+        ImageButton editbtn;
     }
 
     @Override
@@ -55,15 +59,22 @@ public class CarListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.name = (TextView) view.findViewById(R.id.name);
             holder.licens = (TextView) view.findViewById(R.id.licens);
+            holder.editbtn = (ImageButton) view.findViewById(R.id.imageButton);
             view.setTag(holder);
         } else {
             view = convertView;
             holder = (ViewHolder) view.getTag();
         }
 
-        Car car = carArray.get(position);
+        final Car car = carArray.get(position);
         holder.name.setText(car.getName());
         holder.licens.setText(car.getLicens());
+        holder.editbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)context).openCarFragment(v,car.getSqlid());
+            }
+        });
         return view;
     }
 }

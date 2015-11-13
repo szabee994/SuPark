@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
 
     // String database
-    String[] licenseNumberDb = {"sample", "sample2", "sample3"};
+    String[] licenseNumberDb = {""};
 
     //                         sebők             dani              andi             mark
     // Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     ParkingSmsSender smsHandler;
 
     // Edit Boolean
-    boolean edit = false;
+    //boolean edit = false;
 
     // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
     // Zone finder handler
@@ -245,11 +245,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
         // -----------------------------------------------------------------------------------------------------------------
 
-        // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
-        licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
-        licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
-        licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
-        licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
 
         fragmentManager = getSupportFragmentManager();
 
@@ -560,7 +555,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
             openedLayout = view.getId();
-            edit = false;
+            //edit = false;
             // Sets the openedLayout variable so we know which one of the foreign layout was opened
         }
     }
@@ -936,18 +931,32 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         }
     }
 
-    public void openCarFragment(final View view){
+    public void openAddCarFragment(final View view){
+        Bundle args = new Bundle();
+        args.putInt("editid",-1);
         Fragment fragment = new EditCar();
-        if(edit == true) {
+        if (fragment != null) {
+            fragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.otherContent, fragment);
+            fragmentTransaction.commit();
+        }
+    }
+
+    public void openCarFragment(final View view, int editid){
+        Bundle args = new Bundle();
+        args.putInt("editid",editid);
+        Fragment fragment = new EditCar();
+        if(editid == -1) {
             fragment = new CarsFragment();
         }
-            if (fragment != null) {
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.otherContent, fragment);
-                        fragmentTransaction.commit();
-                         edit = !edit;
-            }
+        if (fragment != null) {
+            fragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.otherContent, fragment);
+            fragmentTransaction.commit();
         }
+    }
 
     // ----------------------------- Set License to autoCorrect array--------------------------------
     SQLiteDatabase db;
@@ -966,11 +975,23 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
         String[] cars = new String[d.getCount()];
         numberOfCars = d.getCount();
-
-        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-            int carlicenseindex = d.getColumnIndex("car_license");
-            licenseNumberDb[carlicenseindex] = d.getString(carlicenseindex);
+        Log.i("Number",Integer.toString(numberOfCars));
+        if(numberOfCars > 0) {
+            licenseNumberDb = new String[numberOfCars];
+            int i = 0;
+            for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+                int carlicenseindex = d.getColumnIndex("car_license");
+                licenseNumberDb[i] = d.getString(carlicenseindex);
+                i++;
+            }
         }
+
+        // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
+        licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
+        licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
+        licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
+        licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
+
     }
 }
 

@@ -5,6 +5,7 @@ package com.awt.supark.Model;
  */
 public class Car {
     String name,licens;
+    int sqlid;
 
     public String getName() {
         return name;
@@ -21,4 +22,8 @@ public class Car {
     public void setLicens(String licens) {
         this.licens = licens;
     }
+
+    public int getSqlid() {return sqlid;}
+
+    public void setSqlid(int sqlid) {this.sqlid = sqlid;}
 }

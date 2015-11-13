@@ -52,11 +52,13 @@ public class CarListFragment extends Fragment {
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
             int carNameIndex = d.getColumnIndex("car_name");
             int carLicenseIndex = d.getColumnIndex("car_license");
+            int carSqlId = d.getColumnIndex("car_id");
 
             Car car = new Car();
 
             car.setName(d.getString(carNameIndex)); // set name
             car.setLicens(d.getString(carLicenseIndex)); // set license
+            car.setSqlid(d.getInt(carSqlId));
 
             carArray.add(car);
         }
@@ -79,5 +81,11 @@ public class CarListFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((MainActivity) getActivity()).setLicenseToArray();
     }
 }
