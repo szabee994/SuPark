@@ -53,7 +53,8 @@ public class EditCar extends Fragment {
             public void onClick(View v) {
                 if(editid == -1) {
                     AddCar(v);
-                }else{
+                }
+                else {
                     EditCar(v);
                 }
             }
@@ -70,7 +71,7 @@ public class EditCar extends Fragment {
     }
 
     public void DeleteCar(View v){
-        db.delete("cars","car_id = "+editid,null);
+        db.delete("cars","car_id = " + editid,null);
         ((MainActivity)getActivity()).setLicenseToArray();
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
