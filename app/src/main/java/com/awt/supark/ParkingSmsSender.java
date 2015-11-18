@@ -28,8 +28,8 @@ public class ParkingSmsSender {
     }
 
     public void sendSms(String phoneNumber, int zone) {
-
         Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
+
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
@@ -40,10 +40,10 @@ public class ParkingSmsSender {
         PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, new Intent(SENT), 0);
         PendingIntent deliveredPI = PendingIntent.getBroadcast(context, 0, new Intent(DELIVERED), 0);
 
-        // When the SMS has been sent
-        context.registerReceiver(new BroadcastReceiver() {
+        BroadcastReceiver broadSent = new BroadcastReceiver() {
             @Override
             public void onReceive(Context arg0, Intent arg1) {
+                // Handling the sms states
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
                         Log.i("smsHandler", "SMS sent");
@@ -66,26 +66,35 @@ public class ParkingSmsSender {
                         smsHandler.obtainMessage(3).sendToTarget();
                         break;
                 }
+                // We MUST unregister the receiver
+                context.unregisterReceiver(this);
             }
-        }, new IntentFilter(SENT));
+        };
 
-        // When the SMS has been delivered
-        context.registerReceiver(new BroadcastReceiver() {
+        BroadcastReceiver broadReceive = new BroadcastReceiver() {
             @Override
             public void onReceive(Context arg0, Intent arg1) {
+                // Handling the sms states
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
                         Log.i("smsHandler", "SMS received");
                         smsHandler.obtainMessage(1).sendToTarget();
-
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i("smsHandler", "SMS not received");
                         smsHandler.obtainMessage(2).sendToTarget();
                         break;
                 }
+                // We MUST unregister the receiver
+                context.unregisterReceiver(this);
             }
-        }, new IntentFilter(DELIVERED));
+        };
+
+        // When the SMS has been sent
+        context.registerReceiver(broadSent, new IntentFilter(SENT));
+
+        // When the SMS has been delivered
+        context.registerReceiver(broadReceive, new IntentFilter(DELIVERED));
 
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);

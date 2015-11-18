@@ -37,18 +37,19 @@ import android.widget.Toast;
 
 import com.awt.supark.Model.Car;
 
-public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
-    // Animation
-    boolean dimActive = false;  // Holds the dim layers status (true = visible, false = invisible/gone)
+public class MainActivity extends AppCompatActivity {
+    // Layout
+    boolean dimActive = false;  // Dim layers status
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
-    boolean animInProgress = false;
+    boolean animInProgress = false;  // Is there any animation in progress
     int openedLayout = 0;  // ID of the current opened otherContent
+
+    // Animation times in ms
     int layoutFadeOutDuration = 150;
     int layoutFadeInDuration = 150;
     int layoutPullUpDuration = 300;
     int smallButtonHighlightChangeDuration = 150;
-
 
     // Location
     boolean locationFound = false;  // True if the location has found by GPS signal
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     // String database
     String[] licenseNumberDb = {""};
 
-    //                         sebők             dani              andi             mark
-    // Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4
+    /*                         sebők             dani              andi             mark
+       Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
     String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"};
 
     // Context
@@ -135,20 +136,18 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     }
                     break;
                 case 1:
-                    // This occurs every time the user moves. Because the locationFound
-                    // changes to true but the currentZone remains in it's initial
-                    // state (0), the program will know that the user is not in any
-                    // parking zone.
+                    /* This occurs every time the user moves. Because the locationFound
+                     * changes to true but the currentZone remains in it's initial
+                     * state (0), the program will know that the user is not in any
+                     * parking zone.
+                     */
                     locationFound = true;
-                    //locationLocked = true;
-                    // updateLocationTextGps();
                     break;
                 case 3:
                     // Occurs when parking data has been sent to server
                     if (msg.arg1 == 1) {
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
-                    }
-                    else if (msg.arg1 == 2) {
+                    } else if (msg.arg1 == 2) {
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_fail), Toast.LENGTH_LONG).show();
                     }
                     break;
@@ -156,30 +155,32 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         }
     };
 
-
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 0: // SMS sent
+                // SMS sent
+                case 0:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_sent), Toast.LENGTH_SHORT).show();
                     break;
-                case 1: // SMS delivered
+                // SMS delivered
+                case 1:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show();
                     parkingInit("finish");
                     break;
-                case 2: // Error generic
+                // Error generic
+                case 2:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_error_generic), Toast.LENGTH_LONG).show();
                     parkingInit("error");
                     break;
-                case 3: // Error radio off
+                // Error radio off
+                case 3:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_error_radio), Toast.LENGTH_LONG).show();
                     parkingInit("error");
                     break;
             }
         }
-
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -189,8 +190,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cont = this;
-
-        // Declaring stuff
 
         // Animations
         anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
@@ -226,7 +225,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         btnZone3.setAlpha(0.3f);
         btnZone4.setAlpha(0.3f);
 
-
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
         contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
@@ -234,21 +232,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         otherContent = (FrameLayout) findViewById(R.id.otherContent);
         parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
-        // -----------------------------------------------------------------------------------------------------------------
 
-        setLicenseToArray(); // Call the function setLicenseToArray
-
-        // -----------------------------------------------------------------------------------------------------------------
-        // -----------------------------------------------------------------------------------------------------------------
-
+        setLicenseToArray();
         updateLocationTextGps();
-
-        // -----------------------------------------------------------------------------------------------------------------
-
-
         fragmentManager = getSupportFragmentManager();
-
-        // -----------------------------------------------------------------------------------------------------------------
 
         // Setting up the handlers
         parkHandler = new ParkingDataHandler(this);
@@ -266,23 +253,17 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                // If the user taps the button zooming in animation starts.
-                // The animation will remain in it's final state (pressed).
+                /* If the user taps the button zooming in animation starts.
+                 * The animation will remain in it's final state (pressed).
+                 */
                 if (motionEvent.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-                    // Does the animation
                     view.startAnimation(anim_zoom_out);
                     anim_zoom_out.setFillAfter(true);
-                }
-
-                // If the user releases the button zooming out animation starts.
-                // The animation will remain in it's final state (released).
-                else if (motionEvent.getAction() == android.view.MotionEvent.ACTION_UP) {
-                    // Do the animation
+                } else if (motionEvent.getAction() == android.view.MotionEvent.ACTION_UP) {
                     view.startAnimation(anim_zoom_in);
                     anim_zoom_in.setFillAfter(true);
                 }
 
-                // This is required for some reasons.
                 return false;
             }
         });
@@ -293,36 +274,35 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             public void onClick(View view) {
                 if(!pullUpStarted) {
                     pullUpStarted = true;
-                    // Initializes the parking
                     parkingInit("start");
                 }
             }
         });
     }
 
-    // -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------
-    //
-    // First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
-    // States:
-    // 1. start
-    //   * Initializes parking sequence by checking the zone number
-    //   * Starts the parking animations
-    //   * Calls the parking function
-    // 2. cancel
-    //   * Cancels the parking
-    //   * Rolls back every changes
-    // 3. finish
-    //   * Tells the user that the parking process was successfull
-    //   * Removes every parking layer
-    // 4. error
+    /* -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------
+     *
+     * First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
+     * States:
+     * 1. start
+     *   * Initializes parking sequence by checking the zone number
+     *   * Starts the parking animations
+     *   * Calls the parking function
+     * 2. cancel
+     *   * Cancels the parking
+     *   * Rolls back every changes
+     * 3. finish
+     *   * Tells the user that the parking process was successfull
+     *   * Removes every parking layer
+     * 4. error
+     */
 
     public void parkingInit(String state) {
         if (state.equals("start")) {
             if(currentZone == 0) {
                 Toast.makeText(cont, getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
                 pullUpStarted = false;
-            }
-            else {
+            } else {
                 parkingBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 textParkingScreen.setText(getResources().getString(R.string.please_wait));
 
@@ -360,8 +340,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     }
                 });
             }
-        }
-        else if(state.equals("cancel")) {
+        } else if(state.equals("cancel")) {
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
             park("cancel");
@@ -387,10 +366,8 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 }
             });
             dimActive = false;
-        }
-        else if(state.equals("finish")){
+        } else if(state.equals("finish")){
             park("finish");
-
             appBackgroundColorChange(parkingBackground, 300, 46, 125, 50);
             textParkingScreen.setText(getResources().getString(R.string.success));
 
@@ -436,9 +413,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
 
                 }
             });
-            //dimActive = false;
-        }
-        else if(state.equals("error")){
+        } else if(state.equals("error")){
             // Fades out the dimming layer
             backDimmer.startAnimation(anim_fade_out);
             park("error");
@@ -488,29 +463,24 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         return num;
     }
 
-    // This is the actual parking function. You can call it with one of the next parameters:
-    // 1. send - With this parameter the parking function will send a parking query
-    // 2. cancel - Cancels the parking query
-    // 3. error
+    /* This is the actual parking function. You can call it with one of the next parameters:
+     * 1. send - With this parameter the parking function will send a parking query
+     * 2. cancel - Cancels the parking query
+     * 3. error
+     */
     public void park(String action) {
         if(action == "send") {
             Log.i("MainActivity", "Parking started");
             backDisabled = true;
             smsHandler.sendSms(zoneSmsNumSelector(), currentZone);
             parkHandler.postPark(currentRegion, currentZone, 60);
-        }
-        else if (action == "cancel"){
-            // TODO:
-            // If the user cancels the action
+        } else if (action == "cancel"){
             Log.i("MainActivity", "Parking cancelled");
             Toast.makeText(cont, getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
-        }
-        else if(action == "finish"){
+        } else if(action == "finish"){
             Log.i("MainActivity", "Parking finished");
-
             Toast.makeText(cont, getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
-        }
-        else if(action == "error"){
+        } else if(action == "error"){
             Log.i("MainActivity", "Parking error");
 
         }
@@ -522,14 +492,12 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
         }
     }
-    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
 
 
-
-
-    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
-    //
-    // Includes views from XML depending on which button was pressed
+    /* ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
+     *
+     * Includes views from XML depending on which button was pressed
+     */
     public void otherContentHandler(View view) {
         Fragment fragment = null;
 
@@ -555,7 +523,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
             openedLayout = view.getId();
-            //edit = false;
             // Sets the openedLayout variable so we know which one of the foreign layout was opened
         }
     }
@@ -663,11 +630,10 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 }
             });
             animation.start();
-        }
-        else if (view.getId() == openedLayout){
+        } else if (view.getId() == openedLayout){
             pullDown(); // If there is a layout already pulled up we have to pull it down
-        }
-        else if (pullUp && (openedLayout != 0) && !pullUpStarted) {
+
+        } else if (pullUp && (openedLayout != 0) && !pullUpStarted) {
             pullUpStarted = true; // To prevent more than one highlight
 
             // Changing highlight from previous to current button
@@ -780,11 +746,11 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         });
         animation.start();
     }
-    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION ENDS HERE ------------------------------------------
 
-    // -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
-    //
-    // Every time the user press a zone changer button this will be called
+    /* -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
+     *
+     * Every time the user press a zone changer button this will be called
+     */
     public void zoneChangeButtonPressed(View view) {
         // Gets the pressed buttons ID
         switch(view.getId()) {
@@ -833,7 +799,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                 break;
             case 3:
                 appBackgroundColorChange(wrapper, fadeTime, 0, 121, 107);  // Color of green zone (RGB)
-                //appBackgroundColorChange(wrapper, fadeTime, 46, 125, 50);  // Color of green zone (RGB)
                 break;
             case 4:
                 appBackgroundColorChange(wrapper, fadeTime, 1, 87, 155);  // Color of blue zone (RGB)
@@ -863,9 +828,6 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
         colorFade.start();
     }
 
-    // Updates location info textView to let the user know where is he
-    // TODO:
-    // Push these to strings.xml and create a link to them
     public void updateLocationTextGps() {
         if(locationFound) {
             imageLocation.clearAnimation();  // Stops the blinking GPS image
@@ -886,8 +848,7 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
                     locationInfo.setText(getResources().getString(R.string.zone4auto));
                     break;
             }
-        }
-        else {
+        } else {
             imageLocation.startAnimation(anim_blink);
             locationInfo.setText(getResources().getString(R.string.locating));
         }
@@ -916,8 +877,9 @@ public class MainActivity extends AppCompatActivity { // Needs FragmentActivity
     public void onBackPressed() {
         Log.i("MainActivity", "Back pressed");
         if(!backDisabled) {
-            // If the dimming layer is visible then makes invisible, otherwise
-            // triggers the default action of back button.
+            /* If the dimming layer is visible then makes invisible, otherwise
+             * triggers the default action of back button.
+             */
             if (dimActive) {
                 // Deactivates the dimming
                 parkingInit("cancel");

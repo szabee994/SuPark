@@ -5,7 +5,10 @@
     android:id="@+id/wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:paddingLeft="@dimen/standardFragmentPadding"
+    android:paddingRight="@dimen/standardFragmentPadding"
+    android:paddingBottom="@dimen/standardFragmentPadding">
 
     <RelativeLayout
         android:layout_width="match_parent"

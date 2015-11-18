@@ -11,7 +11,10 @@
         android:id="@+id/scrollContainer"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:paddingLeft="@dimen/standardFragmentPadding"
+        android:paddingRight="@dimen/standardFragmentPadding"
+        android:paddingBottom="@dimen/standardFragmentPadding">
 
 
         <LinearLayout
@@ -27,12 +30,12 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:background="#FFFFFFFF"
-                android:elevation="10dp"
+                android:elevation="@dimen/standardCardElevation"
                 android:padding="0dp"
                 android:translationZ="0dp"
                 app:cardBackgroundColor="#FFFFFFFF"
                 app:cardCornerRadius="2dp"
-                app:cardElevation="10dp"
+                app:cardElevation="@dimen/standardCardElevation"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true"
                 app:contentPadding="10dp">
@@ -92,16 +95,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFFFF"
-                android:elevation="10dp"
+                android:elevation="@dimen/standardCardElevation"
                 android:padding="0dp"
                 android:translationZ="0dp"
                 app:cardBackgroundColor="#FFFFFFFF"
                 app:cardCornerRadius="2dp"
-                app:cardElevation="10dp"
+                app:cardElevation="@dimen/standardCardElevation"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true"
                 app:contentPadding="10dp"
-                android:layout_marginTop="-20dp">
+                android:layout_marginTop="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -139,16 +142,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FFFFFFFF"
-                android:elevation="10dp"
+                android:elevation="@dimen/standardCardElevation"
                 android:padding="0dp"
                 android:translationZ="0dp"
                 app:cardBackgroundColor="#FFFFFFFF"
                 app:cardCornerRadius="2dp"
-                app:cardElevation="10dp"
+                app:cardElevation="@dimen/standardCardElevation"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true"
                 app:contentPadding="10dp"
-                android:layout_marginTop="-20dp">
+                android:layout_marginTop="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
