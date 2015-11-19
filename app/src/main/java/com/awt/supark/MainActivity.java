@@ -37,6 +37,8 @@ import android.widget.Toast;
 
 import com.awt.supark.Model.Car;
 
+import org.apache.http.conn.scheme.HostNameResolver;
+
 public class MainActivity extends AppCompatActivity {
     // Layout
     boolean dimActive = false;  // Dim layers status
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     // Parking Data handler
     ParkingDataHandler parkHandler;
     ParkingSmsSender smsHandler;
+    NotificationHandler notificationHandler;
 
     // Edit Boolean
     //boolean edit = false;
@@ -126,25 +129,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 0:
-                    // If the device is in a polygon receives the region and zone info
+                case 0: // If a parking zone found
                     if(!locationLocked) {
                         currentRegion = msg.arg2;
                         changeZone(msg.arg1);
                         locationFound = true;
-                        updateLocationTextGps();
                     }
                     break;
-                case 1:
-                    /* This occurs every time the user moves. Because the locationFound
-                     * changes to true but the currentZone remains in it's initial
-                     * state (0), the program will know that the user is not in any
-                     * parking zone.
-                     */
+                case 1: // When the user moves
                     locationFound = true;
                     break;
-                case 3:
-                    // Occurs when parking data has been sent to server
+                case 3: // When parking data has been sent to server
                     if (msg.arg1 == 1) {
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
                     } else if (msg.arg1 == 2) {
@@ -179,6 +174,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_error_radio), Toast.LENGTH_LONG).show();
                     parkingInit("error");
                     break;
+            }
+        }
+    };
+
+    // Notification handler
+    private final Handler notificationResponse = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+
             }
         }
     };
@@ -220,11 +225,6 @@ public class MainActivity extends AppCompatActivity {
         btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
         btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
 
-        btnZone1.setAlpha(0.3f);
-        btnZone2.setAlpha(0.3f);
-        btnZone3.setAlpha(0.3f);
-        btnZone4.setAlpha(0.3f);
-
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
         contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
@@ -245,6 +245,11 @@ public class MainActivity extends AppCompatActivity {
 
         smsHandler = new ParkingSmsSender(this);
         smsHandler.throwHandler(smsResponse);  // Initializes the message handler
+
+        notificationHandler = new NotificationHandler(this);
+        notificationHandler.throwHandler(notificationResponse);
+
+        activeZoneButton(0);
 
         // -----------------------------------------------------------------------------------------------------------------
 
@@ -480,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
         } else if(action == "finish"){
             Log.i("MainActivity", "Parking finished");
             Toast.makeText(cont, getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
+            notificationHandler.createNotification("testcarname", "testlicense", 30, currentZone);
         } else if(action == "error"){
             Log.i("MainActivity", "Parking error");
 
@@ -772,6 +778,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         updateLocationTextButton();
+        activeZoneButton(currentZone);
 
         locationLocked = true;  // If one of the zone changer buttons has been pressed we must lock the zone
         currentRegion = -1;
@@ -808,9 +815,12 @@ public class MainActivity extends AppCompatActivity {
 
     // Zone updater
     public void changeZone(int zone) {
+        updateLocationTextGps();
         if(currentZone != zone){
             currentZone = zone;
             colorSwitch(currentZone);
+            activeZoneButton(zone);
+
             Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
         }
     }
@@ -928,6 +938,45 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.replace(R.id.otherContent, fragment);
             fragmentTransaction.commit();
         }
+    }
+
+    public void activeZoneButton(int zone) {
+        float inactive = 0.3f;
+        float active = 1.0f;
+
+        switch (zone) {
+            case 0:
+                btnZone1.setAlpha(inactive);
+                btnZone2.setAlpha(inactive);
+                btnZone3.setAlpha(inactive);
+                btnZone4.setAlpha(inactive);
+                break;
+            case 1:
+                btnZone1.setAlpha(active);
+                btnZone2.setAlpha(inactive);
+                btnZone3.setAlpha(inactive);
+                btnZone4.setAlpha(inactive);
+                break;
+            case 2:
+                btnZone1.setAlpha(inactive);
+                btnZone2.setAlpha(active);
+                btnZone3.setAlpha(inactive);
+                btnZone4.setAlpha(inactive);
+                break;
+            case 3:
+                btnZone1.setAlpha(inactive);
+                btnZone2.setAlpha(inactive);
+                btnZone3.setAlpha(active);
+                btnZone4.setAlpha(inactive);
+                break;
+            case 4:
+                btnZone1.setAlpha(inactive);
+                btnZone2.setAlpha(inactive);
+                btnZone3.setAlpha(inactive);
+                btnZone4.setAlpha(active);
+                break;
+        }
+
     }
 
     // ----------------------------- Set License to autoCorrect array--------------------------------

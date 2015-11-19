@@ -53,13 +53,21 @@
                     android:text="@string/home_text"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/licenseNumber"
-                    android:layout_width="190dp"
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/textWelcome"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center" />
+                    android:gravity="center_horizontal">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/licenseNumber"
+                        android:layout_width="190dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textWelcome"
+                        android:layout_centerHorizontal="true"
+                        android:layout_weight="0" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
