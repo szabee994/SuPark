@@ -483,9 +483,10 @@ public class MainActivity extends AppCompatActivity {
             Log.i("MainActivity", "Parking cancelled");
             Toast.makeText(cont, getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
         } else if(action == "finish"){
+            notificationHandler.createNotification("Sample car", String.valueOf(licenseNumber.getText()), 30, currentZone);
             Log.i("MainActivity", "Parking finished");
             Toast.makeText(cont, getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
-            notificationHandler.createNotification("testcarname", "testlicense", 30, currentZone);
+
         } else if(action == "error"){
             Log.i("MainActivity", "Parking error");
 
