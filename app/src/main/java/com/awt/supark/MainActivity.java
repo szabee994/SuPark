@@ -119,6 +119,11 @@ public class MainActivity extends AppCompatActivity {
     ParkingDataHandler parkHandler;
     ParkingSmsSender smsHandler;
     NotificationHandler notificationHandler;
+    LayoutHandler layoutHandler;
+    ZoneHandler zoneHandler;
+
+    //Activity if needed
+    MainActivity act = this;
 
     // Edit Boolean
     //boolean edit = false;
@@ -132,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
                 case 0: // If a parking zone found
                     if(!locationLocked) {
                         currentRegion = msg.arg2;
-                        changeZone(msg.arg1);
                         locationFound = true;
+                        changeZone(msg.arg1);
                     }
                     break;
                 case 1: // When the user moves
@@ -234,14 +239,12 @@ public class MainActivity extends AppCompatActivity {
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
         setLicenseToArray();
-        updateLocationTextGps();
         fragmentManager = getSupportFragmentManager();
 
         // Setting up the handlers
         parkHandler = new ParkingDataHandler(this);
         parkHandler.checkForUpdate();  // Checks that the local database is up to date
         parkHandler.throwHandler(mHandler);  // Initializes the message handler
-        parkHandler.getZone();  // Gets zone info
 
         smsHandler = new ParkingSmsSender(this);
         smsHandler.throwHandler(smsResponse);  // Initializes the message handler
@@ -249,7 +252,9 @@ public class MainActivity extends AppCompatActivity {
         notificationHandler = new NotificationHandler(this);
         notificationHandler.throwHandler(notificationResponse);
 
-        activeZoneButton(0);
+        layoutHandler = new LayoutHandler(this);
+
+        zoneHandler = new ZoneHandler(this);
 
         // -----------------------------------------------------------------------------------------------------------------
 
@@ -283,511 +288,57 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        layoutHandler.updateLocationTextGps(act);
+        layoutHandler.activeZoneButton(0, act);
+        parkHandler.getZone();  // Gets zone info
     }
 
-    /* -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------
-     *
-     * First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
-     * States:
-     * 1. start
-     *   * Initializes parking sequence by checking the zone number
-     *   * Starts the parking animations
-     *   * Calls the parking function
-     * 2. cancel
-     *   * Cancels the parking
-     *   * Rolls back every changes
-     * 3. finish
-     *   * Tells the user that the parking process was successfull
-     *   * Removes every parking layer
-     * 4. error
-     */
-
-    public void parkingInit(String state) {
-        if (state.equals("start")) {
-            if(currentZone == 0) {
-                Toast.makeText(cont, getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
-                pullUpStarted = false;
-            } else {
-                parkingBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-                textParkingScreen.setText(getResources().getString(R.string.please_wait));
-
-                btnPark.startAnimation(anim_anticipate_rotate_zoom_out);
-                anim_anticipate_rotate_zoom_out.setFillAfter(true);
-
-                pullUpStarted = false;
-
-                backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
-                backDimmer.startAnimation(anim_fade_in);  // Starts a fade in animation on the dimming layer
-                dimActive = true;  // Sets the dim visibility indicator variable to true
-
-                // Making the layout visible
-                parkingBackgroundShow();
-
-                // Car enters
-                imageCar.startAnimation(anim_car_enter);
-                anim_car_enter.setFillAfter(true);
-
-                anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        park("send");  // Calls the parking function
-                        Log.i("SuPark", "Current zone: " + currentZone);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-        } else if(state.equals("cancel")) {
-            // Fades out the dimming layer
-            backDimmer.startAnimation(anim_fade_out);
-            park("cancel");
-
-            // At the end of the animation sets the dimming layers visibility to 'gone'
-            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    backDisabled = false;
-                    backDimmer.setVisibility(View.GONE);
-                    parkingBackground.setVisibility(View.INVISIBLE);
-                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            dimActive = false;
-        } else if(state.equals("finish")){
-            park("finish");
-            appBackgroundColorChange(parkingBackground, 300, 46, 125, 50);
-            textParkingScreen.setText(getResources().getString(R.string.success));
-
-            imageCar.startAnimation(anim_car_leave);
-            anim_car_leave.setFillAfter(true);
-
-            // At the end of the animation sets the dimming layers visibility to 'gone'
-            anim_car_leave.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    backDimmer.startAnimation(anim_fade_out);
-                    anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            backDimmer.setVisibility(View.GONE);
-                            dimActive = false;
-                            parkingBackground.setVisibility(View.INVISIBLE);
-                            btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
-                            backDisabled = false;
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        } else if(state.equals("error")){
-            // Fades out the dimming layer
-            backDimmer.startAnimation(anim_fade_out);
-            park("error");
-
-            // At the end of the animation sets the dimming layers visibility to 'gone'
-            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    backDimmer.setVisibility(View.GONE);
-                    dimActive = false;
-                    parkingBackground.setVisibility(View.INVISIBLE);
-                    btnPark.startAnimation(anim_anticipate_rotate_zoom_in);
-                    backDisabled = false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
+    /* -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------*/
+     public void parkingInit(String state) {
+        parkHandler.parkingInit(state,this);
     }
 
-    // Selects the right sms number according to the current zone
-    public String zoneSmsNumSelector() {
-        String num = "0";
-
-        switch (currentZone) {
-            case 1:
-                num = zoneSmsNumDb[0];
-                break;
-            case 2:
-                num = zoneSmsNumDb[1];
-                break;
-            case 3:
-                num = zoneSmsNumDb[2];
-                break;
-            case 4:
-                num = zoneSmsNumDb[3];
-                break;
-        }
-        return num;
-    }
-
-    /* This is the actual parking function. You can call it with one of the next parameters:
-     * 1. send - With this parameter the parking function will send a parking query
-     * 2. cancel - Cancels the parking query
-     * 3. error
-     */
+    // This is the actual parking function. You can call it with one of the next parameters:
+    // 1. send - With this parameter the parking function will send a parking query
+    // 2. cancel - Cancels the parking query
+    // 3. error
     public void park(String action) {
-        if(action == "send") {
-            Log.i("MainActivity", "Parking started");
-            backDisabled = true;
-            smsHandler.sendSms(zoneSmsNumSelector(), currentZone);
-            parkHandler.postPark(currentRegion, currentZone, 60);
-        } else if (action == "cancel"){
-            Log.i("MainActivity", "Parking cancelled");
-            Toast.makeText(cont, getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
-        } else if(action == "finish"){
-            notificationHandler.createNotification("Sample car", String.valueOf(licenseNumber.getText()), 30, currentZone);
-            Log.i("MainActivity", "Parking finished");
-            Toast.makeText(cont, getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
-
-        } else if(action == "error"){
-            Log.i("MainActivity", "Parking error");
-
-        }
+        parkHandler.park(action,this);
     }
 
     public void parkingBackgroundShow() {
-        if(dimActive) {  // Only works when the dimming layer is visible
-            parkingBackground.setVisibility(View.VISIBLE);  // Turns on the parking background layout
-            parkingBackground.startAnimation(anim_center_open_up);  // Animates the parking background layout
-        }
+        layoutHandler.parkingBackgroundShow(this);
     }
+    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
 
 
-    /* ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
-     *
-     * Includes views from XML depending on which button was pressed
-     */
+
+
+    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
+    //
+    // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
-        Fragment fragment = null;
-
-        // Gets the pressed buttons ID
-        switch (view.getId()) {
-            case R.id.buttonMap:
-                fragment = new MapFragment();
-                break;
-            case R.id.buttonStatistics:
-                fragment = new StatsFragment();
-                break;
-            case R.id.buttonCars:
-                fragment = new CarsFragment();
-                break;
-            case R.id.buttonEtc:
-                fragment = new EtcFragment();
-                break;
-        }
-
-        // If there's no fragment
-        if (fragment != null) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.otherContent, fragment);
-            fragmentTransaction.commit();
-            openedLayout = view.getId();
-            // Sets the openedLayout variable so we know which one of the foreign layout was opened
-        }
+        layoutHandler.otherContentHandler(view,this);
     }
 
     public void smallButtonPressed(final View view) {
-        if (!pullUp && !pullUpStarted) { // If it isn't already up
-            pullUpStarted = true;
-            // Declaring animator
-            ValueAnimator animation = ValueAnimator.ofFloat(1f, 0.17f);
-
-            // ****** UI ELEMENTS FADING OUT ANIMATION ******
-            // Sets the animation properties
-            animation.setDuration(layoutFadeOutDuration);
-
-            animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float value = (float) animation.getAnimatedValue();
-
-                    // Fades out contentLinear and all buttons, except the one that is pressed
-                    contentLinear.setAlpha(value);
-                    if (view.getId() != R.id.buttonMap) {
-                        btnMap.setAlpha(value);
-                    }
-                    if (view.getId() != R.id.buttonCars) {
-                        btnCars.setAlpha(value);
-                    }
-                    if (view.getId() != R.id.buttonStatistics) {
-                        btnStatistics.setAlpha(value);
-                    }
-                    if (view.getId() != R.id.buttonEtc) {
-                        btnEtc.setAlpha(value);
-                    }
-                }
-            });
-
-            animation.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    // Sets the visibility of the other layout and contentlinear
-                    contentLinear.setVisibility(View.GONE);
-                    otherContent.setVisibility(View.VISIBLE);
-
-                    // ****** BUTTON PULL UP ANIMATION ******
-                    // Declaring animator
-                    ValueAnimator nextAnimation = ValueAnimator.ofFloat(1f, 0f);
-
-                    // Sets the animation properties
-                    nextAnimation.setDuration(layoutPullUpDuration);
-                    nextAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
-
-                    nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            float value = (float) animation.getAnimatedValue();
-
-                            // Sets weight of the two layouts, this makes one smaller and the other bigger
-                            tableRowTopHalf.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, value));
-                            otherContent.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1 - value));
-                        }
-                    });
-
-                    // ****** LAYOUT PULL UP ANIMATION ******
-                    nextAnimation.addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            otherContentHandler(view); // Takes care of including new views
-                            otherContent.startAnimation(anim_slide_up_fade_in); // Animates the new activity
-                            pullUp = true; // Changing the pull up status indicator
-                            pullUpStarted = false;
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            pullUpStarted = false;
-                            otherContent.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                    nextAnimation.start();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-            animation.start();
-        } else if (view.getId() == openedLayout){
-            pullDown(); // If there is a layout already pulled up we have to pull it down
-
-        } else if (pullUp && (openedLayout != 0) && !pullUpStarted) {
-            pullUpStarted = true; // To prevent more than one highlight
-
-            // Changing highlight from previous to current button
-            ValueAnimator animation = ValueAnimator.ofFloat(0.17f, 1f);
-            animation.setDuration(smallButtonHighlightChangeDuration);
-            animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float value = (float) animation.getAnimatedValue();
-                    findViewById(view.getId()).setAlpha(value);
-                    findViewById(openedLayout).setAlpha(1.17f - value);
-                }
-            });
-            animation.start();
-
-            // Fades out current layout
-            otherContent.startAnimation(anim_fade_out);
-            anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    otherContentHandler(view);  // Switches the layout to the new one
-                    otherContent.startAnimation(anim_slide_up_fade_in); // Fades in the new layout
-                    pullUpStarted=false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
-
+        layoutHandler.smallButtonPressed(view,this);
     }
 
     // Same as smallButtonPressed just backwards
     public void pullDown() {
-        animInProgress = true;
-
-        // ****** BUTTON AND LAYOUT PULL DOWN ANIMATION
-        // Declaring animator
-        ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
-
-        // Sets the animation properties
-        animation.setDuration(layoutPullUpDuration);
-        animation.setInterpolator(new AccelerateDecelerateInterpolator());
-        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float value = (float) animation.getAnimatedValue();
-                tableRowTopHalf.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, value));
-                btnMap.setAlpha(value);
-                btnCars.setAlpha(value);
-                btnStatistics.setAlpha(value);
-                btnEtc.setAlpha(value);
-            }
-        });
-
-        animation.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                // Starts layout pull down and fade out animation
-                otherContent.startAnimation(anim_slide_down_fade_out);
-                anim_slide_down_fade_out.setFillAfter(true);
-
-                // Makes layout invisible
-                otherContent.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                contentLinear.setVisibility(View.VISIBLE);
-
-                // ****** UI ELEMENTS FADE IN ANIMATION ******
-                // Declaring animator
-                ValueAnimator nextAnimation = ValueAnimator.ofFloat(0.17f, 1f);
-
-                // Sets the animation properties
-                nextAnimation.setDuration(layoutFadeInDuration);
-                nextAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float value = (float) animation.getAnimatedValue();
-                        contentLinear.setAlpha(value);
-                    }
-                });
-                nextAnimation.start();
-
-                pullUp = false;
-                openedLayout = 0;
-                animInProgress = false;
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.remove(fragmentManager.findFragmentById(R.id.otherContent));
-                transaction.commit();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        animation.start();
+        layoutHandler.pullDown(this);
     }
+    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION ENDS HERE ------------------------------------------
 
-    /* -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
-     *
-     * Every time the user press a zone changer button this will be called
-     */
+    // -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
+    //
+
+
+    // Every time the user press a zone changer button this will be called
     public void zoneChangeButtonPressed(View view) {
-        // Gets the pressed buttons ID
-        switch(view.getId()) {
-            case R.id.buttonZone1:
-                currentZone = 1;
-                colorSwitch(1);
-                break;
-            case R.id.buttonZone2:
-                currentZone = 2;
-                colorSwitch(2);
-                break;
-            case R.id.buttonZone3:
-                currentZone = 3;
-                colorSwitch(3);
-                break;
-            case R.id.buttonZone4:
-                currentZone = 4;
-                colorSwitch(4);
-                break;
-        }
-        updateLocationTextButton();
-        activeZoneButton(currentZone);
-
-        locationLocked = true;  // If one of the zone changer buttons has been pressed we must lock the zone
-        currentRegion = -1;
-
-        imageLocation.clearAnimation();  // Stopping the blinking location icon...
-        //imageLocation.setVisibility(View.INVISIBLE);  // ...and making it invisible
-
-        Log.i("ZoneChangeButton", "Current zone: " + currentZone);
+        zoneHandler.zoneChangeButtonPressed(view,this);
     }
 
     public void getGPSzone(View v){
@@ -795,92 +346,15 @@ public class MainActivity extends AppCompatActivity {
         locationLocked = false;
     }
 
-    // Background color switcher
-    public void colorSwitch(int zone) {
-        int fadeTime = 600;
-        switch(zone) {
-            case 1:
-                appBackgroundColorChange(wrapper, fadeTime, 183, 28, 28);  // Color of red zone (RGB)
-                break;
-            case 2:
-                appBackgroundColorChange(wrapper, fadeTime, 255, 160, 0);  // Color of yellow zone (RGB)
-                break;
-            case 3:
-                appBackgroundColorChange(wrapper, fadeTime, 0, 121, 107);  // Color of green zone (RGB)
-                break;
-            case 4:
-                appBackgroundColorChange(wrapper, fadeTime, 1, 87, 155);  // Color of blue zone (RGB)
-                break;
-        }
-    }
-
     // Zone updater
     public void changeZone(int zone) {
-        updateLocationTextGps();
-        if(currentZone != zone){
-            currentZone = zone;
-            colorSwitch(currentZone);
-            activeZoneButton(zone);
-
-            Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
-        }
+        currentZone = zone;
+        layoutHandler.colorSwitch(currentZone, this);
+        layoutHandler.activeZoneButton(zone, this);
+        layoutHandler.updateLocationTextGps(this);
+        Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
     }
 
-    // Background color changer function
-    public void appBackgroundColorChange(View view, int time, int r, int g, int b) {
-        ColorDrawable wBack = (ColorDrawable) view.getBackground();
-        int color = wBack.getColor();
-        int r1 = Color.red(color);
-        int g1 = Color.green(color);
-        int b1 = Color.blue(color);
-
-        ObjectAnimator colorFade = ObjectAnimator.ofObject(view, "backgroundColor", new ArgbEvaluator(), Color.argb(255, r1, g1, b1), Color.argb(255, r, g, b));
-        colorFade.setDuration(time);
-        colorFade.start();
-    }
-
-    public void updateLocationTextGps() {
-        if(locationFound) {
-            imageLocation.clearAnimation();  // Stops the blinking GPS image
-            switch(currentZone) {
-                case 0:
-                    locationInfo.setText(getResources().getString(R.string.nozone_auto));
-                    break;
-                case 1:
-                    locationInfo.setText(getResources().getString(R.string.zone1auto));
-                    break;
-                case 2:
-                    locationInfo.setText(getResources().getString(R.string.zone2auto));
-                    break;
-                case 3:
-                    locationInfo.setText(getResources().getString(R.string.zone3auto));
-                    break;
-                case 4:
-                    locationInfo.setText(getResources().getString(R.string.zone4auto));
-                    break;
-            }
-        } else {
-            imageLocation.startAnimation(anim_blink);
-            locationInfo.setText(getResources().getString(R.string.locating));
-        }
-    }
-
-    public void updateLocationTextButton() {
-        switch(currentZone) {
-            case 1:
-                locationInfo.setText(getResources().getString(R.string.zone1selected));
-                break;
-            case 2:
-                locationInfo.setText(getResources().getString(R.string.zone2selected));
-                break;
-            case 3:
-                locationInfo.setText(getResources().getString(R.string.zone3selected));
-                break;
-            case 4:
-                locationInfo.setText(getResources().getString(R.string.zone4selected));
-                break;
-        }
-    }
     // -------------------------------------- ZONE CONTROLLING FUNCTIONS ENDS HERE ---------------------------------------------
 
     // Android back key function
@@ -888,9 +362,8 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         Log.i("MainActivity", "Back pressed");
         if(!backDisabled) {
-            /* If the dimming layer is visible then makes invisible, otherwise
-             * triggers the default action of back button.
-             */
+            // If the dimming layer is visible then makes invisible, otherwise
+            // triggers the default action of back button.
             if (dimActive) {
                 // Deactivates the dimming
                 parkingInit("cancel");
@@ -941,45 +414,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void activeZoneButton(int zone) {
-        float inactive = 0.3f;
-        float active = 1.0f;
-
-        switch (zone) {
-            case 0:
-                btnZone1.setAlpha(inactive);
-                btnZone2.setAlpha(inactive);
-                btnZone3.setAlpha(inactive);
-                btnZone4.setAlpha(inactive);
-                break;
-            case 1:
-                btnZone1.setAlpha(active);
-                btnZone2.setAlpha(inactive);
-                btnZone3.setAlpha(inactive);
-                btnZone4.setAlpha(inactive);
-                break;
-            case 2:
-                btnZone1.setAlpha(inactive);
-                btnZone2.setAlpha(active);
-                btnZone3.setAlpha(inactive);
-                btnZone4.setAlpha(inactive);
-                break;
-            case 3:
-                btnZone1.setAlpha(inactive);
-                btnZone2.setAlpha(inactive);
-                btnZone3.setAlpha(active);
-                btnZone4.setAlpha(inactive);
-                break;
-            case 4:
-                btnZone1.setAlpha(inactive);
-                btnZone2.setAlpha(inactive);
-                btnZone3.setAlpha(inactive);
-                btnZone4.setAlpha(active);
-                break;
-        }
-
-    }
-
     // ----------------------------- Set License to autoCorrect array--------------------------------
     SQLiteDatabase db;
     public void setLicenseToArray(){
@@ -1016,4 +450,3 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
-

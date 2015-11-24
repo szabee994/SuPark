@@ -136,7 +136,7 @@ public class MapFragment extends Fragment {
                 ((MainActivity)getActivity()).currentRegion = region;
                 ((MainActivity)getActivity()).locationFound = true;
                 ((MainActivity)getActivity()).changeZone(parkdata.getZoneByRegion(region));
-                ((MainActivity)getActivity()).updateLocationTextGps();
+                ((MainActivity)getActivity()).layoutHandler.updateLocationTextGps(((MainActivity) getActivity()));
             }
         });
     }
