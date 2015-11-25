@@ -338,7 +338,7 @@ public class ParkingDataHandler implements LocationListener{
         return inRegion(loc,polyloc);
     }
 
-    //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths.
+    //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths. (LOL :D - szabee94)
     public boolean inRegion(LatLng location, ArrayList<LatLng> polyLoc){
         if (location==null)
             return false;

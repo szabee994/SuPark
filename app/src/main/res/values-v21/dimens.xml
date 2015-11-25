@@ -1,0 +1,6 @@
+<resources>
+    <!-- Small floating button -->
+    <dimen name="small_button_margin_left">14dp</dimen>
+    <dimen name="small_button_margin_right">14dp</dimen>
+    <dimen name="small_button_elevation">3dp</dimen>
+</resources>

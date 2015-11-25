@@ -1,0 +1,5 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="layoutTitleBarHeight">81dp</dimen>
+    <dimen name="contentMarginTop">-25dp</dimen>
+</resources>
