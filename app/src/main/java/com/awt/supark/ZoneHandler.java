@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Created by docto on 24/11/2015.
+ * Created by doctor on 24/11/2015.
  */
 public class ZoneHandler {
     Context context;
@@ -16,14 +16,14 @@ public class ZoneHandler {
     // Selects the right sms number according to the current zone
     public String zoneSmsNumSelector(final MainActivity act) {
         String num = "0";
-        num = act.zoneSmsNumDb[act.currentZone-1];
+        num = act.zoneSmsNumDb[act.currentZone - 1];
+
         return num;
     }
 
     // Every time the user press a zone changer button this will be called
     public void zoneChangeButtonPressed(View view, final MainActivity act) {
-        // Gets the pressed buttons ID
-        switch(view.getId()) {
+        switch(view.getId()) { // Gets the pressed buttons ID
             case R.id.buttonZone1:
                 act.currentZone = 1;
                 act.layoutHandler.colorSwitch(1,act);
@@ -41,13 +41,12 @@ public class ZoneHandler {
                 act.layoutHandler.colorSwitch(4,act);
                 break;
         }
-        act.layoutHandler.updateLocationTextButton(act);
 
-        act.locationLocked = true;  // If one of the zone changer buttons has been pressed we must lock the zone
-        act.currentRegion = -1;
+        act.layoutHandler.updateLocationTextButton(act); // Updating the text on the layout
+        act.locationLocked = true; // We must lock the location changes at this point
+        act.currentRegion = -1; // No region info
 
         act.imageLocation.clearAnimation();  // Stopping the blinking location icon...
-        //imageLocation.setVisibility(View.INVISIBLE);  // ...and making it invisible
 
         Log.i("ZoneChangeButton", "Current zone: " + act.currentZone);
     }

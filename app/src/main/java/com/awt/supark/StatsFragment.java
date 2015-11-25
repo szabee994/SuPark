@@ -30,7 +30,6 @@ import android.widget.TextView;
  * Created by Doctor on 2015.10.25..
  */
 public class StatsFragment extends Fragment {
-
     View view;
 
     private final Handler statsHandler = new Handler() {
@@ -39,7 +38,9 @@ public class StatsFragment extends Fragment {
             Log.i("msg",msg.toString());
             if(msg.what == 10){
                 switch (msg.arg1){
-                    case 2: printStats(); break;
+                    case 2:
+                        printStats();
+                        break;
                 }
             }
         }
@@ -54,14 +55,17 @@ public class StatsFragment extends Fragment {
         view = inflater.inflate(R.layout.stats_layout, container, false);
         context = getContext();
         Log.d("StatsFragment", "Stats activity started");
+
         ParkingDataHandler parkdata = new ParkingDataHandler(context);
         parkdata.throwHandler(statsHandler);
         parkdata.updateStats();
+
         return view;
     }
 
     public void printStats(){
         try {
+            // dani baszki how dis works?
             db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
             Cursor d = db.rawQuery("SELECT * FROM regions", null);
             String[] regionname = new String[d.getCount()];

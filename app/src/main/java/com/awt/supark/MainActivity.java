@@ -294,15 +294,10 @@ public class MainActivity extends AppCompatActivity {
         parkHandler.getZone();  // Gets zone info
     }
 
-    /* -------------------------------------- PARKING MANAGER FUNCTION STARTS HERE ------------------------------------------*/
-     public void parkingInit(String state) {
+    public void parkingInit(String state) {
         parkHandler.parkingInit(state,this);
     }
 
-    // This is the actual parking function. You can call it with one of the next parameters:
-    // 1. send - With this parameter the parking function will send a parking query
-    // 2. cancel - Cancels the parking query
-    // 3. error
     public void park(String action) {
         parkHandler.park(action,this);
     }
@@ -310,13 +305,7 @@ public class MainActivity extends AppCompatActivity {
     public void parkingBackgroundShow() {
         layoutHandler.parkingBackgroundShow(this);
     }
-    // -------------------------------------- PARKING MANAGER FUNCTION ENDS HERE ---------------------------------------------
 
-
-
-
-    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION STARTS HERE ------------------------------------------
-    //
     // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
         layoutHandler.otherContentHandler(view,this);
@@ -330,11 +319,6 @@ public class MainActivity extends AppCompatActivity {
     public void pullDown() {
         layoutHandler.pullDown(this);
     }
-    // ---------------------------------------- LAYOUT PULL-UP/-DOWN FUNCTION ENDS HERE ------------------------------------------
-
-    // -------------------------------------- ZONE CONTROLLING FUNCTIONS STARTS HERE ---------------------------------------------
-    //
-
 
     // Every time the user press a zone changer button this will be called
     public void zoneChangeButtonPressed(View view) {
@@ -354,8 +338,6 @@ public class MainActivity extends AppCompatActivity {
         layoutHandler.updateLocationTextGps(this);
         Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
     }
-
-    // -------------------------------------- ZONE CONTROLLING FUNCTIONS ENDS HERE ---------------------------------------------
 
     // Android back key function
     @Override

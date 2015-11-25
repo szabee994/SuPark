@@ -46,7 +46,6 @@ public class CarListFragment extends Fragment {
 
 
         //------------------------ Creating the car list ---------------------------
-
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
 
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
@@ -83,6 +82,7 @@ public class CarListFragment extends Fragment {
         return view;
     }
 
+    // On exit we have to sync car data between this and main activity in order to keep everything up do date
     @Override
     public void onDestroyView() {
         super.onDestroyView();

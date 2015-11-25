@@ -68,14 +68,18 @@ public class ParkingDataHandler implements LocationListener{
     Handler mHandler;
     Location currloc;
 
-    public void throwHandler(Handler mHandl){ //Handler init for communication with MainActivity
+    public void throwHandler(Handler mHandl){ // Handler init for communication with MainActivity
         mHandler = mHandl;
     }
 
     public ParkingDataHandler(Context cont){
         context = cont;
-        Log.i("Context",context.toString());
+        Log.i("Context", context.toString());
+
+        // ---------- Initializing database ----------
         db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath()+"/ParkingDB.db",null, SQLiteDatabase.CREATE_IF_NECESSARY);
+
+        // Zone table
         db.execSQL("CREATE TABLE IF NOT EXISTS `zones` (\n" +
                 "  `zone_id` int(2) NOT NULL,\n" +
                 "  `maxtime` int(11) NOT NULL,\n" +
@@ -84,6 +88,8 @@ public class ParkingDataHandler implements LocationListener{
                 "  `phone` int(4) NOT NULL,\n" +
                 "  PRIMARY KEY (`zone_id`)\n" +
                 ")");
+
+        // Region table
         db.execSQL("CREATE TABLE IF NOT EXISTS `regions` (\n" +
                 "  `region_id` int(3) NOT NULL,\n" +
                 "  `zone_id` int(2) NOT NULL,\n" +
@@ -93,42 +99,35 @@ public class ParkingDataHandler implements LocationListener{
                 "  `stats_current` INT(2),\n" +
                 "  PRIMARY KEY (`region_id`)\n" +
                 ")");
+
+        // Getting the last update timestamp from shardedprefs
         sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastupdate = sharedprefs.getInt("lastupdate",0);
-        Log.i("lastupdate",Integer.toString(lastupdate));
+
+        Log.i("ParkingDataHandler", "Last update timestamp: " + Integer.toString(lastupdate));
     }
 
-    // First we have to call the initialization function which will clean up thIe UI so we can show up other layouts later.
-    // States:
-    // 1. start
-    //   * Initializes parking sequence by checking the zone number
-    //   * Starts the parking animations
-    //   * Calls the parking function
-    // 2. cancel
-    //   * Cancels the parking
-    //   * Rolls back every changes
-    // 3. finish
-    //   * Tells the user that the parking process was successfull
-    //   * Removes every parking layer
-    // 4. error
     public void parkingInit(String state, final MainActivity act) {
+        // Initialising parking start
         if (state.equals("start")) {
-            if(act.currentZone == 0) {
+            if(act.currentZone == 0) { // If there's no zone selected
                 Toast.makeText(act.cont, act.getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
                 act.pullUpStarted = false;
             }
             else {
-                act.parkingBackground.setBackgroundColor(act.getResources().getColor(R.color.colorPrimaryDark));
-                act.textParkingScreen.setText(act.getResources().getString(R.string.please_wait));
+                // Initializing parking process layout
+                act.parkingBackground.setBackgroundColor(act.getResources().getColor(R.color.colorPrimaryDark)); // Background resets
+                act.textParkingScreen.setText(act.getResources().getString(R.string.please_wait)); // Setting text
 
-                act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_out);
+                act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_out); // Button disappears
                 act.anim_anticipate_rotate_zoom_out.setFillAfter(true);
 
                 act.pullUpStarted = false;
 
-                act.backDimmer.setVisibility(View.VISIBLE);  // Sets the dim layer visible.
-                act.backDimmer.startAnimation(act.anim_fade_in);  // Starts a fade in animation on the dimming layer
-                act.dimActive = true;  // Sets the dim visibility indicator variable to true
+                // Dimming the background
+                act.backDimmer.setVisibility(View.VISIBLE);
+                act.backDimmer.startAnimation(act.anim_fade_in);
+                act.dimActive = true;
 
                 // Making the layout visible
                 act.parkingBackgroundShow();
@@ -146,7 +145,6 @@ public class ParkingDataHandler implements LocationListener{
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         act.park("send");  // Calls the parking function
-                        Log.i("SuPark", "Current zone: " + act.currentZone);
                     }
 
                     @Override
@@ -156,12 +154,14 @@ public class ParkingDataHandler implements LocationListener{
                 });
             }
         }
+        // Initialising parking cancel
         else if(state.equals("cancel")) {
-            // Fades out the dimming layer
+            // Deactivating the dim
             act.backDimmer.startAnimation(act.anim_fade_out);
+            act.dimActive = false;
+
             act.park("cancel");
 
-            // At the end of the animation sets the dimming layers visibility to 'gone'
             act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -170,10 +170,12 @@ public class ParkingDataHandler implements LocationListener{
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    act.backDisabled = false;
+                    act.backDisabled = false; // Enabling back button
+
+                    // Restoring the original state of the layout
                     act.backDimmer.setVisibility(View.GONE);
                     act.parkingBackground.setVisibility(View.INVISIBLE);
-                    act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in);
+                    act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in); // Button comes back
                 }
 
                 @Override
@@ -181,18 +183,19 @@ public class ParkingDataHandler implements LocationListener{
 
                 }
             });
-            act.dimActive = false;
         }
-        else if(state.equals("finish")){
+        // Initialising parking finish
+        else if(state.equals("finish")) {
             act.park("finish");
 
-            act.layoutHandler.appBackgroundColorChange(act.parkingBackground, 300, 46, 125, 50);
-            act.textParkingScreen.setText(act.getResources().getString(R.string.success));
+            // Parking process layout changes
+            act.layoutHandler.appBackgroundColorChange(act.parkingBackground, 300, 46, 125, 50); // Background turns to green
+            act.textParkingScreen.setText(act.getResources().getString(R.string.success)); // Setting the text
 
+            // Car leaves
             act.imageCar.startAnimation(act.anim_car_leave);
             act.anim_car_leave.setFillAfter(true);
 
-            // At the end of the animation sets the dimming layers visibility to 'gone'
             act.anim_car_leave.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -201,7 +204,9 @@ public class ParkingDataHandler implements LocationListener{
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    // Deactivating the dim
                     act.backDimmer.startAnimation(act.anim_fade_out);
+
                     act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
@@ -210,12 +215,13 @@ public class ParkingDataHandler implements LocationListener{
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
+                            act.backDisabled = false; // Enabling back button
+
+                            // Restoring the original state of the layout
                             act.backDimmer.setVisibility(View.GONE);
                             act.dimActive = false;
                             act.parkingBackground.setVisibility(View.INVISIBLE);
-                            act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in);
-                            act.backDisabled = false;
-
+                            act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in); // Button comes back
                         }
 
                         @Override
@@ -223,7 +229,6 @@ public class ParkingDataHandler implements LocationListener{
 
                         }
                     });
-
                 }
 
                 @Override
@@ -231,14 +236,13 @@ public class ParkingDataHandler implements LocationListener{
 
                 }
             });
-            //dimActive = false;
         }
         else if(state.equals("error")){
-            // Fades out the dimming layer
+            // Deactivating the dim
             act.backDimmer.startAnimation(act.anim_fade_out);
+
             act.park("error");
 
-            // At the end of the animation sets the dimming layers visibility to 'gone'
             act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -247,11 +251,13 @@ public class ParkingDataHandler implements LocationListener{
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    act.backDisabled = false; // Enabling back button
+
+                    // Restoring the original state of the layout
                     act.backDimmer.setVisibility(View.GONE);
                     act.dimActive = false;
                     act.parkingBackground.setVisibility(View.INVISIBLE);
-                    act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in);
-                    act.backDisabled = false;
+                    act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_in); // Button comes back
                 }
 
                 @Override
@@ -263,30 +269,28 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public void park(String action, final MainActivity act) {
-        if(action == "send") {
+        if(action.equals("send")) {
             Log.i("MainActivity", "Parking started");
-            act.backDisabled = true;
-            act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone);
-            act.parkHandler.postPark(act.currentRegion, act.currentZone, 60);
+
+            act.backDisabled = true; // Disabling back button
+            act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone); // Sending the sms
+            act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
         }
-        else if (action == "cancel"){
-            // TODO:
-            // If the user cancels the action
+        else if (action.equals("cancel")){
             Log.i("MainActivity", "Parking cancelled");
             Toast.makeText(act.cont, act.getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
         }
-        else if(action == "finish"){
+        else if(action.equals("finish")){
             Log.i("MainActivity", "Parking finished");
             act.notificationHandler.createNotification("Sample car", String.valueOf(act.licenseNumber.getText()), 30, act.currentZone);
             Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
         }
-        else if(action == "error"){
+        else if(action.equals("error")){
             Log.i("MainActivity", "Parking error");
-
         }
     }
 
-   public boolean getPolys() { //Method to load polygons into array for zone detection
+   public boolean getPolys() { // Method to load polygons into array for zone detection
         try {
             db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
             Cursor d = db.rawQuery("SELECT * FROM regions", null);
@@ -303,7 +307,7 @@ public class ParkingDataHandler implements LocationListener{
                 region[polynum] = d.getInt(regionidindex);
                 polynum++;
             }
-            for (int i = 0; i < polynum; i++) { //Boring string operations and throwing into LatLng arraylist
+            for (int i = 0; i < polynum; i++) { // Boring string operations and throwing into LatLng arraylist
                 poly[i] = poly[i].replace("POLYGON((", "");
                 poly[i] = poly[i].replace("))", "");
                 String vertices[] = poly[i].split(",");
@@ -338,7 +342,7 @@ public class ParkingDataHandler implements LocationListener{
         return inRegion(loc,polyloc);
     }
 
-    //Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths. (LOL :D - szabee94)
+    // Ray-Casting thingy for zone detection. (From StackOverflow) Works because maths. (LOL :D - szabee94)
     public boolean inRegion(LatLng location, ArrayList<LatLng> polyLoc){
         if (location==null)
             return false;
@@ -428,7 +432,7 @@ public class ParkingDataHandler implements LocationListener{
         }
     }
 
-    @Override //Method that gets called on every location change
+    @Override // Method that gets called on every location change
     public void onLocationChanged(Location location) {
         currloc = location;
         mHandler.obtainMessage(1).sendToTarget();
