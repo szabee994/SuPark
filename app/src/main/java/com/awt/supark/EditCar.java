@@ -1,5 +1,7 @@
 package com.awt.supark;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatDialog;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -86,6 +89,8 @@ public class EditCar extends Fragment {
             TextView text = (TextView)view.findViewById(R.id.text1);
             text.setText("Edit car");
             d.close();
+        } else {
+            radioNewSrb.setChecked(true);
         }
 
         addCarButton.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +108,7 @@ public class EditCar extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeleteCar(v);
+                showDeleteQuestionDialog("", "Are you sure?", v);
             }
         });
 
@@ -197,31 +202,58 @@ public class EditCar extends Fragment {
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 
+    public void showErrorDialog(String title, String content) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
+        alertBuilder.setTitle(title);
+        alertBuilder.setMessage(content);
+        alertBuilder.setPositiveButton("Ok", null);
+        alertBuilder.show();
+    }
+
+    public void showDeleteQuestionDialog(String title, String content, final View v) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
+        alertBuilder.setTitle(title);
+        alertBuilder.setMessage(content);
+        alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DeleteCar(v);
+            }
+        });
+        alertBuilder.setNegativeButton("No", null);
+        alertBuilder.show();
+    }
+
     public void AddCar(View v) {
-        int numberOfCars;
-
-        // Opening database
-        Cursor d = db.rawQuery("SELECT * FROM cars", null);
-        numberOfCars = d.getCount();
-        d.close();
-
-        // Setting values
-        ContentValues values_temp = new ContentValues();
-        values_temp.put("car_id", numberOfCars + 1);
-        values_temp.put("car_name", carName.getText().toString());
-        values_temp.put("car_license", carLicense.getText().toString());
-        int generic;
-        if (radioNewSrb.isChecked()) {
-            generic = 0;
-        } else {
-            generic = 1;
+        if (carName.getText().toString().equals("") || carLicense.getText().toString().equals("")) {
+            showErrorDialog("Error", "Car name or license number is empty.");
         }
-        values_temp.put("isgeneric", generic);
+        else {
+            int numberOfCars;
 
-        // Inserting the new database record
-        db.insert("cars", null, values_temp);
-        ((MainActivity)getActivity()).setLicenseToArray();
-        ((MainActivity)getActivity()).openCarFragment(v, -1);
+            // Opening database
+            Cursor d = db.rawQuery("SELECT * FROM cars", null);
+            numberOfCars = d.getCount();
+            d.close();
+
+            // Setting values
+            ContentValues values_temp = new ContentValues();
+            values_temp.put("car_id", numberOfCars + 1);
+            values_temp.put("car_name", carName.getText().toString());
+            values_temp.put("car_license", carLicense.getText().toString());
+            int generic;
+            if (radioNewSrb.isChecked()) {
+                generic = 0;
+            } else {
+                generic = 1;
+            }
+            values_temp.put("isgeneric", generic);
+
+            // Inserting the new database record
+            db.insert("cars", null, values_temp);
+            ((MainActivity) getActivity()).setLicenseToArray();
+            ((MainActivity) getActivity()).openCarFragment(v, -1);
+        }
     }
 
     public void editCar(View v) {

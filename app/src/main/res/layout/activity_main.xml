@@ -65,7 +65,8 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/textWelcome"
                         android:layout_centerHorizontal="true"
-                        android:layout_weight="0" />
+                        android:layout_weight="0"
+                        android:singleLine="true" />
 
                 </LinearLayout>
 

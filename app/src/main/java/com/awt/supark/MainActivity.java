@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.animation.Animator;
 
 public class MainActivity extends AppCompatActivity {
     // Notification handler
@@ -349,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
         fragment = new EditCar();
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
@@ -363,6 +365,12 @@ public class MainActivity extends AppCompatActivity {
         }
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (editid == -1) {
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
+        }
+        else {
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
+        }
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
@@ -371,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
     public void openCarFragment(final View view) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 

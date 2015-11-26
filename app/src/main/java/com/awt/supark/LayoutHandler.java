@@ -124,7 +124,7 @@ public class LayoutHandler {
                         break;
                 }
                 if (act.currentZone > 0) {
-                    text = text + "\n" + act.parkHandler.getRegionName(act.currentRegion);
+                    text = text + ": " + act.parkHandler.getRegionName(act.currentRegion);
                 }
                 act.locationInfo.setText(text);
             } else {
@@ -146,7 +146,6 @@ public class LayoutHandler {
                 break;
             case 3:
                 appBackgroundColorChange(act.wrapper, fadeTime, 0, 121, 107);  // Color of green zone (RGB)
-                //appBackgroundColorChange(wrapper, fadeTime, 46, 125, 50);  // Color of green zone (RGB)
                 break;
             case 4:
                 appBackgroundColorChange(act.wrapper, fadeTime, 1, 87, 155);  // Color of blue zone (RGB)
@@ -171,9 +170,10 @@ public class LayoutHandler {
                 break;
         }
 
-        // If there's no fragment
+
         if (act.fragment != null) {
             FragmentTransaction fragmentTransaction = act.fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein2, R.anim.fragment_fadeout2);
             fragmentTransaction.replace(R.id.otherContent, act.fragment);
             fragmentTransaction.commit();
             act.openedLayout = view.getId();
@@ -255,7 +255,7 @@ public class LayoutHandler {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             act.otherContentHandler(view); // Takes care of including new views
-                            act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Animates the new activity
+                            //act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Animates the new activity
                             act.pullUp = true; // Changing the pull up status indicator
                             act.pullUpStarted = false;
                         }
@@ -305,9 +305,33 @@ public class LayoutHandler {
             });
             animation.start();
 
+            animation.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    act.otherContentHandler(view);  // Switches the layout to the new one
+                    //act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Fades in the new layout
+                    act.pullUpStarted=false;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+
             // Fades out current layout
-            act.otherContent.startAnimation(act.anim_fade_out);
-            act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
+            /*act.otherContent.startAnimation(act.anim_fade_out);
+            animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
@@ -324,7 +348,7 @@ public class LayoutHandler {
                 public void onAnimationRepeat(Animation animation) {
 
                 }
-            });
+            });*/
         }
     }
 
