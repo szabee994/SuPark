@@ -1,23 +1,25 @@
 package com.awt.supark;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -28,11 +30,12 @@ import com.google.android.gms.maps.model.PolygonOptions;
  */
 public class MapFragment extends Fragment {
 
-    private static View view;
     private static GoogleMap mMap;
-    private static Double latitude, longitude;
+    Double latitude, longitude;
     SQLiteDatabase db;
     Context context;
+    SharedPreferences sharedprefs;
+    LatLng carlocation = new LatLng(0, 0);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,9 +43,13 @@ public class MapFragment extends Fragment {
             return null; //For if Google Services is missing
         }
         context = getActivity().getApplicationContext();
-        view = (RelativeLayout) inflater.inflate(R.layout.map_layout, container, false);
+        View view = inflater.inflate(R.layout.map_layout, container, false);
         latitude = 46.1;
         longitude = 19.67;
+        sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
+        double locationLat = Double.valueOf(sharedprefs.getString("parklocationLat", "0"));
+        double locationLon = Double.valueOf(sharedprefs.getString("parklocationLon", "0"));
+        carlocation = new LatLng(locationLat, locationLon);
 
         setUpMapIfNeeded(); // For setting up the MapFragment
 
@@ -64,7 +71,7 @@ public class MapFragment extends Fragment {
                 Log.i("Poly", poly[polynum]);
                 polynum++;
             }
-
+            d.close();
             Polygon polygons[] = new Polygon[polynum];
 
             for (int i = 0; i < polynum; i++) {
@@ -73,24 +80,24 @@ public class MapFragment extends Fragment {
                 Log.i("Poly", poly[i]);
                 String vertices[] = poly[i].split(",");
                 PolygonOptions polygon = new PolygonOptions();
-                for (int j = 0; j < vertices.length; j++) {
-                    String verticelatlng[] = vertices[j].split(" ");
+                for (String vertice : vertices) {
+                    String verticelatlng[] = vertice.split(" ");
                     polygon.add(new LatLng(Double.valueOf(verticelatlng[0]), Double.valueOf(verticelatlng[1])));
                     //Log.i("PolygonOptions",Double.toString(Double.valueOf(verticelatlng[0]))+", "+Double.toString(Double.valueOf(verticelatlng[1])));
                 }
                 int color = Color.RED;
                 switch (polycolor[i]) {
                     case 1:
-                        color = Color.RED;
+                        color = Color.argb(200, 183, 28, 28);
                         break;
                     case 2:
-                        color = Color.YELLOW;
+                        color = Color.argb(200, 255, 160, 0);
                         break;
                     case 3:
-                        color = Color.GREEN;
+                        color = Color.argb(200, 0, 121, 107);
                         break;
                     case 4:
-                        color = Color.BLUE;
+                        color = Color.argb(200, 1, 87, 155);
                         break;
                 }
                 polygon.strokeColor(color);
@@ -124,21 +131,37 @@ public class MapFragment extends Fragment {
     private void setUpMap() {
         // For showing a move to my loction button
         mMap.setMyLocationEnabled(true);
-        LatLng location = new LatLng(latitude,longitude);
+        //LatLng location = new LatLng(latitude,longitude);
+        LatLng location = ((MainActivity) getActivity()).parkHandler.getCurrentLocation();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,13f));
+
+        if (carlocation.latitude != 0 && carlocation.longitude != 0) {
+            Marker car = mMap.addMarker(new MarkerOptions()
+                    .position(carlocation)
+                    .title("Parked here")
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_directions_car_black_48dp)));
+        }
         getPolys();
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 ParkingDataHandler parkdata = new ParkingDataHandler(context);
                 int region = parkdata.getRegion(latLng.latitude,latLng.longitude);
-                MainActivity main = new MainActivity();
-                ((MainActivity)getActivity()).currentRegion = region;
+                ((MainActivity) getActivity()).changeRegion(region);
                 ((MainActivity)getActivity()).locationFound = true;
                 ((MainActivity)getActivity()).changeZone(parkdata.getZoneByRegion(region));
-                ((MainActivity)getActivity()).layoutHandler.updateLocationTextGps(((MainActivity) getActivity()));
+                ((MainActivity) getActivity()).locationLocked = true;
             }
         });
+    }
+
+    public void showCar() {
+        if (carlocation.latitude != 0 && carlocation.longitude != 0) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(carlocation, 16f));
+        } else {
+            Toast.makeText(context, "Car has not yet been parked!", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**** The mapfragment's id must be removed from the FragmentManager

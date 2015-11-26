@@ -1,14 +1,9 @@
 package com.awt.supark;
 
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
@@ -16,12 +11,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -35,42 +27,40 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.awt.supark.Model.Car;
-
-import org.apache.http.conn.scheme.HostNameResolver;
-
 public class MainActivity extends AppCompatActivity {
+    // Notification handler
+    private final Handler notificationResponse = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+
+            }
+        }
+    };
     // Layout
     boolean dimActive = false;  // Dim layers status
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;  // Is there any animation in progress
     int openedLayout = 0;  // ID of the current opened otherContent
-
     // Animation times in ms
     int layoutFadeOutDuration = 150;
     int layoutFadeInDuration = 150;
     int layoutPullUpDuration = 300;
     int smallButtonHighlightChangeDuration = 150;
-
     // Location
     boolean locationFound = false;  // True if the location has found by GPS signal
     boolean locationLocked = false;  // True if the location must not change anymore
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
-
     boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
-
     // String database
     String[] licenseNumberDb = {""};
-
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
     String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"};
-
     // Context
     Context cont;
-
     // Animation variables
     Animation anim_fade_in;
     Animation anim_fade_out;
@@ -84,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_blink;
     Animation anim_car_enter;
     Animation anim_car_leave;
-
     // UI elements
     ImageButton btnPark;
     AutoCompleteTextView licenseNumber;
@@ -100,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton btnCars;
     FloatingActionButton btnStatistics;
     FloatingActionButton btnEtc;
-
     // Layouts
     RelativeLayout backDimmer;
     FrameLayout otherContent;
@@ -108,26 +96,16 @@ public class MainActivity extends AppCompatActivity {
     TableRow tableRowTopHalf;
     LinearLayout parkingBackground;
     RelativeLayout wrapper;
-
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
-
     // Fragment manager
     FragmentManager fragmentManager;
-
+    Fragment fragment;
     // Parking Data handler
     ParkingDataHandler parkHandler;
     ParkingSmsSender smsHandler;
     NotificationHandler notificationHandler;
     LayoutHandler layoutHandler;
-    ZoneHandler zoneHandler;
-
-    //Activity if needed
-    MainActivity act = this;
-
-    // Edit Boolean
-    //boolean edit = false;
-
     // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
     // Zone finder handler
     private final Handler mHandler = new Handler() {
@@ -135,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0: // If a parking zone found
-                    if(!locationLocked) {
-                        currentRegion = msg.arg2;
+                    if (!locationLocked) {
+                        changeRegion(msg.arg2);
                         locationFound = true;
                         changeZone(msg.arg1);
                     }
@@ -155,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    // Edit Boolean
+    //boolean edit = false;
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
@@ -182,18 +162,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-    // Notification handler
-    private final Handler notificationResponse = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-
-            }
-        }
-    };
+    ZoneHandler zoneHandler;
+    //Activity if needed
+    MainActivity act = this;
 
     // -----------------------------------------------------------------------------------------------------------------
+    // ----------------------------- Set License to autoCorrect array--------------------------------
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -295,11 +270,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void parkingInit(String state) {
-        parkHandler.parkingInit(state,this);
+        parkHandler.parkingInit(state, this);
     }
 
     public void park(String action) {
-        parkHandler.park(action,this);
+        parkHandler.park(action, this);
     }
 
     public void parkingBackgroundShow() {
@@ -308,11 +283,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
-        layoutHandler.otherContentHandler(view,this);
+        layoutHandler.otherContentHandler(view, this);
     }
 
     public void smallButtonPressed(final View view) {
-        layoutHandler.smallButtonPressed(view,this);
+        layoutHandler.smallButtonPressed(view, this);
     }
 
     // Same as smallButtonPressed just backwards
@@ -322,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Every time the user press a zone changer button this will be called
     public void zoneChangeButtonPressed(View view) {
-        zoneHandler.zoneChangeButtonPressed(view,this);
+        zoneHandler.zoneChangeButtonPressed(view, this);
     }
 
     public void getGPSzone(View v){
@@ -330,13 +305,24 @@ public class MainActivity extends AppCompatActivity {
         locationLocked = false;
     }
 
+    public void changeRegion(int region) {
+        if (!locationLocked) {
+            currentRegion = region;
+            layoutHandler.updateLocationTextGps(this);
+        }
+    }
+
     // Zone updater
     public void changeZone(int zone) {
-        currentZone = zone;
-        layoutHandler.colorSwitch(currentZone, this);
-        layoutHandler.activeZoneButton(zone, this);
-        layoutHandler.updateLocationTextGps(this);
-        Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
+        if (!locationLocked) {
+            if (currentZone != zone) {
+                currentZone = zone;
+                layoutHandler.colorSwitch(currentZone, this);
+                layoutHandler.activeZoneButton(zone, this);
+                layoutHandler.updateLocationTextGps(this);
+                Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
+            }
+        }
     }
 
     // Android back key function
@@ -359,45 +345,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void openAddCarFragment(final View view){
+    public void openAddCarFragment(final View view) {
         Bundle args = new Bundle();
         args.putInt("editid", -1);
-        Fragment fragment = new EditCar();
-        if (fragment != null) {
-            fragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.otherContent, fragment);
-            fragmentTransaction.commit();
-        }
+        fragment = new EditCar();
+        fragment.setArguments(args);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.otherContent, fragment);
+        fragmentTransaction.commit();
+
     }
 
-    public void openCarFragment(final View view, int editid){
+    public void openCarFragment(final View view, int editid) {
         Bundle args = new Bundle();
         args.putInt("editid", editid);
-        Fragment fragment = new EditCar();
-        if(editid == -1) {
+        fragment = new EditCar();
+        if (editid == -1) {
             fragment = new CarsFragment();
         }
-        if (fragment != null) {
-            fragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.otherContent, fragment);
-            fragmentTransaction.commit();
-        }
+        fragment.setArguments(args);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.otherContent, fragment);
+        fragmentTransaction.commit();
+
     }
 
-    public void openCarFragment(final View view){
-        Fragment fragment;
+    public void openCarFragment(final View view) {
         fragment = new CarsFragment();
-        if (fragment != null) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.otherContent, fragment);
-            fragmentTransaction.commit();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.otherContent, fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    public void showParkedCar(final View view) {
+        if (openedLayout == R.id.buttonMap) {
+            MapFragment fragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.otherContent);
+            fragment.showCar();
         }
     }
 
-    // ----------------------------- Set License to autoCorrect array--------------------------------
-    SQLiteDatabase db;
     public void setLicenseToArray(){
 
         db = SQLiteDatabase.openDatabase(this.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
@@ -411,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
         int numberOfCars;
 
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
-        String[] cars = new String[d.getCount()];
         numberOfCars = d.getCount();
         Log.i("Number",Integer.toString(numberOfCars));
         if(numberOfCars > 0) {
@@ -423,9 +409,10 @@ public class MainActivity extends AppCompatActivity {
                 i++;
             }
         }
+        d.close();
 
         // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
-        licenseNumberDbAdapter = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item, licenseNumberDb);
+        licenseNumberDbAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, licenseNumberDb);
         licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
         licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
         licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter

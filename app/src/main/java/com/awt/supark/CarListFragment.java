@@ -12,9 +12,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
+
 import com.awt.supark.Adapter.CarListAdapter;
 import com.awt.supark.Model.Car;
 
@@ -23,9 +24,9 @@ import java.util.ArrayList;
 
 public class CarListFragment extends Fragment {
 
+    public ArrayList<Car> carArray = new ArrayList<>();
     View view;
     ListView listview;
-    public ArrayList<Car> carArray = new ArrayList<>();
     CarListAdapter adapter;
     SQLiteDatabase db;
 
@@ -61,6 +62,7 @@ public class CarListFragment extends Fragment {
 
             carArray.add(car);
         }
+        d.close();
 
         // List adapter
         adapter = new CarListAdapter(getActivity(), carArray);

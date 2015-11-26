@@ -7,7 +7,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 
 /**
- * Created by docto on 24/11/2015.
+ * Created by doctor on 24/11/2015.
  */
 public class LayoutHandler {
     Context context;
@@ -103,29 +102,35 @@ public class LayoutHandler {
     }
 
     public void updateLocationTextGps(final MainActivity act) {
-        if(act.locationFound) {
-            //act.imageLocation.clearAnimation();  // Stops the blinking GPS image
-            switch(act.currentZone) {
-                case 0:
-                    act.locationInfo.setText(act.getResources().getString(R.string.nozone_auto));
-                    break;
-                case 1:
-                    act.locationInfo.setText(act.getResources().getString(R.string.zone1auto));
-                    break;
-                case 2:
-                    act.locationInfo.setText(act.getResources().getString(R.string.zone2auto));
-                    break;
-                case 3:
-                    act.locationInfo.setText(act.getResources().getString(R.string.zone3auto));
-                    break;
-                case 4:
-                    act.locationInfo.setText(act.getResources().getString(R.string.zone4auto));
-                    break;
+        if (!act.locationLocked) {
+            if (act.locationFound) {
+                act.imageLocation.clearAnimation();  // Stops the blinking GPS image
+                String text = "";
+                switch (act.currentZone) {
+                    case 0:
+                        text = act.getResources().getString(R.string.nozone_auto);
+                        break;
+                    case 1:
+                        text = act.getResources().getString(R.string.zone1auto);
+                        break;
+                    case 2:
+                        text = act.getResources().getString(R.string.zone2auto);
+                        break;
+                    case 3:
+                        text = act.getResources().getString(R.string.zone3auto);
+                        break;
+                    case 4:
+                        text = act.getResources().getString(R.string.zone4auto);
+                        break;
+                }
+                if (act.currentZone > 0) {
+                    text = text + "\n" + act.parkHandler.getRegionName(act.currentRegion);
+                }
+                act.locationInfo.setText(text);
+            } else {
+                act.imageLocation.startAnimation(act.anim_blink);
+                act.locationInfo.setText(act.getResources().getString(R.string.locating));
             }
-        }
-        else {
-            act.imageLocation.startAnimation(act.anim_blink);
-            act.locationInfo.setText(act.getResources().getString(R.string.locating));
         }
     }
 
@@ -150,28 +155,26 @@ public class LayoutHandler {
     }
 
     public void otherContentHandler(View view, final MainActivity act) {
-        Fragment fragment = null;
-
         // Gets the pressed buttons ID
         switch (view.getId()) {
             case R.id.buttonMap:
-                fragment = new MapFragment();
+                act.fragment = new MapFragment();
                 break;
             case R.id.buttonStatistics:
-                fragment = new StatsFragment();
+                act.fragment = new StatsFragment();
                 break;
             case R.id.buttonCars:
-                fragment = new CarsFragment();
+                act.fragment = new CarsFragment();
                 break;
             case R.id.buttonEtc:
-                fragment = new EtcFragment();
+                act.fragment = new EtcFragment();
                 break;
         }
 
         // If there's no fragment
-        if (fragment != null) {
+        if (act.fragment != null) {
             FragmentTransaction fragmentTransaction = act.fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.otherContent, fragment);
+            fragmentTransaction.replace(R.id.otherContent, act.fragment);
             fragmentTransaction.commit();
             act.openedLayout = view.getId();
             //edit = false;

@@ -6,24 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 /**
@@ -31,7 +25,8 @@ import android.widget.TextView;
  */
 public class StatsFragment extends Fragment {
     View view;
-
+    Context context;
+    SQLiteDatabase db;
     private final Handler statsHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -45,9 +40,6 @@ public class StatsFragment extends Fragment {
             }
         }
     };
-
-    Context context;
-    SQLiteDatabase db;
 
     @Nullable
     @Override
@@ -66,6 +58,7 @@ public class StatsFragment extends Fragment {
     public void printStats(){
         try {
             // dani baszki how dis works?
+            // database stuff from here
             db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
             Cursor d = db.rawQuery("SELECT * FROM regions", null);
             String[] regionname = new String[d.getCount()];
@@ -84,22 +77,25 @@ public class StatsFragment extends Fragment {
                 currentparked[regionnum] = d.getInt(currentindex);
                 regionnum++;
             }
+            d.close();
+            // to here
             getActivity().findViewById(R.id.loading).setVisibility(View.GONE);
             LinearLayout content = (LinearLayout)getActivity().findViewById(R.id.contentlayout);
-            for(int i = 0; i < regionnum; i++){
-                LinearLayout layout = new LinearLayout(context);
-                layout.setLayoutParams(new ActionBar.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                View inflate = getActivity().getLayoutInflater().inflate(R.layout.stat_item_template,layout);
+            for (int i = 0; i < regionnum; i++) { //for every region
+                LinearLayout layout = new LinearLayout(context); //creating new LinearLayout
+                layout.setLayoutParams(new ActionBar.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)); //With these params
+                View inflate = getActivity().getLayoutInflater().inflate(R.layout.stat_item_template, layout); //Inflates stat_item_template layout to the newly created LinearLayout
+                //From here
                 TextView regionnametext = (TextView)inflate.findViewById(R.id.regionname);
                 regionnametext.setText(regionname[i]);
                 double ratio = (maxparked[i] == 0 ? 0 : ((double)currentparked[i] / (double)maxparked[i])*100);
                 TextView statustext = (TextView)inflate.findViewById(R.id.regionstatus);
-                statustext.setText(String.format("%.2f",ratio));
+                statustext.setText(String.format("%.2f", ratio)); // sets precision of double to 2 digit after ,
                 ProgressBar bar = (ProgressBar)inflate.findViewById(R.id.progressBar);
                 bar.setProgress((int) ratio);
                 int green = (int)(255-(ratio*2.55));
                 int red = (int)(ratio*2.55);
-                bar.getIndeterminateDrawable().setColorFilter(Color.argb(255, red, green,0), PorterDuff.Mode.MULTIPLY);
+                bar.getIndeterminateDrawable().setColorFilter(Color.argb(255, red, green, 0), PorterDuff.Mode.MULTIPLY); //This doesn't work right
                 ImageView zone = (ImageView)inflate.findViewById(R.id.zoneimg);
                 switch (zoneid[i]){
                     case 1: zone.setImageResource(R.drawable.zone1low); break;
@@ -107,8 +103,9 @@ public class StatsFragment extends Fragment {
                     case 3: zone.setImageResource(R.drawable.zone3low); break;
                     case 4: zone.setImageResource(R.drawable.zone4low); break;
                 }
-                Log.i(regionname[i],Double.toString(ratio)+" - "+Integer.toString(red) + "/" + Integer.toString(green));
-                content.addView(layout);
+                //To here, it's just modifying the template layout to match region info
+
+                content.addView(layout); // Adds the new LinearLayout with modified info to stat content.
             }
 
         }catch (Exception e){

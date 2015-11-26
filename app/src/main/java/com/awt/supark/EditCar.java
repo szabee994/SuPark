@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +45,7 @@ public class EditCar extends Fragment {
             deleteButton.setVisibility(View.VISIBLE);
             TextView text = (TextView)view.findViewById(R.id.text1);
             text.setText("Edit car");
+            d.close();
         }
 
         addCarButton.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +55,7 @@ public class EditCar extends Fragment {
                     AddCar(v);
                 }
                 else {
-                    EditCar(v);
+                    editCar(v);
                 }
             }
         });
@@ -81,6 +81,7 @@ public class EditCar extends Fragment {
         // Opening database
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
         numberOfCars = d.getCount();
+        d.close();
 
         // Setting values
         ContentValues values_temp = new ContentValues();
@@ -94,7 +95,7 @@ public class EditCar extends Fragment {
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 
-    public void EditCar(View v) {
+    public void editCar(View v) {
         // Setting values
         ContentValues values_temp = new ContentValues();
         values_temp.put("car_name", carName.getText().toString());
