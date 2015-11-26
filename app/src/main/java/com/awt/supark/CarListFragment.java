@@ -41,7 +41,7 @@ public class CarListFragment extends Fragment {
         db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
                 "  `car_id` int(2) NOT NULL ,\n" +
                 "  `car_name` varchar(100) NOT NULL,\n" +
-                "  `car_license` varchar(100) NOT NULL,\n" +
+                "  `car_license` varchar(100) NOT NULL,\n" +  // TODO: csináld meg hallod csináljad
                 "  PRIMARY KEY (`car_id`)\n" +
                 ")");
 

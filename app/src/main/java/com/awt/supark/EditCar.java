@@ -183,7 +183,7 @@ public class EditCar extends Fragment {
         }
     }
 
-    public void DeleteCar(View v){
+    public void DeleteCar(View v) {
         db.delete("cars","car_id = " + editid,null);
         ((MainActivity)getActivity()).setLicenseToArray();
         ((MainActivity)getActivity()).openCarFragment(v, -1);
