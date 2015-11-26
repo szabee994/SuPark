@@ -12,9 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.awt.supark.Adapter.CarListAdapter;
 import com.awt.supark.Model.Car;
@@ -38,12 +36,6 @@ public class CarListFragment extends Fragment {
 
         // Creating database if it's not exist yet
         db = SQLiteDatabase.openDatabase(getContext().getFilesDir().getPath()+"/carDB.db",null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
-                "  `car_id` int(2) NOT NULL ,\n" +
-                "  `car_name` varchar(100) NOT NULL,\n" +
-                "  `car_license` varchar(100) NOT NULL,\n" +  // TODO: csináld meg hallod csináljad
-                "  PRIMARY KEY (`car_id`)\n" +
-                ")");
 
 
         //------------------------ Creating the car list ---------------------------
@@ -72,14 +64,6 @@ public class CarListFragment extends Fragment {
         listview.setDividerHeight(0);
 
         listview.setAdapter(adapter);
-
-        // Never worked lol
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), String.valueOf(position), Toast.LENGTH_LONG).show();
-            }
-        });
 
         return view;
     }

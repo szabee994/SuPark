@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by Mark on 2015.11.09
@@ -72,10 +70,17 @@ public class EditCar extends Fragment {
             d.moveToFirst();
 
             carName.setText(d.getString(d.getColumnIndex("car_name")));
-
             licenseNum = d.getString(d.getColumnIndex("car_license"));
             carLicense.setText(licenseNum);
-            updateLicensePlate(licenseNum);
+            if (d.getInt(d.getColumnIndex("isgeneric")) == 0) {
+                radioNewSrb.setChecked(true);
+                radioGeneric.setChecked(false);
+                radioListener();
+            } else {
+                radioGeneric.setChecked(true);
+                radioNewSrb.setChecked(false);
+                radioListener();
+            }
 
             deleteButton.setVisibility(View.VISIBLE);
             TextView text = (TextView)view.findViewById(R.id.text1);
@@ -101,7 +106,7 @@ public class EditCar extends Fragment {
                 DeleteCar(v);
             }
         });
-        updateLicensePlate(licenseNum);
+
 
         // License number filler
         carLicense.addTextChangedListener(new TextWatcher() {
@@ -125,28 +130,31 @@ public class EditCar extends Fragment {
         radioLicenseGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if(radioNewSrb.isChecked()) {
-                    txtCity.setVisibility(View.VISIBLE);
-                    licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate));
-
-                    updateLicensePlate(licenseNum);
-                    txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(7)});
-                    carLicense.setFilters(new InputFilter[] {new InputFilter.LengthFilter(8)});
-                }
-                else if (radioGeneric.isChecked()) {
-                    txtCity.setVisibility(View.GONE);
-                    licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate2));
-
-                    // Reset
-                    txtCity.setText("");
-                    updateLicensePlate(licenseNum);
-                    txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
-                    carLicense.setFilters(new InputFilter[] {new InputFilter.LengthFilter(12)});
-                }
+                radioListener();
             }
         });
 
         return view;
+    }
+
+    public void radioListener() {
+        if (radioNewSrb.isChecked()) {
+            txtCity.setVisibility(View.VISIBLE);
+            licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate));
+
+            updateLicensePlate(licenseNum);
+            txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(7)});
+            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
+        } else if (radioGeneric.isChecked()) {
+            txtCity.setVisibility(View.GONE);
+            licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate2));
+
+            // Reset
+            txtCity.setText("");
+            updateLicensePlate(licenseNum);
+            txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+        }
     }
 
     public void updateLicensePlate(CharSequence charSequence) {
@@ -202,6 +210,13 @@ public class EditCar extends Fragment {
         values_temp.put("car_id", numberOfCars + 1);
         values_temp.put("car_name", carName.getText().toString());
         values_temp.put("car_license", carLicense.getText().toString());
+        int generic;
+        if (radioNewSrb.isChecked()) {
+            generic = 0;
+        } else {
+            generic = 1;
+        }
+        values_temp.put("isgeneric", generic);
 
         // Inserting the new database record
         db.insert("cars", null, values_temp);
@@ -214,6 +229,13 @@ public class EditCar extends Fragment {
         ContentValues values_temp = new ContentValues();
         values_temp.put("car_name", carName.getText().toString());
         values_temp.put("car_license", carLicense.getText().toString());
+        int generic;
+        if (radioNewSrb.isChecked()) {
+            generic = 0;
+        } else {
+            generic = 1;
+        }
+        values_temp.put("isgeneric", generic);
 
         // Inserting the new database record
         db.update("cars", values_temp, "car_id = " + editid, null);

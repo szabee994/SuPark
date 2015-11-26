@@ -104,7 +104,7 @@ public class LayoutHandler {
     public void updateLocationTextGps(final MainActivity act) {
         if (!act.locationLocked) {
             if (act.locationFound) {
-                act.imageLocation.clearAnimation();  // Stops the blinking GPS image
+                //act.imageLocation.clearAnimation();  // Stops the blinking GPS image
                 String text = "";
                 switch (act.currentZone) {
                     case 0:

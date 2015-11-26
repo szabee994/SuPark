@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case 0: // If a parking zone found
                     if (!locationLocked) {
+                        locationFound = true;
                         changeRegion(msg.arg2);
                         changeZone(msg.arg1);
                     }
@@ -314,13 +315,11 @@ public class MainActivity extends AppCompatActivity {
     // Zone updater
     public void changeZone(int zone) {
         if (!locationLocked) {
-            if (currentZone != zone) {
-                currentZone = zone;
-                layoutHandler.colorSwitch(currentZone, this);
-                layoutHandler.activeZoneButton(zone, this);
-                layoutHandler.updateLocationTextGps(this);
-                Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
-            }
+            currentZone = zone;
+            layoutHandler.colorSwitch(currentZone, this);
+            layoutHandler.activeZoneButton(zone, this);
+            layoutHandler.updateLocationTextGps(this);
+            Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
         }
     }
 
@@ -391,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
                 "  `car_id` int(2) NOT NULL ,\n" +
                 "  `car_name` varchar(100) NOT NULL,\n" +
                 "  `car_license` varchar(100) NOT NULL,\n" +
+                "  `isgeneric` int(1) NOT NULL,\n" +
                 "  PRIMARY KEY (`car_id`)\n" +
                 ")");
 
