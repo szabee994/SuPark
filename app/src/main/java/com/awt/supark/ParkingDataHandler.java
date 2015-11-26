@@ -411,7 +411,11 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public LatLng getCurrentLocation() {
-        return new LatLng(currloc.getLatitude(), currloc.getLongitude());
+        if (currloc != null) {
+            return new LatLng(currloc.getLatitude(), currloc.getLongitude());
+        } else {
+            return new LatLng(0, 0);
+        }
     }
 
     //Method to be called from MainActivity
@@ -422,7 +426,9 @@ public class ParkingDataHandler implements LocationListener{
             Log.i("Polys","loaded");
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             Criteria crit = new Criteria();
-            crit.setAccuracy(Criteria.ACCURACY_FINE);
+            crit.setAccuracy(Criteria.ACCURACY_COARSE);
+            crit.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+            crit.setVerticalAccuracy(Criteria.ACCURACY_LOW);
             String best = locationManager.getBestProvider(crit, true);
             try {
                 location = locationManager.getLastKnownLocation(best);

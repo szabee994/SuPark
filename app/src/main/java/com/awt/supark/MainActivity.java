@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 case 0: // If a parking zone found
                     if (!locationLocked) {
                         changeRegion(msg.arg2);
-                        locationFound = true;
                         changeZone(msg.arg1);
                     }
                     break;
