@@ -26,7 +26,6 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.animation.Animator;
 
 public class MainActivity extends AppCompatActivity {
     // Notification handler
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     int layoutFadeOutDuration = 150;
     int layoutFadeInDuration = 150;
     int layoutPullUpDuration = 300;
-    int smallButtonHighlightChangeDuration = 150;
+    int smallButtonHighlightChangeDuration = 100;
     // Location
     boolean locationFound = false;  // True if the location has found by GPS signal
     boolean locationLocked = false;  // True if the location must not change anymore
@@ -75,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_blink;
     Animation anim_car_enter;
     Animation anim_car_leave;
+    Animation anim_empty;
+
     // UI elements
     ImageButton btnPark;
     AutoCompleteTextView licenseNumber;
@@ -190,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
         anim_car_enter = AnimationUtils.loadAnimation(this, R.anim.car_enter);
         anim_car_leave = AnimationUtils.loadAnimation(this, R.anim.car_leave);
+        anim_empty = AnimationUtils.loadAnimation(this, R.anim.empty);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
