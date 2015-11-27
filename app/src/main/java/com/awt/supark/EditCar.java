@@ -168,7 +168,8 @@ public class EditCar extends Fragment {
                 txtCity.setText(charSequence.subSequence(0, 2));
 
                 if (charSequence.length() > 5) {
-                    txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2, charSequence.length()));
+                    txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
+                            charSequence.length()));
                 } else if (charSequence.length() > 2) {
                     txtNum.setText(charSequence.subSequence(2, charSequence.length()));
                 } else {
