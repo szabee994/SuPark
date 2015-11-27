@@ -276,8 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
         layoutHandler.activeZoneButton(0, act);
         if (autoLoc) {
-            parkHandler.getZone();  // Gets zone info
-            layoutHandler.updateLocationTextGps(act);
+            getGPSzone(null);
         } else {
             currentZone = 0;
             layoutHandler.updateLocationTextButton(act);
@@ -374,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Edit car
-    public void openCarFragment(final View view, int editid) {
+    public void openCarFragment(View view, int editid) {
         Bundle args = new Bundle();
         args.putInt("editid", editid);
         fragment = new EditCar();
@@ -395,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Back
-    public void openCarFragment(final View view) {
+    public void openCarFragment(View view) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
@@ -413,12 +412,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void autoLocListener(View v) {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
-        sharedprefs.edit().putBoolean("autoloc", fragment.autoLoc.isChecked()).commit();
+        sharedprefs.edit().putBoolean("autoloc", fragment.autoLoc.isChecked()).apply();
+        autoLoc = fragment.autoLoc.isChecked();
     }
 
     public void lastLicenseListener(View v) {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
-        sharedprefs.edit().putBoolean("lastlicenseremember", fragment.lastLicense.isChecked()).commit();
+        sharedprefs.edit().putBoolean("lastlicenseremember", fragment.lastLicense.isChecked()).apply();
+        lastLicense = fragment.lastLicense.isChecked();
     }
 
     public void setLicenseToArray(){
@@ -458,5 +459,25 @@ public class MainActivity extends AppCompatActivity {
             licenseNumber.setText(sharedprefs.getString("lastlicense", ""));
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        if (parkHandler.locationManager != null) {
+            try {
+                parkHandler.locationManager.removeUpdates(parkHandler);
+            } catch (SecurityException e) {
+                Log.i("SecExp", e.toString());
+            }
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (autoLoc) {
+            parkHandler.getZone();
+        }
+        super.onResume();
     }
 }

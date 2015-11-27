@@ -669,7 +669,7 @@ public class ParkingDataHandler implements LocationListener{
                     SharedPreferences.Editor editor = sharedprefs.edit();
                     editor.putInt("lastupdate", lastupd);
                     editor.commit();
-                    getZone();
+                    //getZone();
                     lastupdate = sharedprefs.getInt("lastupdate",0);
                 }else if(data.has("regionstats")) {
                     JSONArray regions = data.getJSONArray("regionstats");
