@@ -41,6 +41,37 @@
                 android:paddingLeft="@dimen/activity_vertical_margin"
                 android:paddingRight="@dimen/activity_vertical_margin">
 
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.6"
+                    android:background="#1c000000"
+                    android:layout_marginTop="5dp"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/textViewLocationInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:text="locationInfo"
+                        android:textAlignment="gravity"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:layout_weight="1"
+                        android:gravity="center|left" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="parkingPrice"
+                        android:id="@+id/textViewZonePrice"
+                        android:layout_weight="0.6"
+                        android:textAlignment="gravity"
+                        android:gravity="center|right" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/textWelcome"
                     android:layout_width="wrap_content"
@@ -49,7 +80,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:text="@string/home_text"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -69,15 +100,6 @@
                         android:singleLine="true" />
 
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textViewLocationInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="locationInfo"
-                    android:textAlignment="center"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <ImageButton
                     android:id="@+id/buttonPark"

@@ -62,6 +62,7 @@ public class LayoutHandler {
                 act.locationInfo.setText(act.getResources().getString(R.string.zone4selected));
                 break;
         }
+        updateZonePrice(act);
         act.locationLocked = true;
     }
 
@@ -128,12 +129,31 @@ public class LayoutHandler {
                 }
                 if (act.currentZone > 0) {
                     text = text + ": " + act.parkHandler.getRegionName(act.currentRegion);
+                    updateZonePrice(act);
                 }
                 act.locationInfo.setText(text);
             } else {
                 act.imageLocation.startAnimation(act.anim_blink);
                 act.locationInfo.setText(act.getResources().getString(R.string.locating));
             }
+        }
+    }
+
+    public void updateZonePrice(final MainActivity act) {
+        String unit;
+
+        if (act.currentZone == 3) {
+            unit = act.getResources().getString(R.string.day);
+        }
+        else {
+            unit = act.getResources().getString(R.string.hour);
+        }
+
+        if (act.currentZone < 1) {
+            act.zonePrice.setText("");
+        }
+        else {
+            act.zonePrice.setText(Float.toString(act.zonePriceDb[act.currentZone - 1]) + " rsd/" + unit);
         }
     }
 
