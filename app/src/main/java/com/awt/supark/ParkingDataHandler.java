@@ -296,12 +296,9 @@ public class ParkingDataHandler implements LocationListener{
             region = new int[d.getCount()];
             polyLoc = new ArrayList[d.getCount()];
             for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-                int regionidindex = d.getColumnIndex("region_id");
-                int polyindex = d.getColumnIndex("location_poly");
-                int zoneindex = d.getColumnIndex("zone_id");
-                poly[polynum] = d.getString(polyindex);
-                polyzone[polynum] = d.getInt(zoneindex);
-                region[polynum] = d.getInt(regionidindex);
+                poly[polynum] = d.getString(d.getColumnIndex("location_poly"));
+                polyzone[polynum] = d.getInt(d.getColumnIndex("zone_id"));
+                region[polynum] = d.getInt(d.getColumnIndex("region_id"));
                 polynum++;
             }
             d.close();
@@ -409,6 +406,16 @@ public class ParkingDataHandler implements LocationListener{
         }
         d.close();
         return name;
+    }
+
+    public double getZonePrice(int zone) {
+        double price = 0;
+        Cursor d = db.rawQuery("SELECT priceperhour FROM zones WHERE zone_id = " + zone, null);
+        if (d.getCount() > 0) {
+            d.moveToFirst();
+            price = d.getDouble(d.getColumnIndex("priceperhour"));
+        }
+        return price;
     }
 
     public LatLng getCurrentLocation() {

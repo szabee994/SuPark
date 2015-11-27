@@ -142,7 +142,7 @@ public class LayoutHandler {
     public void updateZonePrice(final MainActivity act) {
         String unit;
 
-        if (act.currentZone == 3) {
+        if (act.currentZone == 3 || act.currentZone > 4) {
             unit = act.getResources().getString(R.string.day);
         }
         else {
@@ -153,7 +153,7 @@ public class LayoutHandler {
             act.zonePrice.setText("");
         }
         else {
-            act.zonePrice.setText(Float.toString(act.zonePriceDb[act.currentZone - 1]) + " rsd/" + unit);
+            act.zonePrice.setText(Double.toString(act.parkHandler.getZonePrice(act.currentZone)) + " RSD/" + unit);
         }
     }
 

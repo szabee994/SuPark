@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
-    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"};
-    float[] zonePriceDb = {38.94f, 29.47f, 82.10f, 20.42f};
+    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB
+    //float[] zonePriceDb = {38.94f, 29.47f, 82.10f, 20.42f}; -- now read from DD
 
     // Context
     Context cont;
