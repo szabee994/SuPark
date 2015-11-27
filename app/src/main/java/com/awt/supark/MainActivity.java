@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     int layoutFadeOutDuration = 150;
     int layoutFadeInDuration = 150;
     int layoutPullUpDuration = 300;
-    int smallButtonHighlightChangeDuration = 100;
+    int smallButtonHighlightChangeDuration = 150;
     // Location
     boolean locationFound = false;  // True if the location has found by GPS signal
     boolean locationLocked = false;  // True if the location must not change anymore
@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_blink;
     Animation anim_car_enter;
     Animation anim_car_leave;
-    Animation anim_empty;
-
     // UI elements
     ImageButton btnPark;
     AutoCompleteTextView licenseNumber;
@@ -191,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
         anim_car_enter = AnimationUtils.loadAnimation(this, R.anim.car_enter);
         anim_car_leave = AnimationUtils.loadAnimation(this, R.anim.car_leave);
-        anim_empty = AnimationUtils.loadAnimation(this, R.anim.empty);
 
         // UI elements
         btnPark = (ImageButton) findViewById(R.id.buttonPark);
@@ -352,7 +349,6 @@ public class MainActivity extends AppCompatActivity {
         fragment = new EditCar();
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
@@ -367,12 +363,6 @@ public class MainActivity extends AppCompatActivity {
         }
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (editid == -1) {
-            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
-        }
-        else {
-            fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
-        }
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
@@ -381,7 +371,6 @@ public class MainActivity extends AppCompatActivity {
     public void openCarFragment(final View view) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
@@ -429,5 +418,3 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
-
-//lel
