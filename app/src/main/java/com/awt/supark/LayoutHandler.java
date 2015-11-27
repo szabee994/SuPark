@@ -413,7 +413,7 @@ public class LayoutHandler {
                 act.animInProgress = false;
                 FragmentTransaction transaction = act.fragmentManager.beginTransaction();
                 transaction.remove(act.fragmentManager.findFragmentById(R.id.otherContent));
-                transaction.commit();
+                transaction.commitAllowingStateLoss();
             }
 
             @Override
