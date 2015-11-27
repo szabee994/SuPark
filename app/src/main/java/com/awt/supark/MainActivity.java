@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_blink;
     Animation anim_car_enter;
     Animation anim_car_leave;
+
     // UI elements
     ImageButton btnPark;
     AutoCompleteTextView licenseNumber;
@@ -343,17 +344,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // New car
     public void openAddCarFragment(final View view) {
         Bundle args = new Bundle();
         args.putInt("editid", -1);
         fragment = new EditCar();
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
     }
 
+    // Edit car
     public void openCarFragment(final View view, int editid) {
         Bundle args = new Bundle();
         args.putInt("editid", editid);
@@ -363,14 +367,22 @@ public class MainActivity extends AppCompatActivity {
         }
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (editid == -1) {
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
+        }
+        else {
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
+        }
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 
     }
 
+    // Back
     public void openCarFragment(final View view) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 

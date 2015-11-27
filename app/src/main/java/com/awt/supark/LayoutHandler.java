@@ -124,7 +124,7 @@ public class LayoutHandler {
                         break;
                 }
                 if (act.currentZone > 0) {
-                    text = text + "\n" + act.parkHandler.getRegionName(act.currentRegion);
+                    text = text + ": " + act.parkHandler.getRegionName(act.currentRegion);
                 }
                 act.locationInfo.setText(text);
             } else {
