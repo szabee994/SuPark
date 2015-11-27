@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -172,8 +173,9 @@ public class LayoutHandler {
 
 
         if (act.fragment != null) {
+            Log.i("Layout", "Fragment loading");
             FragmentTransaction fragmentTransaction = act.fragmentManager.beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein2, R.anim.fragment_fadeout2);
+            //fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein2, R.anim.fragment_fadeout2);
             fragmentTransaction.replace(R.id.otherContent, act.fragment);
             fragmentTransaction.commit();
             act.openedLayout = view.getId();
@@ -255,7 +257,7 @@ public class LayoutHandler {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             act.otherContentHandler(view); // Takes care of including new views
-                            //act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Animates the new activity
+                            act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Animates the new activity
                             act.pullUp = true; // Changing the pull up status indicator
                             act.pullUpStarted = false;
                         }
@@ -304,7 +306,7 @@ public class LayoutHandler {
                 }
             });
             animation.start();
-
+            /*
             animation.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animator) {
@@ -314,7 +316,7 @@ public class LayoutHandler {
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     act.otherContentHandler(view);  // Switches the layout to the new one
-                    //act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Fades in the new layout
+                    act.otherContent.startAnimation(act.anim_slide_up_fade_in); // Fades in the new layout
                     act.pullUpStarted=false;
                 }
 
@@ -327,11 +329,11 @@ public class LayoutHandler {
                 public void onAnimationRepeat(Animator animator) {
 
                 }
-            });
+            });*/
 
             // Fades out current layout
-            /*act.otherContent.startAnimation(act.anim_fade_out);
-            animation.setAnimationListener(new Animation.AnimationListener() {
+            act.otherContent.startAnimation(act.anim_fade_out);
+            act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
@@ -348,7 +350,7 @@ public class LayoutHandler {
                 public void onAnimationRepeat(Animation animation) {
 
                 }
-            });*/
+            });
         }
     }
 
