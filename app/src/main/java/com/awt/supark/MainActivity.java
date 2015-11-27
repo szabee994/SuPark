@@ -58,13 +58,18 @@ public class MainActivity extends AppCompatActivity {
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
     boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
+
     // String database
     String[] licenseNumberDb = {""};
+
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
     String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"};
+    float[] zonePriceDb = {38.94f, 29.47f, 82.10f, 20.42f};
+
     // Context
     Context cont;
+
     // Animation variables
     Animation anim_fade_in;
     Animation anim_fade_out;
@@ -94,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton btnCars;
     FloatingActionButton btnStatistics;
     FloatingActionButton btnEtc;
+    TextView zonePrice;
+
     // Layouts
     RelativeLayout backDimmer;
     FrameLayout otherContent;
@@ -101,11 +108,14 @@ public class MainActivity extends AppCompatActivity {
     TableRow tableRowTopHalf;
     LinearLayout parkingBackground;
     RelativeLayout wrapper;
+
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
+
     // Fragment manager
     FragmentManager fragmentManager;
     Fragment fragment;
+
     // Parking Data handler
     ParkingDataHandler parkHandler;
     ParkingSmsSender smsHandler;
@@ -210,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         btnStatistics = (FloatingActionButton) findViewById(R.id.buttonStatistics);
         btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
         btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
+        zonePrice = (TextView) findViewById(R.id.textViewZonePrice);
 
         // Layouts
         backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
