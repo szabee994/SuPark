@@ -46,6 +46,9 @@ public class LayoutHandler {
 
     public void updateLocationTextButton(final MainActivity act) {
         switch(act.currentZone) {
+            case 0:
+                act.locationInfo.setText(act.getResources().getString(R.string.selectzone));
+                break;
             case 1:
                 act.locationInfo.setText(act.getResources().getString(R.string.zone1selected));
                 break;

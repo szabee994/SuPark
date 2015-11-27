@@ -10,10 +10,11 @@
 
     <!-- Zone/Location selector stuff -->
     <string name="locating">Locating in progress...</string>
-    <string name="zone1auto">Zone 1</string>
-    <string name="zone2auto">Zone 2</string>
-    <string name="zone3auto">Zone 3</string>
-    <string name="zone4auto">Zone 4</string>
+    <string name="selectzone">Please select zone</string>
+    <string name="zone1auto">You are in Zone 1</string>
+    <string name="zone2auto">You are in Zone 2</string>
+    <string name="zone3auto">You are in Zone 3</string>
+    <string name="zone4auto">You are in Zone 4</string>
     <string name="nozone_auto">You\'re not in any parking zones</string>
     <string name="zone1selected">You have selected Zone 1</string>
     <string name="zone2selected">You have selected Zone 2</string>

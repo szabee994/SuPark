@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/wrapper">
+    android:id="@+id/wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollContainer"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="@dimen/standardFragmentPadding"
         android:paddingLeft="@dimen/standardFragmentPadding"
-        android:paddingRight="@dimen/standardFragmentPadding"
-        android:paddingBottom="@dimen/standardFragmentPadding">
+        android:paddingRight="@dimen/standardFragmentPadding">
 
 
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/container"
-            android:nestedScrollingEnabled="false">
+            android:nestedScrollingEnabled="false"
+            android:orientation="vertical">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardViewLanguage"
@@ -48,41 +48,41 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
                             android:text="@string/settings_title_languages"
-                            android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse"
                             android:textStyle="bold"
-                            android:layout_marginBottom="10dp" />
+                            android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse" />
 
                         <RadioGroup
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
 
                             <RadioButton
+                                android:id="@+id/radioButtonAutomatic"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/settings_phones_lang"
-                                android:id="@+id/radioButtonAutomatic"
                                 android:textColor="#000000" />
 
                             <RadioButton
+                                android:id="@+id/radioButtonSerbian"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/settings_serbian"
-                                android:id="@+id/radioButtonSerbian"
                                 android:textColor="#000000" />
 
                             <RadioButton
+                                android:id="@+id/radioButtonHungarian"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/settings_hungarian"
-                                android:id="@+id/radioButtonHungarian"
                                 android:textColor="#000000" />
 
                             <RadioButton
+                                android:id="@+id/radioButtonEnglish"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/settings_english"
-                                android:id="@+id/radioButtonEnglish"
                                 android:textColor="#000000" />
                         </RadioGroup>
 
@@ -94,6 +94,7 @@
                 android:id="@+id/cardGeneral"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
                 android:background="#FFFFFFFF"
                 android:elevation="@dimen/standardCardElevation"
                 android:padding="0dp"
@@ -103,8 +104,7 @@
                 app:cardElevation="@dimen/standardCardElevation"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true"
-                app:contentPadding="10dp"
-                android:layout_marginTop="0dp">
+                app:contentPadding="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -114,26 +114,31 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/settings_title_general"
-                        android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse"
                         android:textStyle="bold"
-                        android:layout_marginBottom="10dp" />
+                        android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse" />
 
                     <CheckBox
+                        android:id="@+id/checkBoxAutomaticZone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:checked="true"
+                        android:enabled="true"
+                        android:nestedScrollingEnabled="false"
+                        android:onClick="autoLocListener"
                         android:text="@string/settings_auto_zone"
-                        android:checked="true"
-                        android:textColor="#000000"
-                        android:id="@+id/checkBoxAutomaticZone" />
+                        android:textColor="#000000" />
 
                     <CheckBox
+                        android:id="@+id/checkBoxRememberLicenseNumber"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@string/settings_remember_license"
                         android:checked="true"
-                        android:textColor="#000000"
-                        android:id="@+id/checkBoxRememberLicenseNumber" />
+                        android:enabled="true"
+                        android:onClick="lastLicenseListener"
+                        android:text="@string/settings_remember_license"
+                        android:textColor="#000000" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -141,6 +146,7 @@
                 android:id="@+id/cardAbout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
                 android:background="#FFFFFFFF"
                 android:elevation="@dimen/standardCardElevation"
                 android:padding="0dp"
@@ -150,8 +156,7 @@
                 app:cardElevation="@dimen/standardCardElevation"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true"
-                app:contentPadding="10dp"
-                android:layout_marginTop="0dp">
+                app:contentPadding="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -161,157 +166,157 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/settings_title_about"
-                        android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse"
                         android:textStyle="bold"
-                        android:layout_marginBottom="10dp" />
+                        android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_text1"
                         android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_about_text1"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_frontend"
                         android:id="@+id/textView5"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
-
-                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/settings_about_frontend"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/borsos"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/textView8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/borsos"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/sebok"
                         android:id="@+id/textView9"
-                        android:textColor="#000000" />
-
-                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/mark"
-                        android:id="@+id/textView10"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_backend"
-                        android:id="@+id/textView11"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/borsos"
-                        android:id="@+id/textView12"
-                        android:textColor="#000000" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/sebok"
-                        android:id="@+id/textView13"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
+                        android:id="@+id/textView10"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="@string/mark"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_server"
-                        android:id="@+id/textView14"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
+                        android:textColor="#000000" />
 
                     <TextView
+                        android:id="@+id/textView11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/settings_about_backend"
                         android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:text="@string/borsos"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sebok"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/settings_about_server"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/textView15"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/borsos"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_graphics"
                         android:id="@+id/textView21"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
-
-                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/settings_about_graphics"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/guci"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/textView22"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/guci"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/settings_about_test"
                         android:id="@+id/textView16"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
-
-                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="@string/settings_about_test"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/feri"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/textView17"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/feri"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="@string/takacs"
                         android:id="@+id/textView18"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/takacs"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
 
                     <TextView
+                        android:id="@+id/textView19"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:layout_marginTop="15dp"
                         android:text="@string/settings_about_managing"
-                        android:id="@+id/textView19"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp" />
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/textView20"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/andrea"
-                        android:id="@+id/textView20"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#000000" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>

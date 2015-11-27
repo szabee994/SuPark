@@ -277,6 +277,7 @@ public class ParkingDataHandler implements LocationListener{
                     SharedPreferences.Editor editor = sharedprefs.edit();
                     editor.putString("parklocationLat", String.valueOf(currloc.getLatitude()));
                     editor.putString("parklocationLon", String.valueOf(currloc.getLongitude()));
+                    editor.putString("lastlicense", act.licenseNumber.getText().toString());
                     editor.commit();
                 }
                 break;

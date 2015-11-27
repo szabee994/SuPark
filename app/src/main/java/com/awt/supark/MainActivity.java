@@ -1,11 +1,13 @@
 package com.awt.supark;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     boolean pullUp = false;  // Is there any layout pulled up
     boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
     boolean animInProgress = false;  // Is there any animation in progress
+    boolean autoLoc = true;
+    boolean lastLicense = true;
     int openedLayout = 0;  // ID of the current opened otherContent
     // Animation times in ms
     int layoutFadeOutDuration = 150;
@@ -133,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
     // Edit Boolean
     //boolean edit = false;
     // SMS sender handler
@@ -163,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    // Sharedprefs
+    SharedPreferences sharedprefs;
     ZoneHandler zoneHandler;
     //Activity if needed
     MainActivity act = this;
@@ -214,6 +219,10 @@ public class MainActivity extends AppCompatActivity {
         parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
         wrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
+        sharedprefs = PreferenceManager.getDefaultSharedPreferences(cont);
+        autoLoc = sharedprefs.getBoolean("autoloc", true);
+        lastLicense = sharedprefs.getBoolean("lastlicenseremember", true);
+
         setLicenseToArray();
         fragmentManager = getSupportFragmentManager();
 
@@ -258,16 +267,21 @@ public class MainActivity extends AppCompatActivity {
         btnPark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!pullUpStarted) {
+                if (!pullUpStarted) {
                     pullUpStarted = true;
                     parkingInit("start");
                 }
             }
         });
 
-        layoutHandler.updateLocationTextGps(act);
         layoutHandler.activeZoneButton(0, act);
-        parkHandler.getZone();  // Gets zone info
+        if (autoLoc) {
+            parkHandler.getZone();  // Gets zone info
+            layoutHandler.updateLocationTextGps(act);
+        } else {
+            currentZone = 0;
+            layoutHandler.updateLocationTextButton(act);
+        }
     }
 
     public void parkingInit(String state) {
@@ -303,6 +317,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void getGPSzone(View v){
         imageLocation.startAnimation(anim_blink);
+        parkHandler.getZone();
+        layoutHandler.updateLocationTextGps(act);
         locationLocked = false;
     }
 
@@ -390,9 +406,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void showParkedCar(final View view) {
         if (openedLayout == R.id.buttonMap) {
-            MapFragment fragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.otherContent);
+            MapFragment fragment = (MapFragment) fragmentManager.findFragmentById(R.id.otherContent);
             fragment.showCar();
         }
+    }
+
+    public void autoLocListener(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("autoloc", fragment.autoLoc.isChecked()).commit();
+    }
+
+    public void lastLicenseListener(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("lastlicenseremember", fragment.lastLicense.isChecked()).commit();
     }
 
     public void setLicenseToArray(){
@@ -427,6 +453,10 @@ public class MainActivity extends AppCompatActivity {
         licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
         licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
         licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
+
+        if (lastLicense) {
+            licenseNumber.setText(sharedprefs.getString("lastlicense", ""));
+        }
 
     }
 }
