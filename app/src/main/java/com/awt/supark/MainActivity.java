@@ -29,6 +29,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
     // Notification handler
     private final Handler notificationResponse = new Handler() {
@@ -64,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
-    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB
-    //float[] zonePriceDb = {38.94f, 29.47f, 82.10f, 20.42f}; -- now read from DD
+    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB (DB needs to be preloaded in the program)
+
 
     // Context
     Context cont;
@@ -147,8 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    // Edit Boolean
-    //boolean edit = false;
+
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
@@ -327,25 +331,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void getGPSzone(View v){
         imageLocation.startAnimation(anim_blink);
+
         parkHandler.getZone();
         layoutHandler.updateLocationTextGps(act);
+
         locationLocked = false;
     }
 
     public void changeRegion(int region) {
         if (!locationLocked) {
             currentRegion = region;
-            layoutHandler.updateLocationTextGps(this);
+            layoutHandler.updateLocationTextGps(this); // Updates the region text
         }
     }
 
     // Zone updater
     public void changeZone(int zone) {
-        if (!locationLocked) {
-            currentZone = zone;
-            layoutHandler.colorSwitch(currentZone, this);
-            layoutHandler.activeZoneButton(zone, this);
-            layoutHandler.updateLocationTextGps(this);
+        if (!locationLocked) {                              // If the location is not locked, and the user is in a poly we have to
+            currentZone = zone;                             // set the zone,
+            layoutHandler.colorSwitch(currentZone, this);   // change the background color,
+            layoutHandler.activeZoneButton(zone, this);     // highlight the corresponding zone button
+            layoutHandler.updateLocationTextGps(this);      // update the status text
+
             Log.i("SuPark", "Current zone from GPS: " + currentZone + " Region ID: " + currentRegion);
         }
     }

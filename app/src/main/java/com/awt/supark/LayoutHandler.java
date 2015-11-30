@@ -127,12 +127,15 @@ public class LayoutHandler {
                         text = act.getResources().getString(R.string.zone4auto);
                         break;
                 }
+
                 if (act.currentZone > 0) {
                     text = text + ": " + act.parkHandler.getRegionName(act.currentRegion);
                     updateZonePrice(act);
                 }
+
                 act.locationInfo.setText(text);
-            } else {
+            }
+            else {
                 act.imageLocation.startAnimation(act.anim_blink);
                 act.locationInfo.setText(act.getResources().getString(R.string.locating));
             }
@@ -169,7 +172,6 @@ public class LayoutHandler {
                 break;
             case 3:
                 appBackgroundColorChange(act.wrapper, fadeTime, 0, 121, 107);  // Color of green zone (RGB)
-                //appBackgroundColorChange(wrapper, fadeTime, 46, 125, 50);  // Color of green zone (RGB)
                 break;
             case 4:
                 appBackgroundColorChange(act.wrapper, fadeTime, 1, 87, 155);  // Color of blue zone (RGB)
@@ -200,8 +202,6 @@ public class LayoutHandler {
             fragmentTransaction.replace(R.id.otherContent, act.fragment);
             fragmentTransaction.commit();
             act.openedLayout = view.getId();
-            //edit = false;
-            // Sets the openedLayout variable so we know which one of the foreign layout was opened
         }
     }
 
@@ -424,6 +424,4 @@ public class LayoutHandler {
         });
         animation.start();
     }
-
-
 }

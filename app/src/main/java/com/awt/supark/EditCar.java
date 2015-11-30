@@ -170,19 +170,23 @@ public class EditCar extends Fragment {
                 if (charSequence.length() > 5) {
                     txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
                             charSequence.length()));
-                } else if (charSequence.length() > 2) {
+                }
+                else if (charSequence.length() > 2) {
                     txtNum.setText(charSequence.subSequence(2, charSequence.length()));
-                } else {
+                }
+                else {
                     txtNum.setText("");
                 }
-            } else {
+            }
+            else {
                 txtCity.setText("");
                 txtNum.setText("");
             }
 
             if (charSequence.length() == 8) {
                 txtNum.setTextScaleX(0.9f);
-            } else {
+            }
+            else {
                 txtNum.setTextScaleX(1);
             }
         }
@@ -191,7 +195,8 @@ public class EditCar extends Fragment {
 
             if (charSequence.length() > 10) {
                 txtNum.setTextScaleX(0.85f);
-            } else {
+            }
+            else {
                 txtNum.setTextScaleX(1);
             }
         }

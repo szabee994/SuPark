@@ -96,7 +96,8 @@ public class ParkingDataHandler implements LocationListener{
                 if (act.currentZone == 0) { // If there's no zone selected
                     Toast.makeText(act.cont, act.getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
                     act.pullUpStarted = false;
-                } else {
+                }
+                else {
                     // Initializing parking process layout
                     act.parkingBackground.setBackgroundColor(act.getResources().getColor(R.color.colorPrimaryDark)); // Background resets
                     act.textParkingScreen.setText(act.getResources().getString(R.string.please_wait)); // Setting text
@@ -261,18 +262,25 @@ public class ParkingDataHandler implements LocationListener{
                 act.backDisabled = true; // Disabling back button
 
                 act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone); // Sending the sms
-
                 act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
 
                 break;
+
             case "cancel":
                 Log.i("MainActivity", "Parking cancelled");
+
                 Toast.makeText(act.cont, act.getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
+
                 break;
             case "finish":
                 Log.i("MainActivity", "Parking finished");
-                act.notificationHandler.createNotification("Sample car", String.valueOf(act.licenseNumber.getText()), 30, act.currentZone);
+
+                // At this point we can create a notification to display the remaining parking time left, and other fancy stuff
+                act.notificationHandler.createNotification("Sample car", String.valueOf(act.licenseNumber.getText()), getZoneMaxTime(act.currentZone), act.currentZone);
+
                 Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
+
+                // Saving stuff
                 if (act.currentRegion != -1) {
                     SharedPreferences.Editor editor = sharedprefs.edit();
                     editor.putString("parklocationLat", String.valueOf(currloc.getLatitude()));
@@ -280,9 +288,11 @@ public class ParkingDataHandler implements LocationListener{
                     editor.putString("lastlicense", act.licenseNumber.getText().toString());
                     editor.commit();
                 }
+
                 break;
             case "error":
                 Log.i("MainActivity", "Parking error");
+
                 break;
         }
     }
@@ -416,6 +426,17 @@ public class ParkingDataHandler implements LocationListener{
             price = d.getDouble(d.getColumnIndex("priceperhour"));
         }
         return price;
+    }
+
+    public int getZoneMaxTime(int zone) {
+        int maxTime = 0;
+
+        Cursor d = db.rawQuery("SELECT maxtime FROM zones WHERE zone_id = " + zone, null);
+        if (d.getCount() > 0) {
+            d.moveToFirst();
+            maxTime = d.getInt(d.getColumnIndex("maxtime"));
+        }
+        return maxTime;
     }
 
     public LatLng getCurrentLocation() {
