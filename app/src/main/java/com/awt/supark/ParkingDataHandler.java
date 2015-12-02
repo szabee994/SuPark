@@ -2,6 +2,7 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +10,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -274,6 +276,16 @@ public class ParkingDataHandler implements LocationListener{
                 break;
             case "finish":
                 Log.i("MainActivity", "Parking finished");
+
+                // Starting the background service
+                /* NOT WORKING YET
+                Intent mServiceIntent = new Intent(act, ParkingTimerService.class);
+
+                mServiceIntent.putExtra("licenseNum", String.valueOf(act.licenseNumber.getText()));
+                mServiceIntent.putExtra("parkingLength", getZoneMaxTime(act.currentZone));
+                mServiceIntent.putExtra("parkingZone", act.currentZone);
+
+                act.startService(mServiceIntent); */
 
                 // At this point we can create a notification to display the remaining parking time left, and other fancy stuff
                 act.notificationHandler.createNotification("Sample car", String.valueOf(act.licenseNumber.getText()), getZoneMaxTime(act.currentZone), act.currentZone);

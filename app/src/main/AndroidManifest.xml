@@ -46,6 +46,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".ParkingTimerService"
+            android:exported="false"
+            android:label="ParkingTimerService"
+            android:process=":ParkingTimerService" />
     </application>
 
 </manifest>
