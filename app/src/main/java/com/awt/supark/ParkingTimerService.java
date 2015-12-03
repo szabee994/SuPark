@@ -7,7 +7,6 @@ package com.awt.supark;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -63,7 +62,7 @@ public class ParkingTimerService extends Service {
 
             Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until);
 
-            createNotification(car_id, car_license, parked_time, parked_until);
+            createNotification(car_id, car_license, parked_until);
         }
 
 
@@ -79,12 +78,12 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "Service destroyed");
     }
 
-    public void createNotification(final int id, final String licenseNum, final long parkedTime, final long parkedUntil) {
+    public void createNotification(final int id, final String licenseNum, final long parkedUntil) {
         final long parkingLength = parkedUntil - System.currentTimeMillis() / 1000L;
 
         // Calculating parking time end
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, (int) parkingLength * 60);
+        calendar.add(Calendar.MINUTE, (int) parkingLength / 60);
 
         // Formatting the result
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm (MMM dd.)");
@@ -111,7 +110,7 @@ public class ParkingTimerService extends Service {
 
                                 mNotification.setContentTitle("Parking status of " + licenseNum);
                                 mNotification.setContentText(millisUntilFinished / 60000 + " minutes remained, ticket due: " + endTime);
-                                mNotification.setProgress((int) parkingLength, (int) millisUntilFinished / 1000, false);
+                                mNotification.setProgress((int) parkedUntil, (int) (System.currentTimeMillis() / 1000L), false);
 
                                 notificationManager.notify(id, mNotification.build());
                             }

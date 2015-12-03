@@ -276,6 +276,17 @@ public class ParkingDataHandler implements LocationListener{
             case "finish":
                 Log.i("MainActivity", "Parking finished");
 
+
+
+                Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
+
+                // Saving stuff
+                String lic = act.licenseNumber.getText().toString();
+                if (act.carHandler.getIdByLicense(lic) != -1) { // Ha a kocsi még nem lett elmentve
+                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc); // Menti az adatokat
+                }
+                sharedprefs.edit().putString("lastlicense", lic).commit();
+
                 // Starting the background service
                 // NOT WORKING YET
                 Intent mServiceIntent = new Intent(act, ParkingTimerService.class);
@@ -289,14 +300,6 @@ public class ParkingDataHandler implements LocationListener{
                 // At this point we can create a notification to display the remaining parking time left, and other fancy stuff
                 //act.notificationHandler.createNotification("Sample car", act.carHandler.getCarName(String.valueOf(act.licenseNumber.getText())), getZoneMaxTime(act.currentZone), act.currentZone);
 
-                Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
-
-                // Saving stuff
-                String lic = act.licenseNumber.getText().toString();
-                if (act.carHandler.getIdByLicense(lic) != -1) { // Ha a kocsi még nem lett elmentve
-                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc); // Menti az adatokat
-                }
-                sharedprefs.edit().putString("lastlicense", lic).commit();
                 break;
             case "error":
                 Log.i("MainActivity", "Parking error");
