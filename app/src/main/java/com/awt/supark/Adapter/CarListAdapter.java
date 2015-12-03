@@ -1,17 +1,17 @@
 package com.awt.supark.Adapter;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.awt.supark.MainActivity;
-import com.awt.supark.R;
 import com.awt.supark.Model.Car;
+import com.awt.supark.R;
 
 import java.util.ArrayList;
 
@@ -46,11 +46,6 @@ public class CarListAdapter extends BaseAdapter {
         return position;
     }
 
-    public class ViewHolder {
-        TextView name, licens;
-        ImageButton editbtn;
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
@@ -60,6 +55,9 @@ public class CarListAdapter extends BaseAdapter {
             holder.name = (TextView) view.findViewById(R.id.name);
             holder.licens = (TextView) view.findViewById(R.id.licens);
             holder.editbtn = (ImageButton) view.findViewById(R.id.imageButton);
+            holder.state = (TextView) view.findViewById(R.id.state);
+            holder.remaining = (TextView) view.findViewById(R.id.remaining);
+            holder.button = (Button) view.findViewById(R.id.button);
             view.setTag(holder);
         } else {
             view = convertView;
@@ -69,12 +67,33 @@ public class CarListAdapter extends BaseAdapter {
         final Car car = carArray.get(position);
         holder.name.setText(car.getName());
         holder.licens.setText(car.getLicens());
+        holder.state.setText(car.getState());
+        if (car.getState() == "Parked") {
+            int time = car.getRemaining();
+            int totalMinutes = time / 60;
+            holder.remaining.setText(Integer.toString(totalMinutes) + " minutes remaining");
+            holder.remaining.setVisibility(View.VISIBLE);
+        }
         holder.editbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)context).openCarFragment(v,car.getSqlid());
+                ((MainActivity) context).openCarFragment(v, car.getSqlid());
+            }
+        });
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) context).carHandler.getCar(car.getSqlid());
+                holder.state.setText("Free");
+                holder.remaining.setVisibility(View.GONE);
             }
         });
         return view;
+    }
+
+    public class ViewHolder {
+        TextView name, licens, state, remaining;
+        ImageButton editbtn;
+        Button button;
     }
 }

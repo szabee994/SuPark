@@ -1,12 +1,10 @@
 package com.awt.supark;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,8 +32,9 @@ public class MapFragment extends Fragment {
     Double latitude, longitude;
     SQLiteDatabase db;
     Context context;
-    SharedPreferences sharedprefs;
-    LatLng carlocation = new LatLng(0, 0);
+    Marker car[];
+    int numberOfCars;
+    int showncars;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,10 +45,6 @@ public class MapFragment extends Fragment {
         View view = inflater.inflate(R.layout.map_layout, container, false);
         latitude = 46.1;
         longitude = 19.67;
-        sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
-        double locationLat = Double.valueOf(sharedprefs.getString("parklocationLat", "0"));
-        double locationLon = Double.valueOf(sharedprefs.getString("parklocationLon", "0"));
-        carlocation = new LatLng(locationLat, locationLon);
 
         setUpMapIfNeeded(); // For setting up the MapFragment
 
@@ -135,33 +130,52 @@ public class MapFragment extends Fragment {
         LatLng location = ((MainActivity) getActivity()).parkHandler.getCurrentLocation();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,13f));
 
-        if (carlocation.latitude != 0 && carlocation.longitude != 0) {
-            Marker car = mMap.addMarker(new MarkerOptions()
-                    .position(carlocation)
-                    .title("Parked here")
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_directions_car_black_48dp)));
-        }
+        getCars();
         getPolys();
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 ParkingDataHandler parkdata = new ParkingDataHandler(context);
                 int region = parkdata.getRegion(latLng.latitude,latLng.longitude);
-                ((MainActivity) getActivity()).changeRegion(region);
-                ((MainActivity)getActivity()).locationFound = true;
-                ((MainActivity)getActivity()).changeZone(parkdata.getZoneByRegion(region));
-                ((MainActivity) getActivity()).locationLocked = true;
+                if (region != -1) {
+                    ((MainActivity) getActivity()).changeRegion(region);
+                    ((MainActivity) getActivity()).locationFound = true;
+                    ((MainActivity) getActivity()).changeZone(parkdata.getZoneByRegion(region));
+                    ((MainActivity) getActivity()).locationLocked = true;
+                }
             }
         });
     }
 
-    public void showCar() {
-        if (carlocation.latitude != 0 && carlocation.longitude != 0) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(carlocation, 16f));
-        } else {
-            Toast.makeText(context, "Car has not yet been parked!", Toast.LENGTH_SHORT).show();
+    public void getCars() {
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+        Cursor d = db.rawQuery("SELECT * FROM cars", null);
+        numberOfCars = d.getCount();
+        showncars = -1;
+        LatLng carlocation;
+        car = new Marker[numberOfCars];
+        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+            if (d.getInt(d.getColumnIndex("parkedstate")) == 1) {
+                carlocation = new LatLng(d.getDouble(d.getColumnIndex("parkedlat")), d.getDouble(d.getColumnIndex("parkedlon")));
+                if (carlocation.latitude != 0 && carlocation.longitude != 0) {
+                    car[showncars] = mMap.addMarker(new MarkerOptions()
+                                    .position(carlocation)
+                                    .title(d.getString(d.getColumnIndex("car_name")))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_directions_car_black_48dp))
+                                    .visible(false)
+                    );
+                }
+            }
+            showncars++;
         }
 
+
+    }
+
+    public void showCar() {
+        for (int i = 0; i < showncars; i++) {
+            car[i].setVisible(!car[i].isVisible());
+        }
     }
 
     /**** The mapfragment's id must be removed from the FragmentManager

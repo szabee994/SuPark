@@ -2,7 +2,6 @@ package com.awt.supark;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,11 +28,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
     // Notification handler
     private final Handler notificationResponse = new Handler() {
@@ -44,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    public carHandler carHandler;
     // Layout
     boolean dimActive = false;  // Dim layers status
     boolean pullUp = false;  // Is there any layout pulled up
@@ -63,18 +58,13 @@ public class MainActivity extends AppCompatActivity {
     int currentZone = 0;  // User's current zone
     int currentRegion = -1;  // Current region
     boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
-
     // String database
     String[] licenseNumberDb = {""};
-
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
     String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB (DB needs to be preloaded in the program)
-
-
     // Context
     Context cont;
-
     // Animation variables
     Animation anim_fade_in;
     Animation anim_fade_out;
@@ -88,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     Animation anim_blink;
     Animation anim_car_enter;
     Animation anim_car_leave;
-
     // UI elements
     ImageButton btnPark;
     AutoCompleteTextView licenseNumber;
@@ -105,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton btnStatistics;
     FloatingActionButton btnEtc;
     TextView zonePrice;
-
     // Layouts
     RelativeLayout backDimmer;
     FrameLayout otherContent;
@@ -113,14 +101,11 @@ public class MainActivity extends AppCompatActivity {
     TableRow tableRowTopHalf;
     LinearLayout parkingBackground;
     RelativeLayout wrapper;
-
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
-
     // Fragment manager
     FragmentManager fragmentManager;
     Fragment fragment;
-
     // Parking Data handler
     ParkingDataHandler parkHandler;
     ParkingSmsSender smsHandler;
@@ -238,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
         autoLoc = sharedprefs.getBoolean("autoloc", true);
         lastLicense = sharedprefs.getBoolean("lastlicenseremember", true);
 
-        setLicenseToArray();
         fragmentManager = getSupportFragmentManager();
 
         // Setting up the handlers
@@ -253,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         notificationHandler.throwHandler(notificationResponse);
 
         layoutHandler = new LayoutHandler(this);
-
+        carHandler = new carHandler(this);
         zoneHandler = new ZoneHandler(this);
 
         // -----------------------------------------------------------------------------------------------------------------
@@ -296,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
             currentZone = 0;
             layoutHandler.updateLocationTextButton(act);
         }
+        carHandler.setLicenseToArray(act);
     }
 
     public void parkingInit(String state) {
@@ -438,45 +423,6 @@ public class MainActivity extends AppCompatActivity {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
         sharedprefs.edit().putBoolean("lastlicenseremember", fragment.lastLicense.isChecked()).apply();
         lastLicense = fragment.lastLicense.isChecked();
-    }
-
-    public void setLicenseToArray(){
-
-        db = SQLiteDatabase.openDatabase(this.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
-                "  `car_id` int(2) NOT NULL ,\n" +
-                "  `car_name` varchar(100) NOT NULL,\n" +
-                "  `car_license` varchar(100) NOT NULL,\n" +
-                "  `isgeneric` int(1) NOT NULL,\n" +
-                "  PRIMARY KEY (`car_id`)\n" +
-                ")");
-
-        int numberOfCars;
-
-        Cursor d = db.rawQuery("SELECT * FROM cars", null);
-        numberOfCars = d.getCount();
-        Log.i("Number",Integer.toString(numberOfCars));
-        if(numberOfCars > 0) {
-            licenseNumberDb = new String[numberOfCars];
-            int i = 0;
-            for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-                int carlicenseindex = d.getColumnIndex("car_license");
-                licenseNumberDb[i] = d.getString(carlicenseindex);
-                i++;
-            }
-        }
-        d.close();
-
-        // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
-        licenseNumberDbAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, licenseNumberDb);
-        licenseNumber = (AutoCompleteTextView) findViewById(R.id.licenseNumber);
-        licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
-        licenseNumber.setAdapter(licenseNumberDbAdapter);  // Applying the adapter
-
-        if (lastLicense) {
-            licenseNumber.setText(sharedprefs.getString("lastlicense", ""));
-        }
-
     }
 
     @Override

@@ -1,15 +1,14 @@
 package com.awt.supark;
 
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatDialog;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -204,7 +203,7 @@ public class EditCar extends Fragment {
 
     public void DeleteCar(View v) {
         db.delete("cars","car_id = " + editid,null);
-        ((MainActivity)getActivity()).setLicenseToArray();
+        ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 
@@ -257,7 +256,7 @@ public class EditCar extends Fragment {
 
             // Inserting the new database record
             db.insert("cars", null, values_temp);
-            ((MainActivity) getActivity()).setLicenseToArray();
+            ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
             ((MainActivity) getActivity()).openCarFragment(v, -1);
         }
     }
@@ -277,7 +276,7 @@ public class EditCar extends Fragment {
 
         // Inserting the new database record
         db.update("cars", values_temp, "car_id = " + editid, null);
-        ((MainActivity)getActivity()).setLicenseToArray();
+        ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 }

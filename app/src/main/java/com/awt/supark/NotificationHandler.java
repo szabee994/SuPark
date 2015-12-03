@@ -4,24 +4,16 @@ package com.awt.supark;
  * Created by Szabolcs on 2015.11.19..
  */
 
-import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.view.View;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 
 public class NotificationHandler {
@@ -69,7 +61,7 @@ public class NotificationHandler {
                     public void run() {
                             new CountDownTimer(parkingLength * 60000, 1000) {
                                 public void onTick(long millisUntilFinished) {
-                                    Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " sec");
+                                    // Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " sec"); pls no
 
                                     mNotification.setContentText(millisUntilFinished / 60000 + " minutes remained, ticket due: " + endTime);
                                     mNotification.setProgress(parkingLength, (int) millisUntilFinished / 60000, false);

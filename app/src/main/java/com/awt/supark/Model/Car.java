@@ -4,7 +4,8 @@ package com.awt.supark.Model;
  * Created by Róbert on 2015.11.05..
  */
 public class Car {
-    String name,licens;
+    String name, licens, state;
+    int remaining;
     int sqlid;
 
     public String getName() {
@@ -26,4 +27,20 @@ public class Car {
     public int getSqlid() {return sqlid;}
 
     public void setSqlid(int sqlid) {this.sqlid = sqlid;}
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public int getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(int remaining) {
+        this.remaining = remaining;
+    }
 }

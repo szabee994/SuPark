@@ -2,7 +2,6 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,7 +9,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,7 +77,7 @@ public class ParkingDataHandler implements LocationListener{
                 "  `stats_current` INT(2),\n" +
                 "  PRIMARY KEY (`region_id`)\n" +
                 ")");
-
+        db.close();
         // Getting the last update timestamp from shardedprefs
         sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastupdate = sharedprefs.getInt("lastupdate", 0);
@@ -288,19 +286,16 @@ public class ParkingDataHandler implements LocationListener{
                 act.startService(mServiceIntent); */
 
                 // At this point we can create a notification to display the remaining parking time left, and other fancy stuff
-                act.notificationHandler.createNotification("Sample car", String.valueOf(act.licenseNumber.getText()), getZoneMaxTime(act.currentZone), act.currentZone);
+                act.notificationHandler.createNotification("Sample car", act.carHandler.getCarName(String.valueOf(act.licenseNumber.getText())), getZoneMaxTime(act.currentZone), act.currentZone);
 
                 Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
 
                 // Saving stuff
-                if (act.currentRegion != -1) {
-                    SharedPreferences.Editor editor = sharedprefs.edit();
-                    editor.putString("parklocationLat", String.valueOf(currloc.getLatitude()));
-                    editor.putString("parklocationLon", String.valueOf(currloc.getLongitude()));
-                    editor.putString("lastlicense", act.licenseNumber.getText().toString());
-                    editor.commit();
+                String lic = act.licenseNumber.getText().toString();
+                if (act.carHandler.getIdByLicense(lic) != -1) {
+                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc);
                 }
-
+                sharedprefs.edit().putString("lastlicense", lic).commit();
                 break;
             case "error":
                 Log.i("MainActivity", "Parking error");
@@ -324,6 +319,7 @@ public class ParkingDataHandler implements LocationListener{
                 polynum++;
             }
             d.close();
+            db.close();
             for (int i = 0; i < polynum; i++) { // Boring string operations and throwing into LatLng arraylist
                 poly[i] = poly[i].replace("POLYGON((", "");
                 poly[i] = poly[i].replace("))", "");
@@ -409,6 +405,7 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public int getZoneByRegion(int region){
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         int zone = 0;
         Cursor d = db.rawQuery("SELECT zone_id FROM regions WHERE region_id = "+region,null);
         if(d.getCount() > 0) {
@@ -416,10 +413,12 @@ public class ParkingDataHandler implements LocationListener{
             zone = d.getInt(d.getColumnIndex("zone_id"));
         }
         d.close();
+        db.close();
         return zone;
     }
 
     public String getRegionName(int region) {
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         String name = "";
         Cursor d = db.rawQuery("SELECT name FROM regions WHERE region_id = " + region, null);
         if (d.getCount() > 0) {
@@ -427,27 +426,33 @@ public class ParkingDataHandler implements LocationListener{
             name = d.getString(d.getColumnIndex("name"));
         }
         d.close();
+        db.close();
         return name;
     }
 
     public double getZonePrice(int zone) {
         double price = 0;
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         Cursor d = db.rawQuery("SELECT priceperhour FROM zones WHERE zone_id = " + zone, null);
         if (d.getCount() > 0) {
             d.moveToFirst();
             price = d.getDouble(d.getColumnIndex("priceperhour"));
         }
+        d.close();
+        db.close();
         return price;
     }
 
     public int getZoneMaxTime(int zone) {
         int maxTime = 0;
-
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         Cursor d = db.rawQuery("SELECT maxtime FROM zones WHERE zone_id = " + zone, null);
         if (d.getCount() > 0) {
             d.moveToFirst();
             maxTime = d.getInt(d.getColumnIndex("maxtime"));
         }
+        d.close();
+        db.close();
         return maxTime;
     }
 
@@ -669,6 +674,7 @@ public class ParkingDataHandler implements LocationListener{
         @Override
         protected void onPostExecute(String result) {
             int i;
+            db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
             JSONString = (!result.isEmpty() ? result : " ");
             Log.i("String",JSONString);
             try{
@@ -729,6 +735,7 @@ public class ParkingDataHandler implements LocationListener{
                 Log.i("Error",e.toString());
             }
             Log.i("lastupdate",Integer.toString(lastupdate));
+            db.close();
             super.onPostExecute(result);
         }
     }

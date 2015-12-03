@@ -42,20 +42,24 @@ public class CarListFragment extends Fragment {
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
 
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-            int carNameIndex = d.getColumnIndex("car_name");
-            int carLicenseIndex = d.getColumnIndex("car_license");
-            int carSqlId = d.getColumnIndex("car_id");
-
             Car car = new Car();
 
-            car.setName(d.getString(carNameIndex)); // set name
-            car.setLicens(d.getString(carLicenseIndex)); // set license
-            car.setSqlid(d.getInt(carSqlId));
-
+            car.setName(d.getString(d.getColumnIndex("car_name"))); // set name
+            car.setLicens(d.getString(d.getColumnIndex("car_license"))); // set license
+            car.setSqlid(d.getInt(d.getColumnIndex("car_id")));
+            switch (d.getInt(d.getColumnIndex("parkedstate"))) {
+                case 0:
+                    car.setState("Free");
+                    break;
+                case 1:
+                    car.setState("Parked");
+                    break;
+            }
+            car.setRemaining((int) (d.getLong(d.getColumnIndex("parkeduntil")) - ((System.currentTimeMillis() / 1000L))));
             carArray.add(car);
         }
         d.close();
-
+        db.close();
         // List adapter
         adapter = new CarListAdapter(getActivity(), carArray);
 
@@ -72,6 +76,6 @@ public class CarListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((MainActivity) getActivity()).setLicenseToArray();
+        ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
     }
 }
