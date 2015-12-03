@@ -2,6 +2,7 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,7 +49,7 @@ public class ParkingDataHandler implements LocationListener{
     int region[];
     int polynum = 0;
     Handler mHandler;
-    Location currloc;
+    Location currloc = new Location("dummyprovider");
 
     public ParkingDataHandler(Context cont) {
         context = cont;
@@ -276,24 +277,24 @@ public class ParkingDataHandler implements LocationListener{
                 Log.i("MainActivity", "Parking finished");
 
                 // Starting the background service
-                /* NOT WORKING YET
+                // NOT WORKING YET
                 Intent mServiceIntent = new Intent(act, ParkingTimerService.class);
 
-                mServiceIntent.putExtra("licenseNum", String.valueOf(act.licenseNumber.getText()));
-                mServiceIntent.putExtra("parkingLength", getZoneMaxTime(act.currentZone));
-                mServiceIntent.putExtra("parkingZone", act.currentZone);
+                //mServiceIntent.putExtra("licenseNum", String.valueOf(act.licenseNumber.getText()));
+                //mServiceIntent.putExtra("parkingLength", getZoneMaxTime(act.currentZone));
+                //mServiceIntent.putExtra("parkingZone", act.currentZone);
 
-                act.startService(mServiceIntent); */
+                act.startService(mServiceIntent);
 
                 // At this point we can create a notification to display the remaining parking time left, and other fancy stuff
-                act.notificationHandler.createNotification("Sample car", act.carHandler.getCarName(String.valueOf(act.licenseNumber.getText())), getZoneMaxTime(act.currentZone), act.currentZone);
+                //act.notificationHandler.createNotification("Sample car", act.carHandler.getCarName(String.valueOf(act.licenseNumber.getText())), getZoneMaxTime(act.currentZone), act.currentZone);
 
                 Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
 
                 // Saving stuff
                 String lic = act.licenseNumber.getText().toString();
-                if (act.carHandler.getIdByLicense(lic) != -1) {
-                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc);
+                if (act.carHandler.getIdByLicense(lic) != -1) { // Ha a kocsi még nem lett elmentve
+                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc); // Menti az adatokat
                 }
                 sharedprefs.edit().putString("lastlicense", lic).commit();
                 break;

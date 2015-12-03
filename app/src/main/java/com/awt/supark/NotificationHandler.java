@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,12 +60,13 @@ public class NotificationHandler {
                 new Runnable() {
                     @Override
                     public void run() {
-                            new CountDownTimer(parkingLength * 60000, 1000) {
+                            new CountDownTimer(parkingLength * 60000, 60000) {
                                 public void onTick(long millisUntilFinished) {
-                                    // Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " sec"); pls no
+                                    Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " min");
 
                                     mNotification.setContentText(millisUntilFinished / 60000 + " minutes remained, ticket due: " + endTime);
                                     mNotification.setProgress(parkingLength, (int) millisUntilFinished / 60000, false);
+
                                     notificationManager.notify(id, mNotification.build());
                                 }
 
