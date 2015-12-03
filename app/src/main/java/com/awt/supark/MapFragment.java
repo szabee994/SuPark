@@ -158,6 +158,7 @@ public class MapFragment extends Fragment {
             if (d.getInt(d.getColumnIndex("parkedstate")) == 1) {
                 carlocation = new LatLng(d.getDouble(d.getColumnIndex("parkedlat")), d.getDouble(d.getColumnIndex("parkedlon")));
                 if (carlocation.latitude != 0 && carlocation.longitude != 0) {
+                    showncars++;
                     car[showncars] = mMap.addMarker(new MarkerOptions()
                                     .position(carlocation)
                                     .title(d.getString(d.getColumnIndex("car_name")))
@@ -166,7 +167,7 @@ public class MapFragment extends Fragment {
                     );
                 }
             }
-            showncars++;
+
         }
 
 
