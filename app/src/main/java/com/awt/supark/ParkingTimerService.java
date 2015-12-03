@@ -26,6 +26,7 @@ public class ParkingTimerService extends Service {
     Intent intent;
     PendingIntent pIntent;
     NotificationCompat.Builder mNotification;
+    NotificationManager notificationManager;
     SQLiteDatabase db;
 
 
@@ -52,17 +53,26 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "Service started");
 
         db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        Cursor d = db.rawQuery("SELECT car_id, car_license, parkeduntil, parkedtime FROM cars WHERE parkedstate = 1", null);
+        Cursor d = db.rawQuery("SELECT * FROM cars", null);
+        notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
         //d.moveToFirst();
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
             int car_id = d.getInt(d.getColumnIndex("car_id"));
             String car_license = d.getString(d.getColumnIndex("car_license"));
             long parked_time = d.getLong(d.getColumnIndex("parkedtime"));
             long parked_until = d.getLong(d.getColumnIndex("parkeduntil"));
+            int parkedstate = d.getInt(d.getColumnIndex("parkedstate"));
 
             Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until);
-
-            createNotification(car_id, car_license, parked_until, parked_time);
+            if (parkedstate == 1) {
+                createNotification(car_id, car_license, parked_until, parked_time);
+            } else {
+                try {
+                    notificationManager.cancel(car_id);
+                } catch (Exception e) {
+                    Log.i("E", e.toString());
+                }
+            }
         }
 
 
@@ -95,7 +105,6 @@ public class ParkingTimerService extends Service {
         //pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         // Building the notification
-        final NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
         mNotification = new NotificationCompat.Builder(getApplicationContext());
 
         mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);
@@ -112,6 +121,7 @@ public class ParkingTimerService extends Service {
                                 mNotification.setProgress((int) (parkedUntil - parkedTime), (int) ((parkedUntil - parkedTime) - ((System.currentTimeMillis() / 1000) - parkedTime)), false);
                                 Log.i("Int nezes", Integer.toString((int) parkedUntil) + " " + Integer.toString((int) (System.currentTimeMillis() / 1000)));
                                 notificationManager.notify(id, mNotification.build());
+
                             }
 
                             public void onFinish() {
