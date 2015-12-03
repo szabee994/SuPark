@@ -1,6 +1,7 @@
 package com.awt.supark;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -137,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
@@ -165,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    //Intents
+    Intent mServiceIntent;
     // Sharedprefs
     SharedPreferences sharedprefs;
     ZoneHandler zoneHandler;
@@ -281,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
             layoutHandler.updateLocationTextButton(act);
         }
         carHandler.setLicenseToArray(act);
+        mServiceIntent = new Intent(act, ParkingTimerService.class);
+        act.startService(mServiceIntent);
     }
 
     public void parkingInit(String state) {

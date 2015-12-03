@@ -62,7 +62,7 @@ public class ParkingTimerService extends Service {
 
             Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until);
 
-            createNotification(car_id, car_license, parked_until);
+            createNotification(car_id, car_license, parked_until, parked_time);
         }
 
 
@@ -78,7 +78,7 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "Service destroyed");
     }
 
-    public void createNotification(final int id, final String licenseNum, final long parkedUntil) {
+    public void createNotification(final int id, final String licenseNum, final long parkedUntil, final long parkedTime) {
         final long parkingLength = parkedUntil - System.currentTimeMillis() / 1000L;
 
         // Calculating parking time end
@@ -107,11 +107,10 @@ public class ParkingTimerService extends Service {
                         new CountDownTimer(parkingLength * 1000, 60000) {
                             public void onTick(long millisUntilFinished) {
                                 Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " min");
-
                                 mNotification.setContentTitle("Parking status of " + licenseNum);
                                 mNotification.setContentText(millisUntilFinished / 60000 + " minutes remained, ticket due: " + endTime);
-                                mNotification.setProgress((int) parkedUntil, (int) (System.currentTimeMillis() / 1000L), false);
-
+                                mNotification.setProgress((int) (parkedUntil - parkedTime), (int) ((parkedUntil - parkedTime) - ((System.currentTimeMillis() / 1000) - parkedTime)), false);
+                                Log.i("Int nezes", Integer.toString((int) parkedUntil) + " " + Integer.toString((int) (System.currentTimeMillis() / 1000)));
                                 notificationManager.notify(id, mNotification.build());
                             }
 
