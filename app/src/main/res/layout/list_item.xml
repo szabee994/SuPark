@@ -64,7 +64,7 @@
             android:layout_below="@+id/licens"
             android:text="State"
             android:textColor="@android:color/black"
-            android:textSize="15sp" />
+            android:textSize="12dp" />
 
         <TextView
             android:id="@+id/remaining"
@@ -76,30 +76,35 @@
             android:layout_toRightOf="@+id/state"
             android:text="00:00"
             android:textColor="@android:color/black"
-            android:textSize="15sp"
+            android:textSize="12dp"
             android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/imageButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/licens"
-            android:layout_alignParentEnd="true"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"
+            android:layout_alignParentTop="false"
             android:background="@null"
+            android:src="@mipmap/ic_mode_edit_black_48dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_mode_edit_black_48dp" />
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_marginTop="7dp" />
 
-        <Button
-            android:id="@+id/button"
+        <ImageButton
+            android:id="@+id/imageButtonCancel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@mipmap/ic_remove_circle_outline_black_48dp"
+            android:scaleType="fitCenter"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/imageButton"
             android:layout_toStartOf="@+id/imageButton"
-            android:text="Get car" />
+            android:layout_marginTop="7dp" />
 
     </RelativeLayout>
 

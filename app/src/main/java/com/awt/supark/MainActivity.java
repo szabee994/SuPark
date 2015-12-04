@@ -275,14 +275,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Turning off zone button highlight
         layoutHandler.activeZoneButton(0, act);
+
+        // If the auto locate setting was enabled starts locating
         if (autoLoc) {
             getGPSzone(null);
         } else {
             currentZone = 0;
             layoutHandler.updateLocationTextButton(act);
         }
+
+        // Loading the car list
         carHandler.setLicenseToArray(act);
+
+        // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
         act.startService(mServiceIntent);
     }
@@ -401,10 +408,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Back
-    public void openCarFragment(View view) {
+    public void openCarFragment(View view, boolean animation) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
+        if(animation) {
+            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
+        }
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
 

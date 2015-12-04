@@ -246,6 +246,8 @@ public class EditCar extends Fragment {
             values_temp.put("car_id", numberOfCars + 1);
             values_temp.put("car_name", carName.getText().toString());
             values_temp.put("car_license", carLicense.getText().toString());
+            values_temp.put("parkedstate", 0);
+
             int generic;
             if (radioNewSrb.isChecked()) {
                 generic = 0;

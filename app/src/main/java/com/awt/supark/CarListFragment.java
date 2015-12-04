@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.awt.supark.Adapter.CarListAdapter;
@@ -37,7 +38,6 @@ public class CarListFragment extends Fragment {
         // Creating database if it's not exist yet
         db = SQLiteDatabase.openDatabase(getContext().getFilesDir().getPath()+"/carDB.db",null, SQLiteDatabase.CREATE_IF_NECESSARY);
 
-
         //------------------------ Creating the car list ---------------------------
         Cursor d = db.rawQuery("SELECT * FROM cars", null);
 
@@ -47,6 +47,8 @@ public class CarListFragment extends Fragment {
             car.setName(d.getString(d.getColumnIndex("car_name"))); // set name
             car.setLicens(d.getString(d.getColumnIndex("car_license"))); // set license
             car.setSqlid(d.getInt(d.getColumnIndex("car_id")));
+
+            // Retrieves the parking state of the car
             switch (d.getInt(d.getColumnIndex("parkedstate"))) {
                 case 0:
                     car.setState("Free");
@@ -58,8 +60,10 @@ public class CarListFragment extends Fragment {
             car.setRemaining((int) (d.getLong(d.getColumnIndex("parkeduntil")) - ((System.currentTimeMillis() / 1000L))));
             carArray.add(car);
         }
+
         d.close();
         db.close();
+
         // List adapter
         adapter = new CarListAdapter(getActivity(), carArray);
 

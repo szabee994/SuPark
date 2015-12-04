@@ -7,6 +7,8 @@ package com.awt.supark;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,11 +18,12 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.awt.supark.Adapter.CarListAdapter;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class ParkingTimerService extends Service {
-
 
     Handler notificationHandler;
     Intent intent;
@@ -28,8 +31,8 @@ public class ParkingTimerService extends Service {
     NotificationCompat.Builder mNotification;
     NotificationManager notificationManager;
     SQLiteDatabase db;
-
-
+    Context context;
+    Cursor d;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -39,12 +42,7 @@ public class ParkingTimerService extends Service {
 
     public void onCreate(){
         super.onCreate();
-
-
-
-
         Log.i("Service", "Service created");
-
     }
 
     @Override
@@ -53,9 +51,10 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "Service started");
 
         db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        Cursor d = db.rawQuery("SELECT * FROM cars", null);
+        d = db.rawQuery("SELECT * FROM cars", null);
+
         notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
-        //d.moveToFirst();
+
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
             int car_id = d.getInt(d.getColumnIndex("car_id"));
             String car_license = d.getString(d.getColumnIndex("car_license"));
@@ -63,7 +62,8 @@ public class ParkingTimerService extends Service {
             long parked_until = d.getLong(d.getColumnIndex("parkeduntil"));
             int parkedstate = d.getInt(d.getColumnIndex("parkedstate"));
 
-            Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until);
+            Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until + ", State: " + parkedstate);
+
             if (parkedstate == 1) {
                 createNotification(car_id, car_license, parked_until, parked_time);
             } else {
@@ -75,10 +75,7 @@ public class ParkingTimerService extends Service {
             }
         }
 
-
         return START_STICKY;
-                //super.onStartCommand(intent, flags, startId);
-
     }
 
     @Override
@@ -88,7 +85,7 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "Service destroyed");
     }
 
-    public void createNotification(final int id, final String licenseNum, final long parkedUntil, final long parkedTime) {
+    public void createNotification(final int id, final String licenseNum, final long parkedUntil, final long parkedTime, final int parkedState) {
         final long parkingLength = parkedUntil - System.currentTimeMillis() / 1000L;
 
         // Calculating parking time end
@@ -113,7 +110,7 @@ public class ParkingTimerService extends Service {
                 new Runnable() {
                     @Override
                     public void run() {
-                        new CountDownTimer(parkingLength * 1000, 60000) {
+                        new CountDownTimer(parkingLength * 1000, 5000) {
                             public void onTick(long millisUntilFinished) {
                                 Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " min");
                                 mNotification.setContentTitle("Parking status of " + licenseNum);
@@ -121,10 +118,13 @@ public class ParkingTimerService extends Service {
                                 mNotification.setProgress((int) (parkedUntil - parkedTime), (int) ((parkedUntil - parkedTime) - ((System.currentTimeMillis() / 1000) - parkedTime)), false);
                                 Log.i("Int nezes", Integer.toString((int) parkedUntil) + " " + Integer.toString((int) (System.currentTimeMillis() / 1000)));
                                 notificationManager.notify(id, mNotification.build());
-
                             }
 
                             public void onFinish() {
+                                ContentValues temp = new ContentValues();
+                                temp.put("parkedstate", 0);
+                                db.update("cars", temp, "car_id = " + id, null);
+                                db.close();
 
                                 mNotification.setContentTitle("Parking status of " + licenseNum);
                                 mNotification.setContentText("Parking ticket due!");
@@ -141,6 +141,10 @@ public class ParkingTimerService extends Service {
 
 
         //notificationManager.notify(id, mNotification);
+    }
+
+    public void deleteNotification(final int id) {
+        notificationManager.cancel(id);
     }
 
 }

@@ -51,6 +51,7 @@ public class ParkingSmsSender {
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                         Log.i("smsHandler", "ERR: Generic failure");
+
                         smsHandler.obtainMessage(2).sendToTarget();
                         break;
                     case SmsManager.RESULT_ERROR_NO_SERVICE:
