@@ -43,11 +43,11 @@ public class ZoneHandler {
                 break;
         }
 
-        act.layoutHandler.updateLocationTextButton(act); // Updating the text on the layout
-        act.locationLocked = true; // We must lock the location changes at this point
-        act.currentRegion = -1; // No region info
+        act.layoutHandler.updateLocationTextButton(act);    // Updating the text on the layout
+        act.locationLocked = true;                          // We must lock the location changes at this point
+        act.currentRegion = -1;                             // No region info
 
-        act.imageLocation.clearAnimation();  // Stopping the blinking location icon...
+        act.imageLocation.clearAnimation();                 // Stopping the blinking location icon...
 
         Log.i("ZoneChangeButton", "Current zone: " + act.currentZone);
     }

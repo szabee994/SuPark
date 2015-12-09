@@ -75,7 +75,7 @@ public class carHandler {
     }
 
     // Set car's park state to false
-    public void getCar(int id) {
+    public void stopPark(int id) {
         db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         ContentValues temp = new ContentValues();
 
@@ -85,8 +85,10 @@ public class carHandler {
         db.close();
 
         // Refreshing the notifications
-        Intent mServiceIntent = new Intent(context, ParkingTimerService.class);
-        context.startService(mServiceIntent);
+        //Intent mServiceIntent = new Intent(context, ParkingTimerService.class);
+        //context.stopService(mServiceIntent);
+        //context.startService(mServiceIntent);
+        ((MainActivity) context).startTimerService();
     }
 
     public void setLicenseToArray(final MainActivity act) {

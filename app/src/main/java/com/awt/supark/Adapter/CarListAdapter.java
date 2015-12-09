@@ -96,14 +96,14 @@ public class CarListAdapter extends BaseAdapter {
         holder.buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) context).carHandler.getCar(car.getSqlid());
+                ((MainActivity) context).carHandler.stopPark(car.getSqlid());
                 holder.state.setText("Free");
                 holder.remaining.setVisibility(View.GONE);
                 holder.buttonCancel.setVisibility(View.GONE);
                 Log.i("SQLID", "ID: " + car.getSqlid());
 
-                //MainActivity act = new MainActivity();
                 ((MainActivity) context).openCarFragment(null, false);
+                //((MainActivity) context).startService(true, car.getSqlid());
             }
         });
 

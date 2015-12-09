@@ -30,89 +30,91 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    // Notification handler
-    private final Handler notificationResponse = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-
-            }
-        }
-    };
     public carHandler carHandler;
-    // Layout
-    boolean dimActive = false;  // Dim layers status
-    boolean pullUp = false;  // Is there any layout pulled up
-    boolean pullUpStarted = false;  // Is there any layout BEING pulled up - prevents opening two layouts at the same time
-    boolean animInProgress = false;  // Is there any animation in progress
-    boolean autoLoc = true;
-    boolean lastLicense = true;
-    int openedLayout = 0;  // ID of the current opened otherContent
+
+    // Layout variables
+    boolean     dimActive = false;          // Dim layers status
+    boolean     pullUp = false;             // Is there any layout pulled up
+    boolean     pullUpStarted = false;      // Is there any layout BEING pulled up - prevents opening two layouts at the same time
+    boolean     animInProgress = false;     // Is there any animation in progress
+    boolean     autoLoc = true;
+    boolean     lastLicense = true;
+    int         openedLayout = 0;           // ID of the current opened
+
     // Animation times in ms
-    int layoutFadeOutDuration = 150;
-    int layoutFadeInDuration = 150;
-    int layoutPullUpDuration = 300;
-    int smallButtonHighlightChangeDuration = 150;
+    int         layoutFadeOutDuration = 150;
+    int         layoutFadeInDuration = 150;
+    int         layoutPullUpDuration = 300;
+    int         smallButtonHighlightChangeDuration = 150;
+
     // Location
-    boolean locationFound = false;  // True if the location has found by GPS signal
-    boolean locationLocked = false;  // True if the location must not change anymore
-    int currentZone = 0;  // User's current zone
-    int currentRegion = -1;  // Current region
-    boolean backDisabled = false;  // True if the back keys functionality needs to be disabled
+    boolean     locationFound = false;      // True if the location has found by GPS signal
+    boolean     locationLocked = false;     // True if the location must not change anymore
+    int         currentZone = 0;            // User's current zone
+    int         currentRegion = -1;         // Current region
+    boolean     backDisabled = false;       // True if the back keys functionality needs to be disabled
+
     // String database
-    String[] licenseNumberDb = {""};
+    String[]    licenseNumberDb = {""};
+
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
-    String[] zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB (DB needs to be preloaded in the program)
+    String[]    zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB (DB needs to be preloaded in the program)
+
     // Context
-    Context cont;
+    Context     cont;
+
     // Animation variables
-    Animation anim_fade_in;
-    Animation anim_fade_out;
-    Animation anim_zoom_in;
-    Animation anim_zoom_out;
-    Animation anim_slide_up_fade_in;
-    Animation anim_slide_down_fade_out;
-    Animation anim_center_open_up;
-    Animation anim_anticipate_rotate_zoom_out;
-    Animation anim_anticipate_rotate_zoom_in;
-    Animation anim_blink;
-    Animation anim_car_enter;
-    Animation anim_car_leave;
+    Animation  anim_fade_in;
+    Animation  anim_fade_out;
+    Animation  anim_zoom_in;
+    Animation  anim_zoom_out;
+    Animation  anim_slide_up_fade_in;
+    Animation  anim_slide_down_fade_out;
+    Animation  anim_center_open_up;
+    Animation  anim_anticipate_rotate_zoom_out;
+    Animation  anim_anticipate_rotate_zoom_in;
+    Animation  anim_blink;
+    Animation  anim_car_enter;
+    Animation  anim_car_leave;
+
     // UI elements
-    ImageButton btnPark;
-    AutoCompleteTextView licenseNumber;
-    ImageButton btnZone1;
-    ImageButton btnZone2;
-    ImageButton btnZone3;
-    ImageButton btnZone4;
-    TextView locationInfo;
-    ImageView imageLocation;
-    ImageView imageCar;
-    TextView textParkingScreen;
-    FloatingActionButton btnMap;
-    FloatingActionButton btnCars;
-    FloatingActionButton btnStatistics;
-    FloatingActionButton btnEtc;
-    TextView zonePrice;
+    ImageButton             btnPark;
+    AutoCompleteTextView    licenseNumber;
+    ImageButton             btnZone1;
+    ImageButton             btnZone2;
+    ImageButton             btnZone3;
+    ImageButton             btnZone4;
+    TextView                locationInfo;
+    ImageView               imageLocation;
+    ImageView               imageCar;
+    TextView                textParkingScreen;
+    FloatingActionButton    btnMap;
+    FloatingActionButton    btnCars;
+    FloatingActionButton    btnStatistics;
+    FloatingActionButton    btnEtc;
+    TextView                zonePrice;
+
     // Layouts
-    RelativeLayout backDimmer;
-    FrameLayout otherContent;
-    LinearLayout contentLinear;
-    TableRow tableRowTopHalf;
-    LinearLayout parkingBackground;
-    RelativeLayout wrapper;
+    RelativeLayout      backDimmer;
+    FrameLayout         otherContent;
+    LinearLayout        contentLinear;
+    TableRow            tableRowTopHalf;
+    LinearLayout        parkingBackground;
+    RelativeLayout      wrapper;
+
     // License number database adapter
     ArrayAdapter<String> licenseNumberDbAdapter;
+
     // Fragment manager
     FragmentManager fragmentManager;
-    Fragment fragment;
+    Fragment        fragment;
+
     // Parking Data handler
-    ParkingDataHandler parkHandler;
-    ParkingSmsSender smsHandler;
-    NotificationHandler notificationHandler;
-    LayoutHandler layoutHandler;
-    // ----------------------------------- THREAD MESSAGE HANDLER ---------------------------------------------
+    ParkingDataHandler  parkHandler;
+    ParkingSmsSender    smsHandler;
+    LayoutHandler       layoutHandler;
+
     // Zone finder handler
     private final Handler mHandler = new Handler() {
         @Override
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
@@ -165,93 +168,83 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    //Intents
+
+    // Intents
     Intent mServiceIntent;
-    // Sharedprefs
+
+    // SharedPreferences
     SharedPreferences sharedprefs;
     ZoneHandler zoneHandler;
-    //Activity if needed
-    MainActivity act = this;
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // ----------------------------- Set License to autoCorrect array--------------------------------
+    MainActivity act = this;
     SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         cont = this;
 
         // Animations
-        anim_zoom_in = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
-        anim_zoom_out = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
-        anim_fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        anim_fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-        anim_slide_up_fade_in = AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in);
-        anim_slide_down_fade_out = AnimationUtils.loadAnimation(this, R.anim.slide_down_fade_out);
-        anim_center_open_up = AnimationUtils.loadAnimation(this, R.anim.center_open_up);
-        anim_anticipate_rotate_zoom_out = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_out);
-        anim_anticipate_rotate_zoom_in = AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
-        anim_blink = AnimationUtils.loadAnimation(this, R.anim.blink);
-        anim_car_enter = AnimationUtils.loadAnimation(this, R.anim.car_enter);
-        anim_car_leave = AnimationUtils.loadAnimation(this, R.anim.car_leave);
+        anim_zoom_in =                      AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        anim_zoom_out =                     AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        anim_fade_in =                      AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        anim_fade_out =                     AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        anim_slide_up_fade_in =             AnimationUtils.loadAnimation(this, R.anim.slide_up_fade_in);
+        anim_slide_down_fade_out =          AnimationUtils.loadAnimation(this, R.anim.slide_down_fade_out);
+        anim_center_open_up =               AnimationUtils.loadAnimation(this, R.anim.center_open_up);
+        anim_anticipate_rotate_zoom_out =   AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_out);
+        anim_anticipate_rotate_zoom_in =    AnimationUtils.loadAnimation(this, R.anim.anticipate_rotate_zoom_in);
+        anim_blink =                        AnimationUtils.loadAnimation(this, R.anim.blink);
+        anim_car_enter =                    AnimationUtils.loadAnimation(this, R.anim.car_enter);
+        anim_car_leave =                    AnimationUtils.loadAnimation(this, R.anim.car_leave);
 
         // UI elements
-        btnPark = (ImageButton) findViewById(R.id.buttonPark);
-        btnZone1 = (ImageButton) findViewById(R.id.buttonZone1);
-        btnZone2 = (ImageButton) findViewById(R.id.buttonZone2);
-        btnZone3 = (ImageButton) findViewById(R.id.buttonZone3);
-        btnZone4 = (ImageButton) findViewById(R.id.buttonZone4);
-        locationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
-        imageLocation = (ImageView) findViewById(R.id.imageLocation);
-        imageCar = (ImageView) findViewById(R.id.imageCar);
-        textParkingScreen = (TextView) findViewById(R.id.textParkingScreen);
-        btnCars = (FloatingActionButton) findViewById(R.id.buttonCars);
-        btnStatistics = (FloatingActionButton) findViewById(R.id.buttonStatistics);
-        btnEtc = (FloatingActionButton) findViewById(R.id.buttonEtc);
-        btnMap = (FloatingActionButton) findViewById(R.id.buttonMap);
-        zonePrice = (TextView) findViewById(R.id.textViewZonePrice);
+        btnPark =           (ImageButton)           findViewById(R.id.buttonPark);
+        btnZone1 =          (ImageButton)           findViewById(R.id.buttonZone1);
+        btnZone2 =          (ImageButton)           findViewById(R.id.buttonZone2);
+        btnZone3 =          (ImageButton)           findViewById(R.id.buttonZone3);
+        btnZone4 =          (ImageButton)           findViewById(R.id.buttonZone4);
+        locationInfo =      (TextView)              findViewById(R.id.textViewLocationInfo);
+        imageLocation =     (ImageView)             findViewById(R.id.imageLocation);
+        imageCar =          (ImageView)             findViewById(R.id.imageCar);
+        textParkingScreen = (TextView)              findViewById(R.id.textParkingScreen);
+        btnCars =           (FloatingActionButton)  findViewById(R.id.buttonCars);
+        btnStatistics =     (FloatingActionButton)  findViewById(R.id.buttonStatistics);
+        btnEtc =            (FloatingActionButton)  findViewById(R.id.buttonEtc);
+        btnMap =            (FloatingActionButton)  findViewById(R.id.buttonMap);
+        zonePrice =         (TextView)              findViewById(R.id.textViewZonePrice);
 
         // Layouts
-        backDimmer = (RelativeLayout) findViewById(R.id.back_dimmer);
-        contentLinear = (LinearLayout) findViewById(R.id.contentLinear);
-        tableRowTopHalf = (TableRow) findViewById(R.id.tableRowTopHalf);
-        otherContent = (FrameLayout) findViewById(R.id.otherContent);
-        parkingBackground = (LinearLayout) findViewById(R.id.parkingBackground);
-        wrapper = (RelativeLayout) findViewById(R.id.wrapper);
+        backDimmer =        (RelativeLayout)        findViewById(R.id.back_dimmer);
+        contentLinear =     (LinearLayout)          findViewById(R.id.contentLinear);
+        tableRowTopHalf =   (TableRow)              findViewById(R.id.tableRowTopHalf);
+        otherContent =      (FrameLayout)           findViewById(R.id.otherContent);
+        parkingBackground = (LinearLayout)          findViewById(R.id.parkingBackground);
+        wrapper =           (RelativeLayout)        findViewById(R.id.wrapper);
 
-        sharedprefs = PreferenceManager.getDefaultSharedPreferences(cont);
-        autoLoc = sharedprefs.getBoolean("autoloc", true);
-        lastLicense = sharedprefs.getBoolean("lastlicenseremember", true);
+        sharedprefs =       PreferenceManager.getDefaultSharedPreferences(cont);
+        autoLoc =           sharedprefs.getBoolean("autoloc", true);
+        lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
 
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager =   getSupportFragmentManager();
 
         // Setting up the handlers
         parkHandler = new ParkingDataHandler(this);
-        parkHandler.checkForUpdate();  // Checks that the local database is up to date
-        parkHandler.throwHandler(mHandler);  // Initializes the message handler
+        parkHandler.checkForUpdate();           // Checks that the local database is up to date
+        parkHandler.throwHandler(mHandler);     // Initializes the message handler
 
         smsHandler = new ParkingSmsSender(this);
-        smsHandler.throwHandler(smsResponse);  // Initializes the message handler
-
-        notificationHandler = new NotificationHandler(this);
-        notificationHandler.throwHandler(notificationResponse);
+        smsHandler.throwHandler(smsResponse);   // Initializes the message handler
 
         layoutHandler = new LayoutHandler(this);
-        carHandler = new carHandler(this);
-        zoneHandler = new ZoneHandler(this);
+        carHandler =    new carHandler(this);
+        zoneHandler =   new ZoneHandler(this);
 
-        // -----------------------------------------------------------------------------------------------------------------
-
-        // Setting up a listener to track the touch/release events for the parking button
         btnPark.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                /* If the user taps the button zooming in animation starts.
-                 * The animation will remain in it's final state (pressed).
-                 */
                 if (motionEvent.getAction() == android.view.MotionEvent.ACTION_DOWN) {
                     view.startAnimation(anim_zoom_out);
                     anim_zoom_out.setFillAfter(true);
@@ -291,7 +284,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
-        act.startService(mServiceIntent);
+        Log.i("Main", "OnCreate");
+        startTimerService();
+    }
+
+    public void startTimerService() {
+        // Starting the background service
+        //mServiceIntent.removeExtra("stopId");
+        //if(stopId != 0) {
+        //    mServiceIntent.putExtra("stopId", stopId);
+        //}
+
+        startService(mServiceIntent);
     }
 
     public void parkingInit(String state) {
@@ -356,18 +360,13 @@ public class MainActivity extends AppCompatActivity {
     // Android back key function
     @Override
     public void onBackPressed() {
-        Log.i("MainActivity", "Back pressed");
         if(!backDisabled) {
-            // If the dimming layer is visible then makes invisible, otherwise
-            // triggers the default action of back button.
             if (dimActive) {
-                // Deactivates the dimming
                 parkingInit("cancel");
             } else if ((pullUp || pullUpStarted) && !animInProgress) {
                 // If there is an activity pulled up, pulls down
                 pullDown();
             } else {
-                // Default action
                 finish();
             }
         }
@@ -379,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
         args.putInt("editid", -1);
         fragment = new EditCar();
         fragment.setArguments(args);
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
         fragmentTransaction.replace(R.id.otherContent, fragment);
@@ -391,32 +391,31 @@ public class MainActivity extends AppCompatActivity {
         Bundle args = new Bundle();
         args.putInt("editid", editid);
         fragment = new EditCar();
-        if (editid == -1) {
-            fragment = new CarsFragment();
-        }
+
+        if (editid == -1) { fragment = new CarsFragment(); }
+
         fragment.setArguments(args);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         if (editid == -1) {
             fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
-        }
-        else {
+        } else {
             fragmentTransaction.setCustomAnimations(R.anim.fragment_slideup, R.anim.fragment_fadeout);
         }
+
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
-
     }
 
     // Back
     public void openCarFragment(View view, boolean animation) {
         fragment = new CarsFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if(animation) {
-            fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown);
-        }
+
+        if(animation) { fragmentTransaction.setCustomAnimations(R.anim.fragment_fadein, R.anim.fragment_slidedown); }
+
         fragmentTransaction.replace(R.id.otherContent, fragment);
         fragmentTransaction.commit();
-
     }
 
     public void showParkedCar(final View view) {

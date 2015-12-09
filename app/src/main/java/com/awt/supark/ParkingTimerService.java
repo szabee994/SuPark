@@ -4,6 +4,7 @@ package com.awt.supark;
  * Created by Szabolcs on 2015.11.30..
  */
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -17,22 +18,20 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import com.awt.supark.Adapter.CarListAdapter;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ParkingTimerService extends Service {
-
-    Handler notificationHandler;
-    Intent intent;
-    PendingIntent pIntent;
-    NotificationCompat.Builder mNotification;
-    NotificationManager notificationManager;
-    SQLiteDatabase db;
-    Context context;
-    Cursor d;
+    SQLiteDatabase              db;
+    Context                     context;
+    Cursor                      d;
+    int                         stopId;
+    NotificationManager         notificationManager;
+    NotificationCompat.Builder  mNotification;
+    CountDownTimer[]            countTimer;
+    Timer                       refreshTimer;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -42,38 +41,17 @@ public class ParkingTimerService extends Service {
 
     public void onCreate(){
         super.onCreate();
-        Log.i("Service", "Service created");
+        Log.i("Service", "---------- Service created ----------");
+        notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO Auto-generated method stub
-        Log.i("Service", "Service started");
+        Log.i("Service", "---------- Service started ----------");
 
-        db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        d = db.rawQuery("SELECT * FROM cars", null);
-
-        notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
-
-        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-            int car_id = d.getInt(d.getColumnIndex("car_id"));
-            String car_license = d.getString(d.getColumnIndex("car_license"));
-            long parked_time = d.getLong(d.getColumnIndex("parkedtime"));
-            long parked_until = d.getLong(d.getColumnIndex("parkeduntil"));
-            int parkedstate = d.getInt(d.getColumnIndex("parkedstate"));
-
-            Log.i("Car", "ID: " + car_id + ", Lic: " + car_license + ", Time: " + parked_time + ", Until: " + parked_until + ", State: " + parkedstate);
-
-            if (parkedstate == 1) {
-                createNotification(car_id, car_license, parked_until, parked_time);
-            } else {
-                try {
-                    notificationManager.cancel(car_id);
-                } catch (Exception e) {
-                    Log.i("E", e.toString());
-                }
-            }
-        }
+        loadDatabase();
+        startTimer();
 
         return START_STICKY;
     }
@@ -82,69 +60,126 @@ public class ParkingTimerService extends Service {
     public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
-        Log.i("Service", "Service destroyed");
+        Log.i("Service", "---------- Service destroyed ----------");
     }
 
-    public void createNotification(final int id, final String licenseNum, final long parkedUntil, final long parkedTime, final int parkedState) {
-        final long parkingLength = parkedUntil - System.currentTimeMillis() / 1000L;
+    private boolean isThereAnyParkedCars() {
+        Cursor cursor = db.rawQuery("SELECT * FROM cars WHERE parkedstate = 1", null);
 
-        // Calculating parking time end
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, (int) parkingLength / 60);
-
-        // Formatting the result
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm (MMM dd.)");
-        final String endTime = sdf.format(calendar.getTime());
-
-
-        // Intent of main activity
-        //intent = new Intent(context, MainActivity.class);
-        //pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-        // Building the notification
-        mNotification = new NotificationCompat.Builder(getApplicationContext());
-
-        mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);
-
-        new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        new CountDownTimer(parkingLength * 1000, 5000) {
-                            public void onTick(long millisUntilFinished) {
-                                Log.i("TICK!", "Time remaining: " + millisUntilFinished / 60000 + " min");
-                                mNotification.setContentTitle("Parking status of " + licenseNum);
-                                mNotification.setContentText(millisUntilFinished / 60000 + " minutes remained, ticket due: " + endTime);
-                                mNotification.setProgress((int) (parkedUntil - parkedTime), (int) ((parkedUntil - parkedTime) - ((System.currentTimeMillis() / 1000) - parkedTime)), false);
-                                Log.i("Int nezes", Integer.toString((int) parkedUntil) + " " + Integer.toString((int) (System.currentTimeMillis() / 1000)));
-                                notificationManager.notify(id, mNotification.build());
-                            }
-
-                            public void onFinish() {
-                                ContentValues temp = new ContentValues();
-                                temp.put("parkedstate", 0);
-                                db.update("cars", temp, "car_id = " + id, null);
-                                db.close();
-
-                                mNotification.setContentTitle("Parking status of " + licenseNum);
-                                mNotification.setContentText("Parking ticket due!");
-                                mNotification.setProgress(0, 0, false);
-                                notificationManager.notify(id, mNotification.build());
-                            }
-                        }.start();
-                    }
-                }
-        ).run();
-
-        // Making it ongoing
-        //mNotification.flags = Notification.FLAG_ONGOING_EVENT;
-
-
-        //notificationManager.notify(id, mNotification);
+        if(cursor.getCount() == 0) {
+            return false;
+        } else {
+            return  true;
+        }
     }
 
-    public void deleteNotification(final int id) {
+    public void startTimer() {
+        if(refreshTimer == null) {
+            refreshTimer = new Timer("refreshNotificaition");
+            refreshTimer.schedule(_timerTask, 0, 2000);
+        }
+    }
+
+    public void cancelTimer() {
+        if(refreshTimer != null) {
+            refreshTimer.cancel();
+            refreshTimer = null;
+        }
+    }
+
+    private final TimerTask _timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            Log.i("Service", "* Updating DB...");
+            requestCars();
+        }
+    };
+
+    private void loadDatabase() {
+        // Loading the database
+        try {
+            db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+            Log.i("Service", "DB loaded successfully");
+        } catch (Exception e) {
+            Log.i("Service", "DB read error");
+            Log.i("Service", "Exception: " + e.toString());
+        }
+    }
+
+    // ezt ciklikaljuk majd
+    private void requestCars() {
+        d = db.rawQuery("SELECT * FROM cars", null);
+
+        // Fetching the results
+        for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
+            // Putting stuff into variables
+            int carId = d.getInt(d.getColumnIndex("car_id"));
+            String carLicense = d.getString(d.getColumnIndex("car_license"));
+            long parkedTime = d.getLong(d.getColumnIndex("parkedtime"));
+            long parkedUntil = d.getLong(d.getColumnIndex("parkeduntil"));
+            int parkedState = d.getInt(d.getColumnIndex("parkedstate"));
+
+            // Calculating remaining parking length
+            final long remainingTime = parkedUntil - System.currentTimeMillis() / 1000L;
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, (int) remainingTime / 60);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm (MMM dd.)");
+            final String endTime = sdf.format(calendar.getTime()); // Parking end in HH:mm (MMM dd.)
+
+            Log.i("Service", "Car " + carId + " | License: " + carLicense + " | State: " + parkedState);
+
+            if(parkedState == 1) {
+                createNotification(carId, carLicense, endTime, remainingTime/60, parkedTime, parkedUntil);
+            } else {
+                removeNotification(carId);
+            }
+
+            //if (!isThereAnyParkedCars()) {
+            //    cancelTimer();
+            //}
+        }
+    }
+
+    private void createNotification(final int id, final String licenseNum, final String formattedEndTime, final long remainingTime, final long parkedTime, final long parkedUntil) {
+        try {
+            // Building the notification
+            mNotification = new NotificationCompat.Builder(getApplicationContext());
+            mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);
+            //mNotification.setOngoing(true);
+            mNotification.setContentTitle("Parking status of " + licenseNum);
+            mNotification.setContentText(remainingTime + " minutes remained, ticket due: " + formattedEndTime);
+            mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);
+
+            notificationManager.notify(id, mNotification.build());
+
+            Log.i("Service", "Notification created for ID: " + id);
+        } catch (Exception e) {
+            Log.i("Service", "Failed to create notification for ID: " + id);
+            Log.i("Service", "Exception: " + e.toString());
+        }
+    }
+
+    private void removeNotification(final int id) {
         notificationManager.cancel(id);
     }
 
+    private void finishNotification(final int id, final String licenseNum) {
+        try {
+            // Building the notification
+            mNotification = new NotificationCompat.Builder(getApplicationContext());
+            mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);
+            mNotification.setOngoing(false);
+            mNotification.setContentTitle("Parking status of " + licenseNum);
+            mNotification.setContentText("Parking ticket due!");
+            mNotification.setProgress(0, 0, false);
+
+            notificationManager.notify(id, mNotification.build());
+
+            Log.i("Service", "Finish notification created for ID: " + id);
+        } catch (Exception e) {
+            Log.i("Service", "Failed to create notification for ID: " + id);
+            Log.i("Service", "Exception: " + e.toString());
+        }
+    }
 }
