@@ -167,8 +167,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cancel"
-                        android:id="@+id/CancelButton"
-                        android:onClick="openCarFragment" />
+                        android:id="@+id/cancelButton"
+                        android:onClick="openCarFragment(null, true)" />
 
                     <Button
                         android:layout_width="wrap_content"

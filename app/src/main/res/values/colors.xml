@@ -9,6 +9,6 @@
     <color name="colorControls">#7f000000</color>
 
     <color name="darkerWhite">#f2f2f2</color>
-    <color name="foreignLayoutBackground">#28000000</color>
+    <color name="fragmentBackground">#f3f3f3</color>
     <color name="parkingShapeBackground">#2f4fa1</color>
 </resources>

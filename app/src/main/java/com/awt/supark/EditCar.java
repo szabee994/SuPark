@@ -1,6 +1,7 @@
 package com.awt.supark;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,6 +30,7 @@ public class EditCar extends Fragment {
     View view;
     Button addCarButton;
     Button deleteButton;
+    Button cancelButton;
     SQLiteDatabase db;
     EditText carName;
     EditText carLicense;
@@ -40,6 +42,7 @@ public class EditCar extends Fragment {
     RadioButton radioGeneric;
     RadioGroup radioLicenseGroup;
     LinearLayout licensePlate;
+    Context context;
 
     @Nullable
     @Override
@@ -48,6 +51,7 @@ public class EditCar extends Fragment {
 
         addCarButton = (Button) view.findViewById(R.id.DoneButton);
         deleteButton = (Button) view.findViewById(R.id.DeleteButton);
+        cancelButton = (Button) view.findViewById(R.id.cancelButton);
         carName = (EditText) view.findViewById(R.id.carName);
         carLicense = (EditText) view.findViewById(R.id.carLicense);
         txtCity = (TextView) view.findViewById(R.id.city);
@@ -57,6 +61,7 @@ public class EditCar extends Fragment {
         radioLicenseGroup = (RadioGroup) view.findViewById(R.id.radioLicenseGroup);
         licensePlate = (LinearLayout) view.findViewById(R.id.licensePlate);
         licenseNum = "";
+        context = getContext();
 
         // Setting the custom font
         Typeface licenseFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/LicensePlate.ttf");
@@ -108,6 +113,13 @@ public class EditCar extends Fragment {
             @Override
             public void onClick(View v) {
                 showDeleteQuestionDialog("", "Are you sure?", v);
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) context).openCarFragment(null, true);
             }
         });
 

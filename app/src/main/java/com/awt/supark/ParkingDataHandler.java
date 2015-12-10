@@ -263,7 +263,6 @@ public class ParkingDataHandler implements LocationListener{
                 act.backDisabled = true; // Disabling back button
 
                 act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone); // Sending the sms
-                act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
 
                 break;
 
@@ -276,7 +275,8 @@ public class ParkingDataHandler implements LocationListener{
             case "finish":
                 Log.i("MainActivity", "Parking finished");
 
-                Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
+                //Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
+                act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
 
                 // Saving car's state
                 String lic = act.licenseNumber.getText().toString();

@@ -6,30 +6,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:paddingLeft="@dimen/standardFragmentPadding"
-    android:paddingRight="@dimen/standardFragmentPadding"
-    android:paddingBottom="@dimen/standardFragmentPadding">
+    android:visibility="visible">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <fragment class="com.awt.supark.CarListFragment"
-            android:id="@+id/cars"
-            android:layout_width="fill_parent" android:layout_height="fill_parent" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fragmentContainer"
+            android:visibility="visible"
+            android:background="@color/fragmentBackground">
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_margin="16dp"
-            android:clickable="true"
-            android:src="@mipmap/ic_add_black_48dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:onClick="openAddCarFragment"
-            android:id="@+id/floatingButtonAdd"
-            app:backgroundTint="@color/colorAccent" />
-    </RelativeLayout>
+            <fragment class="com.awt.supark.CarListFragment"
+                android:id="@+id/cars"
+                android:layout_width="fill_parent" android:layout_height="fill_parent"
+                android:layout_marginLeft="@dimen/standardFragmentPadding"
+                android:layout_marginRight="@dimen/standardFragmentPadding" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="12dp"
+                android:clickable="true"
+                android:src="@mipmap/ic_add_black_48dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:onClick="openAddCarFragment"
+                android:id="@+id/floatingButtonAdd"
+                android:elevation="5dp"
+                app:backgroundTint="@color/colorAccent"
+                app:elevation="5dp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="7dp"
+            android:background="@drawable/shadow_gradient" />
+
+    </FrameLayout>
 
 </RelativeLayout>

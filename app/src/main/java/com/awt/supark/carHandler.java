@@ -85,9 +85,6 @@ public class carHandler {
         db.close();
 
         // Refreshing the notifications
-        //Intent mServiceIntent = new Intent(context, ParkingTimerService.class);
-        //context.stopService(mServiceIntent);
-        //context.startService(mServiceIntent);
         ((MainActivity) context).startTimerService();
     }
 

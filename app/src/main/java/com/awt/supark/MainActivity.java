@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 3: // When parking data has been sent to server
                     if (msg.arg1 == 1) {
-                        Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(cont, getResources().getString(R.string.parking_data_uploaded), Toast.LENGTH_SHORT).show();
                     } else if (msg.arg1 == 2) {
                         Toast.makeText(cont, getResources().getString(R.string.parking_data_fail), Toast.LENGTH_LONG).show();
                     }
@@ -148,11 +148,11 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 // SMS sent
                 case 0:
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_sent), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_sent), Toast.LENGTH_SHORT).show();
                     break;
                 // SMS delivered
                 case 1:
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), getResources().getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show();
                     parkingInit("finish");
                     break;
                 // Error generic
