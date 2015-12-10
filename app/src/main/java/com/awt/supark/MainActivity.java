@@ -42,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
     int         openedLayout = 0;           // ID of the current opened
 
     // Animation times in ms
-    int         layoutFadeOutDuration = 150;
-    int         layoutFadeInDuration = 150;
-    int         layoutPullUpDuration = 300;
-    int         smallButtonHighlightChangeDuration = 150;
+    int         layoutFadeOutDuration = 100;
+    int         layoutFadeInDuration = 100;
+    int         layoutPullUpDuration = 250;
+    int         smallButtonHighlightChangeDuration = 100;
 
     // Location
     boolean     locationFound = false;      // True if the location has found by GPS signal
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
-    String[]    zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; //Will be read from DB (DB needs to be preloaded in the program)
+    String[]    zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; // Will be read from DB (DB needs to be preloaded in the program)
 
     // Context
     Context     cont;
