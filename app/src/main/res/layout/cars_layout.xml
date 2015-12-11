@@ -17,13 +17,13 @@
             android:layout_height="match_parent"
             android:id="@+id/fragmentContainer"
             android:visibility="visible"
-            android:background="@color/fragmentBackground">
+            android:background="@color/fragmentBackground"
+            android:paddingLeft="@dimen/standardFragmentPadding"
+            android:paddingRight="@dimen/standardFragmentPadding">
 
             <fragment class="com.awt.supark.CarListFragment"
                 android:id="@+id/cars"
-                android:layout_width="fill_parent" android:layout_height="fill_parent"
-                android:layout_marginLeft="@dimen/standardFragmentPadding"
-                android:layout_marginRight="@dimen/standardFragmentPadding" />
+                android:layout_width="fill_parent" android:layout_height="fill_parent" />
 
             <android.support.design.widget.FloatingActionButton
                 android:layout_width="wrap_content"

@@ -18,8 +18,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingLeft="@dimen/standardFragmentPadding"
-            android:paddingRight="@dimen/standardFragmentPadding"
-            android:paddingBottom="@dimen/standardFragmentPadding">
+            android:paddingRight="@dimen/standardFragmentPadding">
 
 
         <LinearLayout

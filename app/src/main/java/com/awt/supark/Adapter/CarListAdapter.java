@@ -57,20 +57,23 @@ public class CarListAdapter extends BaseAdapter {
 
         if (convertView == null) {
             view = inflater.inflate(R.layout.list_item, parent, false);
+
             holder = new ViewHolder();
-            holder.name = (TextView) view.findViewById(R.id.name);
-            holder.licens = (TextView) view.findViewById(R.id.licens);
-            holder.editbtn = (ImageButton) view.findViewById(R.id.imageButton);
-            holder.state = (TextView) view.findViewById(R.id.state);
-            holder.remaining = (TextView) view.findViewById(R.id.remaining);
-            holder.buttonCancel = (ImageButton) view.findViewById(R.id.imageButtonCancel);
+            holder.name =           (TextView)      view.findViewById(R.id.name);
+            holder.licens =         (TextView)      view.findViewById(R.id.licens);
+            holder.editbtn =        (ImageButton)   view.findViewById(R.id.imageButton);
+            holder.state =          (TextView)      view.findViewById(R.id.state);
+            holder.remaining =      (TextView)      view.findViewById(R.id.remaining);
+            holder.buttonCancel =   (ImageButton)   view.findViewById(R.id.imageButtonCancel);
+
             view.setTag(holder);
         } else {
             view = convertView;
-            holder = (ViewHolder) view.getTag();
+            holder =                (ViewHolder)    view.getTag();
         }
 
         final Car car = carArray.get(position);
+
         holder.name.setText(car.getName());
         holder.licens.setText(car.getLicens());
         holder.state.setText(car.getState());
@@ -78,12 +81,12 @@ public class CarListAdapter extends BaseAdapter {
         if (car.getState() == "Parked") {
             int time = car.getRemaining();
             int totalMinutes = (time / 60) + 1; // Don't know why, but this was the only way that worked it out
+
             holder.remaining.setText(Integer.toString(totalMinutes) + " minutes remaining");
             holder.remaining.setVisibility(View.VISIBLE);
             holder.buttonCancel.setVisibility(View.VISIBLE);
-        }
-        else {
-            holder.buttonCancel.setVisibility(View.GONE);
+        } else {
+            holder.buttonCancel.setVisibility(View.INVISIBLE);
         }
 
         holder.editbtn.setOnClickListener(new View.OnClickListener() {
@@ -97,13 +100,12 @@ public class CarListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 ((MainActivity) context).carHandler.stopPark(car.getSqlid());
+
                 holder.state.setText("Free");
                 holder.remaining.setVisibility(View.GONE);
-                holder.buttonCancel.setVisibility(View.GONE);
-                Log.i("SQLID", "ID: " + car.getSqlid());
+                holder.buttonCancel.setVisibility(View.INVISIBLE);
 
                 ((MainActivity) context).openCarFragment(null, false);
-                //((MainActivity) context).startService(true, car.getSqlid());
             }
         });
 

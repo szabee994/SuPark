@@ -49,19 +49,19 @@ public class EditCar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.edit_car, container, false);
 
-        addCarButton = (Button) view.findViewById(R.id.DoneButton);
-        deleteButton = (Button) view.findViewById(R.id.DeleteButton);
-        cancelButton = (Button) view.findViewById(R.id.cancelButton);
-        carName = (EditText) view.findViewById(R.id.carName);
-        carLicense = (EditText) view.findViewById(R.id.carLicense);
-        txtCity = (TextView) view.findViewById(R.id.city);
-        txtNum = (TextView) view.findViewById(R.id.number);
-        radioNewSrb = (RadioButton) view.findViewById(R.id.radioNewSrb);
-        radioGeneric = (RadioButton) view.findViewById(R.id.radioGeneric);
-        radioLicenseGroup = (RadioGroup) view.findViewById(R.id.radioLicenseGroup);
-        licensePlate = (LinearLayout) view.findViewById(R.id.licensePlate);
+        addCarButton =      (Button)         view.findViewById(R.id.DoneButton);
+        deleteButton =      (Button)        view.findViewById(R.id.DeleteButton);
+        cancelButton =      (Button)        view.findViewById(R.id.cancelButton);
+        carName =           (EditText)      view.findViewById(R.id.carName);
+        carLicense =        (EditText)      view.findViewById(R.id.carLicense);
+        txtCity =           (TextView)      view.findViewById(R.id.city);
+        txtNum =            (TextView)      view.findViewById(R.id.number);
+        radioNewSrb =       (RadioButton)   view.findViewById(R.id.radioNewSrb);
+        radioGeneric =      (RadioButton)   view.findViewById(R.id.radioGeneric);
+        radioLicenseGroup = (RadioGroup)    view.findViewById(R.id.radioLicenseGroup);
+        licensePlate =      (LinearLayout)  view.findViewById(R.id.licensePlate);
         licenseNum = "";
-        context = getContext();
+        context =           getContext();
 
         // Setting the custom font
         Typeface licenseFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/LicensePlate.ttf");
@@ -95,13 +95,14 @@ public class EditCar extends Fragment {
             d.close();
         } else {
             radioNewSrb.setChecked(true);
+            radioListener();
         }
 
         addCarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(editid == -1) {
-                    AddCar(v);
+                    addCar(v);
                 }
                 else {
                     editCar(v);
@@ -241,7 +242,7 @@ public class EditCar extends Fragment {
         alertBuilder.show();
     }
 
-    public void AddCar(View v) {
+    public void addCar(View v) {
         if (carName.getText().toString().equals("") || carLicense.getText().toString().equals("")) {
             showErrorDialog("Error", "Car name or license number is empty.");
         }
@@ -257,7 +258,7 @@ public class EditCar extends Fragment {
             ContentValues values_temp = new ContentValues();
             values_temp.put("car_id", numberOfCars + 1);
             values_temp.put("car_name", carName.getText().toString());
-            values_temp.put("car_license", carLicense.getText().toString());
+            values_temp.put("car_license", carLicense.getText().toString().toUpperCase());
             values_temp.put("parkedstate", 0);
 
             int generic;
@@ -279,7 +280,7 @@ public class EditCar extends Fragment {
         // Setting values
         ContentValues values_temp = new ContentValues();
         values_temp.put("car_name", carName.getText().toString());
-        values_temp.put("car_license", carLicense.getText().toString());
+        values_temp.put("car_license", carLicense.getText().toString().toUpperCase());
         int generic;
         if (radioNewSrb.isChecked()) {
             generic = 0;

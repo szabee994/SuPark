@@ -4,6 +4,7 @@
     <dimen name="contentMarginTop">0dp</dimen>
     <dimen name="standardCardElevation">3dp</dimen>
     <dimen name="standardFragmentPadding">5dp</dimen>
+    <dimen name="etcLayoutCardMargin">3dp</dimen>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
