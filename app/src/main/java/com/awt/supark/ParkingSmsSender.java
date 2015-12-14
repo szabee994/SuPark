@@ -28,8 +28,8 @@ public class ParkingSmsSender {
     }
 
     public void sendSms(String phoneNumber, int zone) {
-        Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
-        /*
+        /*Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
+
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 

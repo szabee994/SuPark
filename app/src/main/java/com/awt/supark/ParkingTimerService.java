@@ -28,12 +28,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ParkingTimerService extends Service {
+    private static final int TIMER_PERIOD = 2000;
+
     SQLiteDatabase              db;
     Context                     context;
     Cursor                      d;
     NotificationManager         notificationManager;
     NotificationCompat.Builder  mNotification;
     Timer                       refreshTimer;
+    TimerTask                   timerTask;
     BroadcastReceiver           mReceiver;
 
     @Override
@@ -45,6 +48,7 @@ public class ParkingTimerService extends Service {
     public void onCreate(){
         super.onCreate();
         Log.i("Service", "---------- Service created ----------");
+
         notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
     }
 
@@ -54,7 +58,13 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "---------- Service started ----------");
 
         loadDatabase();
-        startTimer();
+
+        // Checking that are there any cars in the database. If the result is true starts the timer, otherwise destroys the service.
+        if(isThereAnyCars()) {
+            startTimer(TIMER_PERIOD);
+        } else {
+            this.stopService(intent);
+        }
 
         return START_STICKY;
     }
@@ -66,7 +76,6 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "---------- Service destroyed ----------");
     }
 
-    // use this as an inner class like here or as a top-level class
     public class MyReceiver extends BroadcastReceiver {
 
         @Override
@@ -95,17 +104,31 @@ public class ParkingTimerService extends Service {
         }
     }
 
+    private boolean isThereAnyCars() {
+        Cursor cursor = db.rawQuery("SELECT * FROM cars", null);
+
+        if(cursor.getCount() == 0) {
+            return false;
+        } else {
+            return  true;
+        }
+    }
+
     /*
      * Starts a timer which will auto updates the database and the notifications in every 2 seconds
      */
-    public void startTimer() {
+    public void startTimer(int period) {
         if(refreshTimer == null) {
-            refreshTimer = new Timer("refreshNotification");
-            refreshTimer.schedule(_timerTask, 0, 2000);
+            refreshTimer = new Timer("refreshNotification", true);
+            timerTask = new _timerTask();
+            refreshTimer.schedule(timerTask, 0, period);
             Log.i("Service", "* Refresh timer started...");
         }
     }
 
+    /*
+     * Cancels the timer task
+     */
     public void cancelTimer() {
         if(refreshTimer != null) {
             refreshTimer.cancel();
@@ -114,13 +137,16 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    private final TimerTask _timerTask = new TimerTask() {
+    /*
+     * Timer runs this command
+     */
+    private class _timerTask extends TimerTask {
         @Override
         public void run() {
-            Log.i("Service", "* Updating DB...");
+            //Log.i("Service", "* Updating DB...");
             requestCars();
         }
-    };
+    }
 
     /*
      * Initializes the database
@@ -146,11 +172,11 @@ public class ParkingTimerService extends Service {
         for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
 
             // Putting stuff into variables
-            int carId =         d.getInt(   d.getColumnIndex("car_id"));
+            int carId = d.getInt(d.getColumnIndex("car_id"));
             String carLicense = d.getString(d.getColumnIndex("car_license"));
-            long parkedTime =   d.getLong(  d.getColumnIndex("parkedtime"));
-            long parkedUntil =  d.getLong(  d.getColumnIndex("parkeduntil"));
-            int parkedState =   d.getInt(   d.getColumnIndex("parkedstate"));
+            long parkedTime =   d.getLong(d.getColumnIndex("parkedtime"));
+            long parkedUntil =  d.getLong(d.getColumnIndex("parkeduntil"));
+            int parkedState =   d.getInt(d.getColumnIndex("parkedstate"));
 
             // Calculating remaining parking length
             long remainingTime = parkedUntil - System.currentTimeMillis() / 1000L;
@@ -174,6 +200,13 @@ public class ParkingTimerService extends Service {
                 removeNotification(carId);
             }
         }
+
+        // If there is no parked cars cancels the timer and destroys the service
+        if(!isThereAnyParkedCars()) {
+            cancelTimer();
+            Intent i = new Intent(this, ParkingTimerService.class);
+            stopService(i);
+        }
     }
 
     /*
@@ -181,7 +214,7 @@ public class ParkingTimerService extends Service {
      */
     private void createNotification(final int id, final String licenseNum, final String formattedEndTime, final long remainingTime, final long parkedTime, final long parkedUntil) {
         /*Cancel intent
-        Intent cancelIntent = new Intent(this, ParkingTimerService.class);
+        Intent cancelIntent = new Intent(this, sheit);
         Bundle cancelBundle = new Bundle();
         cancelBundle.putInt("cancelId", id);
         cancelIntent.putExtras(cancelBundle);
@@ -192,7 +225,7 @@ public class ParkingTimerService extends Service {
             mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);                                      // * icon
             mNotification.setOngoing(true);                                                                         // * making it ongoing so the user can't swipe away
             mNotification.setContentTitle("Parking status of " + licenseNum);                                       // * title
-            mNotification.setContentText(remainingTime + " minute(s) remained, ticket due: " + formattedEndTime);   // * content text
+            mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);   // * content text
             mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);           // * progress bar to visualize the remaining time
             //mNotification.addAction(R.mipmap.ic_remove_circle_outline_black_48dp, "Cancel", pIntentCancel);         // * cancel button
             notificationManager.notify(id, mNotification.build());                                                  // Finally we can build the actual notification where the ID is the selected car's ID

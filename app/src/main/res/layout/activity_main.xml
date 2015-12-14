@@ -37,18 +37,18 @@
                 android:layout_weight="1"
                 android:alpha="1"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_horizontal_margin"
-                android:paddingLeft="@dimen/activity_vertical_margin"
-                android:paddingRight="@dimen/activity_vertical_margin">
+                android:paddingBottom="@dimen/activity_horizontal_margin">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="8dp"
                     android:layout_weight="0.6"
                     android:background="#1c000000"
-                    android:layout_marginTop="5dp"
-                    android:padding="5dp">
+                    android:layout_marginTop="2dp"
+                    android:padding="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginLeft="3dp">
 
                     <TextView
                         android:id="@+id/textViewLocationInfo"
@@ -222,7 +222,7 @@
         android:layout_height="@dimen/layoutTitleBarHeight"
         android:layout_gravity="center_vertical|left"
         android:layout_weight="1"
-        android:background="#32000000"
+        android:background="#5a000000"
         android:fitsSystemWindows="false"
         android:orientation="horizontal"
         android:paddingBottom="10dp"
@@ -245,13 +245,13 @@
         <LinearLayout
             android:id="@+id/layoutZoneChanger"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
             android:layout_gravity="bottom|left"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/buttonZone1"
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:background="@null"
@@ -261,7 +261,7 @@
 
             <ImageButton
                 android:id="@+id/buttonZone2"
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:background="@null"
@@ -271,7 +271,7 @@
 
             <ImageButton
                 android:id="@+id/buttonZone3"
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:background="@null"
@@ -281,7 +281,7 @@
 
             <ImageButton
                 android:id="@+id/buttonZone4"
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:background="@null"
