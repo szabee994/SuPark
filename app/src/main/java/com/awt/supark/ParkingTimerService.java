@@ -98,8 +98,10 @@ public class ParkingTimerService extends Service {
         Cursor cursor = db.rawQuery("SELECT * FROM cars WHERE parkedstate = 1", null);
 
         if(cursor.getCount() == 0) {
+            cursor.close();
             return false;
         } else {
+            cursor.close();
             return  true;
         }
     }
@@ -108,21 +110,23 @@ public class ParkingTimerService extends Service {
         Cursor cursor = db.rawQuery("SELECT * FROM cars", null);
 
         if(cursor.getCount() == 0) {
+            cursor.close();
             return false;
         } else {
+            cursor.close();
             return  true;
         }
     }
 
     /*
-     * Starts a timer which will auto updates the database and the notifications in every 2 seconds
+     * Starts a timer which will auto update the database and the notifications
      */
     public void startTimer(int period) {
         if(refreshTimer == null) {
             refreshTimer = new Timer("refreshNotification", true);
             timerTask = new _timerTask();
             refreshTimer.schedule(timerTask, 0, period);
-            Log.i("Service", "* Refresh timer started...");
+            Log.i("Service", "Refresh timer started...");
         }
     }
 
@@ -143,7 +147,7 @@ public class ParkingTimerService extends Service {
     private class _timerTask extends TimerTask {
         @Override
         public void run() {
-            //Log.i("Service", "* Updating DB...");
+            Log.i("Service", "Updating DB...");
             requestCars();
         }
     }
@@ -154,7 +158,7 @@ public class ParkingTimerService extends Service {
     private void loadDatabase() {
         try {
             db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-            Log.i("Service", "DB loaded successfully");
+            Log.i("Service", "DB loaded successfully...");
         } catch (Exception e) {
             Log.i("Service", "DB read error");
             Log.i("Service", "Exception: " + e.toString());
@@ -179,7 +183,7 @@ public class ParkingTimerService extends Service {
             int parkedState =   d.getInt(d.getColumnIndex("parkedstate"));
 
             // Calculating remaining parking length
-            long remainingTime = parkedUntil - System.currentTimeMillis() / 1000L;
+            long remainingTime = (parkedUntil - System.currentTimeMillis() / 1000L);
 
             // Formatting the ending time
             Calendar calendar = Calendar.getInstance();
@@ -187,19 +191,22 @@ public class ParkingTimerService extends Service {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm (MMM dd.)");
             final String endTime = sdf.format(calendar.getTime()); // Parking end in HH:mm (MMM dd.)
 
-            Log.i("Service", "Car " + carId + " | License: " + carLicense + " | State: " + parkedState);
+            Log.i("Service", "Car " + carId + " | License: " + carLicense + "\t | State: " + parkedState + " | Remaining: " + remainingTime);
 
             if(parkedState == 1) {
                 if(remainingTime > 0) {
                     createNotification(carId, carLicense, endTime, (remainingTime / 60) + 1, parkedTime, parkedUntil);
                 } else {
                     finishNotification(carId, carLicense);
+                    removeNotification(carId);
                     stopPark(carId);
                 }
             } else {
                 removeNotification(carId);
             }
         }
+
+        d.close();
 
         // If there is no parked cars cancels the timer and destroys the service
         if(!isThereAnyParkedCars()) {
@@ -230,7 +237,7 @@ public class ParkingTimerService extends Service {
             //mNotification.addAction(R.mipmap.ic_remove_circle_outline_black_48dp, "Cancel", pIntentCancel);         // * cancel button
             notificationManager.notify(id, mNotification.build());                                                  // Finally we can build the actual notification where the ID is the selected car's ID
 
-            Log.i("Service", "Notification created for ID: " + id);
+            //Log.i("Service", "Notification created for ID: " + id);
         } catch (Exception e) {
             Log.i("Service", "Failed to create notification for ID: " + id);
             Log.i("Service", "Exception: " + e.toString());
@@ -241,7 +248,13 @@ public class ParkingTimerService extends Service {
      * Removes the notification on the ID given in the parameter
      */
     private void removeNotification(final int id) {
-        notificationManager.cancel(id);
+        try {
+            notificationManager.cancel(id);
+            //Log.i("Service", "Notification successfully removed for ID: " + id);
+        } catch (Exception e) {
+            Log.i("Service", "Failed to remove notification for ID: " + id);
+            Log.i("Service", "Exception: " + e.toString());
+        }
     }
 
     /*
@@ -262,7 +275,7 @@ public class ParkingTimerService extends Service {
              */
             notificationManager.notify((int) System.currentTimeMillis(), mNotification.build());
 
-            Log.i("Service", "Finish notification created for ID: " + id);
+            //Log.i("Service", "Finish notification created for ID: " + id);
         } catch (Exception e) {
             Log.i("Service", "Failed to create notification for ID: " + id);
             Log.i("Service", "Exception: " + e.toString());
