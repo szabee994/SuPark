@@ -1,21 +1,18 @@
 package com.awt.supark.Adapter;
 
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.awt.supark.MainActivity;
 import com.awt.supark.Model.Car;
-import com.awt.supark.ParkingTimerService;
 import com.awt.supark.R;
 
 import java.util.ArrayList;
@@ -60,11 +57,14 @@ public class CarListAdapter extends BaseAdapter {
 
             holder = new ViewHolder();
             holder.name =           (TextView)      view.findViewById(R.id.name);
-            holder.licens =         (TextView)      view.findViewById(R.id.licens);
+            holder.licensePlate = (LinearLayout) view.findViewById(R.id.licensePlateLayout);
+            holder.city = (TextView) view.findViewById(R.id.city);
+            holder.num = (TextView) view.findViewById(R.id.num);
             holder.editbtn =        (ImageButton)   view.findViewById(R.id.imageButton);
             holder.state =          (TextView)      view.findViewById(R.id.state);
             holder.remaining =      (TextView)      view.findViewById(R.id.remaining);
             holder.buttonCancel =   (ImageButton)   view.findViewById(R.id.imageButtonCancel);
+            holder.cardGeneral = (CardView) view.findViewById(R.id.cardGeneral);
 
             view.setTag(holder);
         } else {
@@ -75,7 +75,10 @@ public class CarListAdapter extends BaseAdapter {
         final Car car = carArray.get(position);
 
         holder.name.setText(car.getName());
-        holder.licens.setText(car.getLicens());
+        Typeface licenseFont = Typeface.createFromAsset(context.getAssets(), "fonts/LicensePlate.ttf");
+        holder.city.setTypeface(licenseFont);
+        holder.num.setTypeface(licenseFont);
+        updateLicensePlate(car.getLicens(), car.getGeneric(), holder.city, holder.num, holder.licensePlate);
         holder.state.setText(car.getState());
 
         if (car.getState() == "Parked") {
@@ -100,21 +103,64 @@ public class CarListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 ((MainActivity) context).carHandler.stopPark(car.getSqlid());
-
                 holder.state.setText("Free");
                 holder.remaining.setVisibility(View.GONE);
                 holder.buttonCancel.setVisibility(View.INVISIBLE);
-
                 ((MainActivity) context).openCarFragment(null, false);
+            }
+        });
+
+        holder.cardGeneral.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) context).setLicense(v, car.getLicens());
             }
         });
 
         return view;
     }
 
+    public void updateLicensePlate(CharSequence charSequence, int generic, TextView txtCity, TextView txtNum, LinearLayout licensePlate) {
+        if (generic == 0) {
+            if (charSequence.length() > 1) {
+                txtCity.setText(charSequence.subSequence(0, 2));
+
+                if (charSequence.length() > 5) {
+                    txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
+                            charSequence.length()));
+                } else if (charSequence.length() > 2) {
+                    txtNum.setText(charSequence.subSequence(2, charSequence.length()));
+                } else {
+                    txtNum.setText("");
+                }
+            } else {
+                txtCity.setText("");
+                txtNum.setText("");
+            }
+
+            if (charSequence.length() == 8) {
+                txtNum.setTextScaleX(0.9f);
+            } else {
+                txtNum.setTextScaleX(1);
+            }
+        } else {
+            txtCity.setVisibility(View.GONE);
+            licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate2));
+            txtNum.setText(charSequence);
+
+            if (charSequence.length() > 10) {
+                txtNum.setTextScaleX(0.85f);
+            } else {
+                txtNum.setTextScaleX(1);
+            }
+        }
+    }
+
     public class ViewHolder {
-        TextView name, licens, state, remaining;
+        TextView name, city, num, state, remaining;
         ImageButton editbtn;
         ImageButton buttonCancel;
+        LinearLayout licensePlate;
+        CardView cardGeneral;
     }
 }

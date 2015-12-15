@@ -2,7 +2,6 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -279,9 +278,10 @@ public class ParkingDataHandler implements LocationListener{
                 act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
 
                 // Saving car's state
-                String lic = act.licenseNumber.getText().toString();
-                if (act.carHandler.getIdByLicense(lic) != -1) {
-                    act.carHandler.saveCarState(act.carHandler.getIdByLicense(lic), getZoneMaxTime(act.currentZone), currloc);
+                String lic = act.currentLicense;
+                int id = act.carHandler.getIdByLicense(lic);
+                if (id != -1) {
+                    act.carHandler.saveCarState(id, getZoneMaxTime(act.currentZone), currloc);
                 }
 
                 // Saving the last used license number

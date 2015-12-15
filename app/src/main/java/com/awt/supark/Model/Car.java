@@ -7,6 +7,7 @@ public class Car {
     String name, licens, state;
     int remaining;
     int sqlid;
+    int generic;
 
     public String getName() {
         return name;
@@ -42,5 +43,13 @@ public class Car {
 
     public void setRemaining(int remaining) {
         this.remaining = remaining;
+    }
+
+    public int getGeneric() {
+        return generic;
+    }
+
+    public void setGeneric(int generic) {
+        this.generic = generic;
     }
 }

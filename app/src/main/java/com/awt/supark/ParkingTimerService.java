@@ -4,24 +4,19 @@ package com.awt.supark;
  * Created by Szabolcs on 2015.11.30..
  */
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.media.MediaBrowserCompat;
 import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Timer;
@@ -76,24 +71,6 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "---------- Service destroyed ----------");
     }
 
-    public class MyReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i("Service", "Cancel broadcast received.");
-
-            Bundle answerBundle = intent.getExtras();
-            int cancelId = answerBundle.getInt("cancelId");
-
-            stopPark(cancelId);
-        }
-
-        // constructor
-        public MyReceiver(){
-
-        }
-    }
-
     private boolean isThereAnyParkedCars() {
         Cursor cursor = db.rawQuery("SELECT * FROM cars WHERE parkedstate = 1", null);
 
@@ -138,17 +115,6 @@ public class ParkingTimerService extends Service {
             refreshTimer.cancel();
             refreshTimer.purge();
             refreshTimer = null;
-        }
-    }
-
-    /*
-     * Timer runs this command
-     */
-    private class _timerTask extends TimerTask {
-        @Override
-        public void run() {
-            Log.i("Service", "Updating DB...");
-            requestCars();
         }
     }
 
@@ -231,10 +197,10 @@ public class ParkingTimerService extends Service {
             mNotification = new NotificationCompat.Builder(getApplicationContext());                                // Setting the notification parameters:
             mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);                                      // * icon
             mNotification.setOngoing(true);                                                                         // * making it ongoing so the user can't swipe away
-            mNotification.setContentTitle("Parking status of " + licenseNum);                                       // * title
-            mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);   // * content text
+            mNotification.setContentTitle("Parking status of " + licenseNum.toUpperCase());                         // * title
+            mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);       // * content text
             mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);           // * progress bar to visualize the remaining time
-            //mNotification.addAction(R.mipmap.ic_remove_circle_outline_black_48dp, "Cancel", pIntentCancel);         // * cancel button
+            //mNotification.addAction(R.mipmap.ic_remove_circle_outline_black_48dp, "Cancel", pIntentCancel);       // * cancel button
             notificationManager.notify(id, mNotification.build());                                                  // Finally we can build the actual notification where the ID is the selected car's ID
 
             //Log.i("Service", "Notification created for ID: " + id);
@@ -291,5 +257,34 @@ public class ParkingTimerService extends Service {
         ContentValues temp = new ContentValues();
         temp.put("parkedstate", 0);
         db.update("cars", temp, "car_id = " + id, null);
+    }
+
+    public class MyReceiver extends BroadcastReceiver {
+
+        // constructor
+        public MyReceiver() {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("Service", "Cancel broadcast received.");
+
+            Bundle answerBundle = intent.getExtras();
+            int cancelId = answerBundle.getInt("cancelId");
+
+            stopPark(cancelId);
+        }
+    }
+
+    /*
+     * Timer runs this command
+     */
+    private class _timerTask extends TimerTask {
+        @Override
+        public void run() {
+            Log.i("Service", "Updating DB...");
+            requestCars();
+        }
     }
 }

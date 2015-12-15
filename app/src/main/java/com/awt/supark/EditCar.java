@@ -215,8 +215,7 @@ public class EditCar extends Fragment {
     }
 
     public void DeleteCar(View v) {
-        db.delete("cars","car_id = " + editid,null);
-        ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
+        db.delete("cars", "car_id = " + editid, null);
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 
@@ -271,7 +270,6 @@ public class EditCar extends Fragment {
 
             // Inserting the new database record
             db.insert("cars", null, values_temp);
-            ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
             ((MainActivity) getActivity()).openCarFragment(v, -1);
         }
     }
@@ -291,7 +289,6 @@ public class EditCar extends Fragment {
 
         // Inserting the new database record
         db.update("cars", values_temp, "car_id = " + editid, null);
-        ((MainActivity) getActivity()).carHandler.setLicenseToArray(((MainActivity) getActivity()));
         ((MainActivity)getActivity()).openCarFragment(v, -1);
     }
 }

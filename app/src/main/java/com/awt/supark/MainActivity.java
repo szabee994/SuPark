@@ -3,7 +3,6 @@ package com.awt.supark;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,8 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     backDisabled = false;       // True if the back keys functionality needs to be disabled
 
     // String database
-    String[]    licenseNumberDb = {""};
+    String currentLicense = "";
 
     /*                         sebők             dani              andi             mark
        Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
@@ -80,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
     // UI elements
     ImageButton             btnPark;
-    AutoCompleteTextView    licenseNumber;
     ImageButton             btnZone1;
     ImageButton             btnZone2;
     ImageButton             btnZone3;
@@ -94,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton    btnStatistics;
     FloatingActionButton    btnEtc;
     TextView                zonePrice;
+    LinearLayout licensePlate;
+    TextView licenseCity;
+    TextView licenseNum;
 
     // Layouts
     RelativeLayout      backDimmer;
@@ -102,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
     TableRow            tableRowTopHalf;
     LinearLayout        parkingBackground;
     RelativeLayout      wrapper;
-
-    // License number database adapter
-    ArrayAdapter<String> licenseNumberDbAdapter;
 
     // Fragment manager
     FragmentManager fragmentManager;
@@ -177,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
     ZoneHandler zoneHandler;
 
     MainActivity act = this;
-    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
         btnEtc =            (FloatingActionButton)  findViewById(R.id.buttonEtc);
         btnMap =            (FloatingActionButton)  findViewById(R.id.buttonMap);
         zonePrice =         (TextView)              findViewById(R.id.textViewZonePrice);
+        licensePlate = (LinearLayout) findViewById(R.id.licensePlate);
+        licenseCity = (TextView) findViewById(R.id.city);
+        licenseNum = (TextView) findViewById(R.id.num);
 
         // Layouts
         backDimmer =        (RelativeLayout)        findViewById(R.id.back_dimmer);
@@ -227,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
         sharedprefs =       PreferenceManager.getDefaultSharedPreferences(cont);
         autoLoc =           sharedprefs.getBoolean("autoloc", true);
         lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
+        if (lastLicense)
+            currentLicense = sharedprefs.getString("lastlicense", "");
 
         fragmentManager =   getSupportFragmentManager();
 
@@ -279,8 +279,7 @@ public class MainActivity extends AppCompatActivity {
             layoutHandler.updateLocationTextButton(act);
         }
 
-        // Loading the car list
-        carHandler.setLicenseToArray(act);
+        carHandler.updateLicense(act);
 
         // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
@@ -302,6 +301,12 @@ public class MainActivity extends AppCompatActivity {
         parkHandler.parkingInit(state, this);
     }
 
+    public void setLicense(View v, String license) {
+        currentLicense = license;
+        carHandler.updateLicense(act);
+        smallButtonPressed(findViewById(R.id.buttonCars));
+    }
+
     public void park(String action) {
         parkHandler.park(action, this);
     }
@@ -313,6 +318,10 @@ public class MainActivity extends AppCompatActivity {
     // Includes views from XML depending on which button was pressed
     public void otherContentHandler(View view) {
         layoutHandler.otherContentHandler(view, this);
+    }
+
+    public void licensePressed(View view) {
+        layoutHandler.smallButtonPressed(findViewById(R.id.buttonCars), act);
     }
 
     public void smallButtonPressed(final View view) {

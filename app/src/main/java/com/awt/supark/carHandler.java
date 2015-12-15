@@ -2,13 +2,14 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.location.Location;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by docto on 03/12/2015.
@@ -16,9 +17,23 @@ import android.widget.AutoCompleteTextView;
 public class carHandler {
     Context context;
     SQLiteDatabase db;
+    SharedPreferences sharedprefs;
 
     public carHandler(Context cont) {
         context = cont;
+        db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
+                "  `car_id` int(2) NOT NULL ,\n" +
+                "  `car_name` varchar(100) NOT NULL,\n" +
+                "  `car_license` varchar(100) NOT NULL,\n" +
+                "  `isgeneric` int(1) NOT NULL,\n" +
+                "  `parkedtime` long default 0,\n" +
+                "  `parkeduntil` long default 0,\n" +
+                "  `parkedlon` double default 0,\n" +
+                "  `parkedlat` double default 0,\n" +
+                "  `parkedstate` int(1) NOT NULL default 0,\n" +
+                "  PRIMARY KEY (`car_id`)\n" +
+                ")");
     }
 
     public int getIdByLicense(String lic) {
@@ -88,47 +103,60 @@ public class carHandler {
         ((MainActivity) context).startTimerService();
     }
 
-    public void setLicenseToArray(final MainActivity act) {
+    public void updateLicense(MainActivity act) {
+        updateLicensePlate(getIdByLicense(act.currentLicense), act.licenseCity, act.licenseNum, act.licensePlate);
+    }
+
+    public void updateLicensePlate(int sqlid, TextView txtCity, TextView txtNum, LinearLayout licensePlate) {
         db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-        db.execSQL("CREATE TABLE IF NOT EXISTS `cars` (\n" +
-                "  `car_id` int(2) NOT NULL ,\n" +
-                "  `car_name` varchar(100) NOT NULL,\n" +
-                "  `car_license` varchar(100) NOT NULL,\n" +
-                "  `isgeneric` int(1) NOT NULL,\n" +
-                "  `parkedtime` long default 0,\n" +
-                "  `parkeduntil` long default 0,\n" +
-                "  `parkedlon` double default 0,\n" +
-                "  `parkedlat` double default 0,\n" +
-                "  `parkedstate` int(1) NOT NULL default 0,\n" +
-                "  PRIMARY KEY (`car_id`)\n" +
-                ")");
-
-        int numberOfCars;
-
-        Cursor d = db.rawQuery("SELECT * FROM cars", null);
-        numberOfCars = d.getCount();
-        Log.i("Number", Integer.toString(numberOfCars));
-        if (numberOfCars > 0) {
-            act.licenseNumberDb = new String[numberOfCars];
-            int i = 0;
-            for (d.moveToFirst(); !d.isAfterLast(); d.moveToNext()) {
-                int carlicenseindex = d.getColumnIndex("car_license");
-                act.licenseNumberDb[i] = d.getString(carlicenseindex);
-                i++;
-            }
+        Cursor d = db.rawQuery("SELECT car_license, isgeneric FROM cars WHERE car_id = '" + sqlid + "'", null);
+        int generic;
+        CharSequence charSequence;
+        if (d.getCount() > 0) {
+            d.moveToFirst();
+            generic = d.getInt(d.getColumnIndex("isgeneric"));
+            charSequence = d.getString(d.getColumnIndex("car_license"));
+        } else {
+            generic = 1;
+            charSequence = "NO LICENSE";
         }
+        Typeface licenseFont = Typeface.createFromAsset(context.getAssets(), "fonts/LicensePlate.ttf");
+        txtCity.setTypeface(licenseFont);
+        txtNum.setTypeface(licenseFont);
+        if (generic == 0) {
+            txtCity.setVisibility(View.VISIBLE);
+            licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate));
+            if (charSequence.length() > 1) {
+                txtCity.setText(charSequence.subSequence(0, 2));
 
-        d.close();
-        db.close();
+                if (charSequence.length() > 5) {
+                    txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
+                            charSequence.length()));
+                } else if (charSequence.length() > 2) {
+                    txtNum.setText(charSequence.subSequence(2, charSequence.length()));
+                } else {
+                    txtNum.setText("");
+                }
+            } else {
+                txtCity.setText("");
+                txtNum.setText("");
+            }
 
-        // Loading license numbers database into the UI element licenseNumber (AutoCompleteTextView)
-        act.licenseNumberDbAdapter = new ArrayAdapter<>(act, android.R.layout.select_dialog_item, act.licenseNumberDb);
-        act.licenseNumber = (AutoCompleteTextView) act.findViewById(R.id.licenseNumber);
-        act.licenseNumber.setThreshold(1);  // Starts the matching after one letter entered
-        act.licenseNumber.setAdapter(act.licenseNumberDbAdapter);  // Applying the adapter
+            if (charSequence.length() == 8) {
+                txtNum.setTextScaleX(0.9f);
+            } else {
+                txtNum.setTextScaleX(1);
+            }
+        } else {
+            txtCity.setVisibility(View.GONE);
+            licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate2));
+            txtNum.setText(charSequence);
 
-        if (act.lastLicense) {
-            act.licenseNumber.setText(act.sharedprefs.getString("lastlicense", ""));
+            if (charSequence.length() > 10) {
+                txtNum.setTextScaleX(0.85f);
+            } else {
+                txtNum.setTextScaleX(1);
+            }
         }
     }
 }
