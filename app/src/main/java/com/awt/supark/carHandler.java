@@ -104,59 +104,65 @@ public class carHandler {
     }
 
     public void updateLicense(MainActivity act) {
-        updateLicensePlate(getIdByLicense(act.currentLicense), act.licenseCity, act.licenseNum, act.licensePlate);
+        updateLicensePlate(getIdByLicense(act.currentLicense), act.licenseCity, act.licenseNum, act.licensePlate, act.tapHereText);
     }
 
-    public void updateLicensePlate(int sqlid, TextView txtCity, TextView txtNum, LinearLayout licensePlate) {
+    public void updateLicensePlate(int sqlid, TextView txtCity, TextView txtNum, LinearLayout licensePlate, TextView tapHereText) {
+        txtCity.setVisibility(View.VISIBLE);
+        txtNum.setVisibility(View.VISIBLE);
+        licensePlate.setVisibility(View.VISIBLE);
+        tapHereText.setVisibility(View.GONE);
         db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
         Cursor d = db.rawQuery("SELECT car_license, isgeneric FROM cars WHERE car_id = '" + sqlid + "'", null);
-        int generic;
+        int generic = 0;
         CharSequence charSequence;
         if (d.getCount() > 0) {
             d.moveToFirst();
             generic = d.getInt(d.getColumnIndex("isgeneric"));
             charSequence = d.getString(d.getColumnIndex("car_license"));
-        } else {
-            generic = 1;
-            charSequence = "NO LICENSE";
-        }
-        Typeface licenseFont = Typeface.createFromAsset(context.getAssets(), "fonts/LicensePlate.ttf");
-        txtCity.setTypeface(licenseFont);
-        txtNum.setTypeface(licenseFont);
-        if (generic == 0) {
-            txtCity.setVisibility(View.VISIBLE);
-            licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate));
-            if (charSequence.length() > 1) {
-                txtCity.setText(charSequence.subSequence(0, 2));
+            Typeface licenseFont = Typeface.createFromAsset(context.getAssets(), "fonts/LicensePlate.ttf");
+            txtCity.setTypeface(licenseFont);
+            txtNum.setTypeface(licenseFont);
+            if (generic == 0) {
+                txtCity.setVisibility(View.VISIBLE);
+                licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate));
+                if (charSequence.length() > 1) {
+                    txtCity.setText(charSequence.subSequence(0, 2));
 
-                if (charSequence.length() > 5) {
-                    txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
-                            charSequence.length()));
-                } else if (charSequence.length() > 2) {
-                    txtNum.setText(charSequence.subSequence(2, charSequence.length()));
+                    if (charSequence.length() > 5) {
+                        txtNum.setText(charSequence.subSequence(2, charSequence.length() - 2) + "-" + charSequence.subSequence(charSequence.length() - 2,
+                                charSequence.length()));
+                    } else if (charSequence.length() > 2) {
+                        txtNum.setText(charSequence.subSequence(2, charSequence.length()));
+                    } else {
+                        txtNum.setText("");
+                    }
                 } else {
+                    txtCity.setText("");
                     txtNum.setText("");
                 }
-            } else {
-                txtCity.setText("");
-                txtNum.setText("");
-            }
 
-            if (charSequence.length() == 8) {
-                txtNum.setTextScaleX(0.9f);
+                if (charSequence.length() == 8) {
+                    txtNum.setTextScaleX(0.9f);
+                } else {
+                    txtNum.setTextScaleX(1);
+                }
             } else {
-                txtNum.setTextScaleX(1);
+                txtCity.setVisibility(View.GONE);
+                licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate2));
+                txtNum.setText(charSequence);
+
+                if (charSequence.length() > 10) {
+                    txtNum.setTextScaleX(0.85f);
+                } else {
+                    txtNum.setTextScaleX(1);
+                }
             }
         } else {
             txtCity.setVisibility(View.GONE);
-            licensePlate.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.licenseplate2));
-            txtNum.setText(charSequence);
-
-            if (charSequence.length() > 10) {
-                txtNum.setTextScaleX(0.85f);
-            } else {
-                txtNum.setTextScaleX(1);
-            }
+            txtNum.setVisibility(View.GONE);
+            licensePlate.setVisibility(View.GONE);
+            tapHereText.setVisibility(View.VISIBLE);
         }
     }
 }

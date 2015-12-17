@@ -83,6 +83,15 @@
                     android:text="@string/home_text"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
+                <TextView
+                    android:id="@+id/tapHereText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:onClick="licensePressed"
+                    android:text="Tap here to select a car"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:id="@+id/licensePlate"
                     android:layout_width="250dp"
@@ -98,7 +107,8 @@
                     android:paddingBottom="12dp"
                     android:paddingLeft="29dp"
                     android:paddingRight="11dp"
-                    android:paddingTop="15dp">
+                    android:paddingTop="15dp"
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/city"
@@ -122,14 +132,6 @@
                         android:textSize="46dp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Tap here to select a car"
-                        android:id="@+id/tapHereText"
-                        android:gravity="center"
-                        android:visibility="gone" />
                 </LinearLayout>
 
                 <ImageButton
