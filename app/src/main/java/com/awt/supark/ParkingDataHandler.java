@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,12 +37,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Doctor on 27/10/2015.
  */
-public class ParkingDataHandler implements LocationListener{
+public class ParkingDataHandler implements LocationListener {
     SQLiteDatabase db;
     SharedPreferences sharedprefs;
     LocationManager locationManager;
@@ -82,6 +85,7 @@ public class ParkingDataHandler implements LocationListener{
                 "  PRIMARY KEY (`region_id`)\n" +
                 ")");
         db.close();
+
         // Getting the last update timestamp from shardedprefs
         sharedprefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastupdate = sharedprefs.getInt("lastupdate", 0);
@@ -94,7 +98,6 @@ public class ParkingDataHandler implements LocationListener{
     }
 
     public void parkingInit(String state, final MainActivity act) {
-        // Initialising parking start
         switch (state) {
             case "start":
                 if (act.currentZone == 0) { // If there's no zone selected
@@ -105,10 +108,8 @@ public class ParkingDataHandler implements LocationListener{
                     // Initializing parking process layout
                     act.parkingBackground.setBackgroundColor(act.getResources().getColor(R.color.colorPrimaryDark)); // Background resets
                     act.textParkingScreen.setText(act.getResources().getString(R.string.please_wait)); // Setting text
-
                     act.btnPark.startAnimation(act.anim_anticipate_rotate_zoom_out); // Button disappears
                     act.anim_anticipate_rotate_zoom_out.setFillAfter(true);
-
                     act.pullUpStarted = false;
 
                     // Dimming the background
@@ -123,56 +124,99 @@ public class ParkingDataHandler implements LocationListener{
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            // Displaying the dialog
-                            LayoutInflater inflater = act.getLayoutInflater();
-                            View dialoglayout = inflater.inflate(R.layout.parking_ticket_preview, null);
-                            TextView zoneText = (TextView) dialoglayout.findViewById(R.id.zoneInfo);
-                            TextView lengthText = (TextView) dialoglayout.findViewById(R.id.lengthInfo);
-                            TextView endText = (TextView) dialoglayout.findViewById(R.id.endInfo);
-                            TextView priceText = (TextView) dialoglayout.findViewById(R.id.priceInfo);
+                            if(act.showTicket) {    // If the user requested the parking ticket preview
+                                // Displaying the dialog
+                                LayoutInflater inflater = act.getLayoutInflater();
+                                View dialoglayout = inflater.inflate(R.layout.parking_ticket_preview, null);
 
-                            zoneText.setText("Zone " + act.currentZone);
-                            lengthText.setText(getZoneMaxTime(act.currentZone) / 3600 + " h");
-                            priceText.setText(getZonePrice(act.currentZone) + " RSD");
+                                TextView zoneText =     (TextView) dialoglayout.findViewById(R.id.zoneInfo);
+                                TextView lengthText =   (TextView) dialoglayout.findViewById(R.id.lengthInfo);
+                                TextView endText =      (TextView) dialoglayout.findViewById(R.id.endInfo);
+                                TextView priceText =    (TextView) dialoglayout.findViewById(R.id.priceInfo);
+                                ImageView zonePreview = (ImageView) dialoglayout.findViewById(R.id.zonePreview);
 
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(act);
-                            alertDialog.setView(dialoglayout);
-                            alertDialog.setCancelable(false);
-                            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    // Making the layout visible
-                                    act.parkingBackgroundShow();
+                                // Formatting the parking end time
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.add(Calendar.MINUTE, getZoneMaxTime(act.currentZone));
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm (MMM dd.)");
+                                final String endTime = sdf.format(calendar.getTime()); // Parking end in HH:mm (MMM dd.)
 
-                                    // Car enters
-                                    act.imageCar.startAnimation(act.anim_car_enter);
-                                    act.anim_car_enter.setFillAfter(true);
+                                // Setting the values
+                                zoneText.setText("Zone " + act.currentZone);
+                                lengthText.setText(getZoneMaxTime(act.currentZone) + " minutes");
+                                endText.setText(endTime);
+                                priceText.setText("Parking price: " + getZonePrice(act.currentZone) + " RSD");
 
-                                    act.anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
-                                        @Override
-                                        public void onAnimationStart(Animation animation) {
-
-                                        }
-
-                                        @Override
-                                        public void onAnimationEnd(Animation animation) {
-                                            act.park("send");  // Calls the parking function
-                                        }
-
-                                        @Override
-                                        public void onAnimationRepeat(Animation animation) {
-
-                                        }
-                                    });
+                                // Selects the right parking zone picture
+                                switch (act.currentZone) {
+                                    case 1: zonePreview.setImageResource(R.drawable.zone1); break;
+                                    case 2: zonePreview.setImageResource(R.drawable.zone2); break;
+                                    case 3: zonePreview.setImageResource(R.drawable.zone3); break;
+                                    case 4: zonePreview.setImageResource(R.drawable.zone4); break;
                                 }
-                            });
-                            alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    act.parkingInit("cancel");
-                                }
-                            });
-                            alertDialog.show();
+
+                                // Building the AlertDialog
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(act);
+                                alertDialog.setView(dialoglayout);
+                                alertDialog.setCancelable(false);
+                                alertDialog.setPositiveButton("Park", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        // Making the layout visible
+                                        act.parkingBackgroundShow();
+
+                                        // Car enters
+                                        act.imageCar.startAnimation(act.anim_car_enter);
+                                        act.anim_car_enter.setFillAfter(true);
+                                        act.anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
+                                            @Override
+                                            public void onAnimationStart(Animation animation) {
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animation animation) {
+                                                act.park("send");  // Calls the parking function
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animation animation) {
+
+                                            }
+                                        });
+                                    }
+                                });
+                                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        act.parkingInit("cancel");
+                                    }
+                                });
+                                alertDialog.show();
+                            } else {    // If the user not requested the parking ticket preview
+                                // Making the layout visible
+                                act.parkingBackgroundShow();
+
+                                // Car enters
+                                act.imageCar.startAnimation(act.anim_car_enter);
+                                act.anim_car_enter.setFillAfter(true);
+                                act.anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
+                                    @Override
+                                    public void onAnimationStart(Animation animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        act.park("send");  // Calls the parking function
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animation animation) {
+
+                                    }
+                                });
+                            }
                         }
 
                         @Override
@@ -180,8 +224,6 @@ public class ParkingDataHandler implements LocationListener{
 
                         }
                     });
-
-
                 }
                 break;
             // Initialising parking cancel
@@ -189,7 +231,6 @@ public class ParkingDataHandler implements LocationListener{
                 // Deactivating the dim
                 act.backDimmer.startAnimation(act.anim_fade_out);
                 act.dimActive = false;
-
                 act.park("cancel");
 
                 act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
@@ -220,9 +261,7 @@ public class ParkingDataHandler implements LocationListener{
 
                 // Parking process layout changes
                 act.layoutHandler.appBackgroundColorChange(act.parkingBackground, 300, 46, 125, 50); // Background turns to green
-
                 act.textParkingScreen.setText(act.getResources().getString(R.string.success)); // Setting the text
-
 
                 // Car leaves
                 act.imageCar.startAnimation(act.anim_car_leave);
@@ -238,7 +277,6 @@ public class ParkingDataHandler implements LocationListener{
                     public void onAnimationEnd(Animation animation) {
                         // Deactivating the dim
                         act.backDimmer.startAnimation(act.anim_fade_out);
-
                         act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
@@ -272,7 +310,6 @@ public class ParkingDataHandler implements LocationListener{
             case "error":
                 // Deactivating the dim
                 act.backDimmer.startAnimation(act.anim_fade_out);
-
                 act.park("error");
 
                 act.anim_fade_out.setAnimationListener(new Animation.AnimationListener() {
@@ -305,23 +342,17 @@ public class ParkingDataHandler implements LocationListener{
         switch (action) {
             case "send":
                 Log.i("MainActivity", "Parking started");
-
                 act.backDisabled = true; // Disabling back button
-
-                act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone); // Sending the sms
+                act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone, act.currentLicense); // Sending the sms
 
                 break;
-
             case "cancel":
                 Log.i("MainActivity", "Parking cancelled");
-
                 Toast.makeText(act.cont, act.getResources().getString(R.string.parking_cancelled), Toast.LENGTH_SHORT).show();
 
                 break;
             case "finish":
                 Log.i("MainActivity", "Parking finished");
-
-                //Toast.makeText(act.cont, act.getResources().getString(R.string.parking_success), Toast.LENGTH_LONG).show();
                 act.parkHandler.postPark(act.currentRegion, act.currentZone, 60); // Uploading the parking data
 
                 // Saving car's state
