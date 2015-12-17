@@ -57,14 +57,14 @@ public class CarListAdapter extends BaseAdapter {
 
             holder = new ViewHolder();
             holder.name =           (TextView)      view.findViewById(R.id.name);
-            holder.licensePlate = (LinearLayout) view.findViewById(R.id.licensePlateLayout);
-            holder.city = (TextView) view.findViewById(R.id.city);
-            holder.num = (TextView) view.findViewById(R.id.num);
+            holder.licensePlate =   (LinearLayout)  view.findViewById(R.id.licensePlateLayout);
+            holder.city =           (TextView)      view.findViewById(R.id.city);
+            holder.num =            (TextView)      view.findViewById(R.id.num);
             holder.editbtn =        (ImageButton)   view.findViewById(R.id.imageButton);
             holder.state =          (TextView)      view.findViewById(R.id.state);
             holder.remaining =      (TextView)      view.findViewById(R.id.remaining);
             holder.buttonCancel =   (ImageButton)   view.findViewById(R.id.imageButtonCancel);
-            holder.cardGeneral = (CardView) view.findViewById(R.id.cardGeneral);
+            holder.cardGeneral =    (CardView)      view.findViewById(R.id.cardGeneral);
 
             view.setTag(holder);
         } else {

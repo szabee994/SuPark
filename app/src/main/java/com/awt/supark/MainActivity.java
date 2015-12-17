@@ -90,9 +90,9 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton    btnStatistics;
     FloatingActionButton    btnEtc;
     TextView                zonePrice;
-    LinearLayout licensePlate;
-    TextView licenseCity;
-    TextView licenseNum;
+    LinearLayout            licensePlate;
+    TextView                licenseCity;
+    TextView                licenseNum;
 
     // Layouts
     RelativeLayout      backDimmer;

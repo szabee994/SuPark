@@ -70,7 +70,8 @@ public class CarListFragment extends Fragment {
         // Turning off dividers
         listview.setDivider(null);
         listview.setDividerHeight(0);
-
+        listview.setClipToPadding(false);
+        listview.setPadding(0, 10, 0, 100);
         listview.setAdapter(adapter);
 
         return view;
