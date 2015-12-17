@@ -20,20 +20,27 @@ public class EtcFragment extends Fragment {
     View view;
     CheckBox autoLoc;
     CheckBox lastLicense;
+    CheckBox showTicketCheck;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.etc_layout, container, false);
         Log.d("EtcFragment", "Etc activity started");
+
         Context cont = getActivity().getApplicationContext();
         ParkingDataHandler parkhandler = new ParkingDataHandler(cont);
         parkhandler.checkForUpdate();
+
         autoLoc = (CheckBox) view.findViewById(R.id.checkBoxAutomaticZone);
         lastLicense = (CheckBox) view.findViewById(R.id.checkBoxRememberLicenseNumber);
+        showTicketCheck = (CheckBox) view.findViewById(R.id.checkBoxShowParkingTicket);
+
         SharedPreferences sharedprefs = PreferenceManager.getDefaultSharedPreferences(cont);
         autoLoc.setChecked(sharedprefs.getBoolean("autoloc", true));
         lastLicense.setChecked(sharedprefs.getBoolean("lastlicenseremember", true));
+        showTicketCheck.setChecked(sharedprefs.getBoolean("showTicket", true));
+
         return view;
     }
 

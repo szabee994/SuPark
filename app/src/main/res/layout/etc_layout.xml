@@ -154,6 +154,50 @@
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
+                    android:id="@+id/cardPark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/etcLayoutCardMargin"
+                    android:background="#FFFFFFFF"
+                    android:elevation="@dimen/standardCardElevation"
+                    android:padding="0dp"
+                    android:translationZ="0dp"
+                    app:cardBackgroundColor="#FFFFFFFF"
+                    app:cardCornerRadius="2dp"
+                    app:cardElevation="@dimen/standardCardElevation"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardUseCompatPadding="true"
+                    app:contentPadding="10dp"
+                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
+                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="@string/settings_title_parking"
+                            android:textStyle="bold"
+                            android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse" />
+
+                        <CheckBox
+                            android:id="@+id/checkBoxShowParkingTicket"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:checked="true"
+                            android:enabled="true"
+                            android:onClick="showTicketListener"
+                            android:text="@string/settings_show_parking_ticket"
+                            android:textColor="#000000" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:id="@+id/cardAbout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
