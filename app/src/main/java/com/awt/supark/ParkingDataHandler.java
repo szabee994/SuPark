@@ -2,6 +2,7 @@ package com.awt.supark;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,9 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -111,15 +115,7 @@ public class ParkingDataHandler implements LocationListener{
                     act.backDimmer.setVisibility(View.VISIBLE);
                     act.backDimmer.startAnimation(act.anim_fade_in);
                     act.dimActive = true;
-
-                    // Making the layout visible
-                    act.parkingBackgroundShow();
-
-                    // Car enters
-                    act.imageCar.startAnimation(act.anim_car_enter);
-                    act.anim_car_enter.setFillAfter(true);
-
-                    act.anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
+                    act.anim_fade_in.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
 
@@ -127,7 +123,56 @@ public class ParkingDataHandler implements LocationListener{
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            act.park("send");  // Calls the parking function
+                            // Displaying the dialog
+                            LayoutInflater inflater = act.getLayoutInflater();
+                            View dialoglayout = inflater.inflate(R.layout.parking_ticket_preview, null);
+                            TextView zoneText = (TextView) dialoglayout.findViewById(R.id.zoneInfo);
+                            TextView lengthText = (TextView) dialoglayout.findViewById(R.id.lengthInfo);
+                            TextView endText = (TextView) dialoglayout.findViewById(R.id.endInfo);
+                            TextView priceText = (TextView) dialoglayout.findViewById(R.id.priceInfo);
+
+                            zoneText.setText("Zone " + act.currentZone);
+                            lengthText.setText(getZoneMaxTime(act.currentZone) / 3600 + " h");
+                            priceText.setText(getZonePrice(act.currentZone) + " RSD");
+
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(act);
+                            alertDialog.setView(dialoglayout);
+                            alertDialog.setCancelable(false);
+                            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    // Making the layout visible
+                                    act.parkingBackgroundShow();
+
+                                    // Car enters
+                                    act.imageCar.startAnimation(act.anim_car_enter);
+                                    act.anim_car_enter.setFillAfter(true);
+
+                                    act.anim_car_enter.setAnimationListener(new Animation.AnimationListener() {
+                                        @Override
+                                        public void onAnimationStart(Animation animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animation animation) {
+                                            act.park("send");  // Calls the parking function
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animation animation) {
+
+                                        }
+                                    });
+                                }
+                            });
+                            alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    act.parkingInit("cancel");
+                                }
+                            });
+                            alertDialog.show();
                         }
 
                         @Override
@@ -135,6 +180,8 @@ public class ParkingDataHandler implements LocationListener{
 
                         }
                     });
+
+
                 }
                 break;
             // Initialising parking cancel
