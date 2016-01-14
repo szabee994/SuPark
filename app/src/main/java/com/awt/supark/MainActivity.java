@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     animInProgress = false;     // Is there any animation in progress
     boolean     autoLoc = true;
     boolean     lastLicense = true;
+    boolean     showTicket = true;
     int         openedLayout = 0;           // ID of the current opened
 
     // Animation times in ms
@@ -227,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         sharedprefs =       PreferenceManager.getDefaultSharedPreferences(cont);
         autoLoc =           sharedprefs.getBoolean("autoloc", true);
         lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
+        showTicket =        sharedprefs.getBoolean("showTicket", true);
         if (lastLicense)
             currentLicense = sharedprefs.getString("lastlicense", "");
 
@@ -446,6 +448,12 @@ public class MainActivity extends AppCompatActivity {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
         sharedprefs.edit().putBoolean("lastlicenseremember", fragment.lastLicense.isChecked()).apply();
         lastLicense = fragment.lastLicense.isChecked();
+    }
+
+    public void showTicketListener(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("showTicket", fragment.showTicketCheck.isChecked()).apply();
+        showTicket = fragment.showTicketCheck.isChecked();
     }
 
     @Override

@@ -27,17 +27,17 @@ public class ParkingSmsSender {
         smsHandler = hndlr;
     }
 
-    public void sendSms(String phoneNumber, int zone) {
-        /*Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
+    public void sendSms(String phoneNumber, int zone, String license) {
+        Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
 
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
         // Actual SMS message
-        String message = "Test SMS - Zone: " + zone + " - Sent via SuPark! AWT";
+        String message = license + " - SuPark Test SMS";
 
         // Intents for SMS state
-        PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, new Intent(SENT), 0);
+        PendingIntent sentPI =      PendingIntent.getBroadcast(context, 0, new Intent(SENT), 0);
         PendingIntent deliveredPI = PendingIntent.getBroadcast(context, 0, new Intent(DELIVERED), 0);
 
         BroadcastReceiver broadSent = new BroadcastReceiver() {
@@ -98,8 +98,9 @@ public class ParkingSmsSender {
         context.registerReceiver(broadReceive, new IntentFilter(DELIVERED));
 
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI); */
-        smsHandler.obtainMessage(0).sendToTarget();
-        smsHandler.obtainMessage(1).sendToTarget();
+        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+
+        //smsHandler.obtainMessage(0).sendToTarget();
+        //smsHandler.obtainMessage(1).sendToTarget();
     }
 }

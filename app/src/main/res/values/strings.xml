@@ -48,6 +48,9 @@
     <string name="takacs">David Takacs</string>
     <string name="andrea">Andrea Rafai</string>
 
+    <string name="settings_title_parking">Parking</string>
+    <string name="settings_show_parking_ticket">Show parking ticket confirmation</string>
+
     <!-- Toasts -->
     <string name="parking_data_uploaded">Parking data successfully uploaded</string>
     <string name="parking_data_fail">Failed to upload parking data</string>
