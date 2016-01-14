@@ -596,7 +596,7 @@ public class ParkingDataHandler implements LocationListener{
             try {
                 String timestamp = Long.toString(System.currentTimeMillis() / 1000L);
                 String token = timestamp + "$up4rK";
-                String url = "http://supark.host-ed.me/index.php?do=addpark&token="+md5(token)+"&timestamp="+timestamp; //+"&gzip";
+                String url = "http://supark.host-ed.me/api/index.php?do=addpark&token=" + md5(token) + "&timestamp=" + timestamp; //+"&gzip";
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("POST");
@@ -643,7 +643,7 @@ public class ParkingDataHandler implements LocationListener{
             try {
                 String timestamp = Long.toString(System.currentTimeMillis() / 1000L);
                 String token = timestamp + "$up4rK";
-                String url = "http://supark.host-ed.me/index.php?do="+params[0]+"&token="+md5(token)+"&timestamp="+timestamp; //+"&gzip";
+                String url = "http://supark.host-ed.me/api/index.php?do=" + params[0] + "&token=" + md5(token) + "&timestamp=" + timestamp; //+"&gzip";
                 Log.i("url",url);
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
