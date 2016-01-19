@@ -354,7 +354,7 @@ public class LayoutHandler {
     // Same as smallButtonPressed just backwards
     public void pullDown(final MainActivity act) {
         act.animInProgress = true;
-        act.carHandler.updateLicense(act);
+        act.CarHandler.updateLicense(act);
 
         // ****** BUTTON AND LAYOUT PULL DOWN ANIMATION
         // Declaring animator

@@ -81,6 +81,6 @@ public class CarListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((MainActivity) getActivity()).carHandler.updateLicense(((MainActivity) getActivity()));
+        ((MainActivity) getActivity()).CarHandler.updateLicense(((MainActivity) getActivity()));
     }
 }

@@ -5,17 +5,23 @@ package com.awt.supark;
  */
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,6 +30,8 @@ import java.util.TimerTask;
 
 public class ParkingTimerService extends Service {
     private static final int TIMER_PERIOD = 2000;
+    private static final String ACTION_CANCEL = "com.awt.supark.ParkingTimerService.ACTION_CANCEL";
+    private static final String ACTION_RENEW = "com.awt.supark.ParkingTimerService.ACTION_RENEW";
 
     SQLiteDatabase              db;
     Context                     context;
@@ -32,7 +40,6 @@ public class ParkingTimerService extends Service {
     NotificationCompat.Builder  mNotification;
     Timer                       refreshTimer;
     TimerTask                   timerTask;
-    BroadcastReceiver           mReceiver;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -95,9 +102,6 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Starts a timer which will auto update the database and the notifications
-     */
     public void startTimer(int period) {
         if(refreshTimer == null) {
             refreshTimer = new Timer("refreshNotification", true);
@@ -107,9 +111,6 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Cancels the timer task
-     */
     public void cancelTimer() {
         if(refreshTimer != null) {
             refreshTimer.cancel();
@@ -118,9 +119,6 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Initializes the database
-     */
     private void loadDatabase() {
         try {
             db = SQLiteDatabase.openDatabase(getApplicationContext().getFilesDir().getPath() + "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
@@ -182,37 +180,34 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Creates or updates a notification
-     */
     private void createNotification(final int id, final String licenseNum, final String formattedEndTime, final long remainingTime, final long parkedTime, final long parkedUntil) {
-        /*Cancel intent
-        Intent cancelIntent = new Intent(this, sheit);
-        Bundle cancelBundle = new Bundle();
-        cancelBundle.putInt("cancelId", id);
-        cancelIntent.putExtras(cancelBundle);
-        PendingIntent pIntentCancel = PendingIntent.getActivity(this, id, cancelIntent, 0); */
-
         try {
+            // Cancel button action
+            Intent cancelIntent = new Intent(ACTION_CANCEL);
+            cancelIntent.putExtra("cancelId", id);
+            PendingIntent pIntentCancel = PendingIntent.getBroadcast(this, id, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // Renew button action
+            Intent renewIntent = new Intent(ACTION_RENEW);
+            renewIntent.putExtra("renewId", id);
+            PendingIntent pIntentRenew = PendingIntent.getBroadcast(this, id, renewIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
             mNotification = new NotificationCompat.Builder(getApplicationContext());                                // Setting the notification parameters:
             mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);                                      // * icon
             mNotification.setOngoing(true);                                                                         // * making it ongoing so the user can't swipe away
             mNotification.setContentTitle("Parking status of " + licenseNum.toUpperCase());                         // * title
             mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);       // * content text
             mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);           // * progress bar to visualize the remaining time
-            //mNotification.addAction(R.mipmap.ic_remove_circle_outline_black_48dp, "Cancel", pIntentCancel);       // * cancel button
+            mNotification.addAction(R.mipmap.ic_highlight_off_white_24dp, "Cancel", pIntentCancel);                 // * cancel button
+            mNotification.addAction(R.mipmap.ic_loop_white_24dp, "Renew", pIntentRenew);                            // * renew button
             notificationManager.notify(id, mNotification.build());                                                  // Finally we can build the actual notification where the ID is the selected car's ID
 
-            //Log.i("Service", "Notification created for ID: " + id);
         } catch (Exception e) {
             Log.i("Service", "Failed to create notification for ID: " + id);
             Log.i("Service", "Exception: " + e.toString());
         }
     }
 
-    /*
-     * Removes the notification on the ID given in the parameter
-     */
     private void removeNotification(final int id) {
         try {
             notificationManager.cancel(id);
@@ -223,9 +218,6 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Displays a "parking due" notification
-     */
     private void finishNotification(final int id, final String licenseNum) {
         try {
             mNotification = new NotificationCompat.Builder(getApplicationContext());
@@ -248,9 +240,6 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    /*
-     * Changes the parked state to false of the car found at the given ID
-     */
     private void stopPark(final int id) {
         Log.i("Service", "Parking stop requested for: " + id);
 
@@ -259,27 +248,46 @@ public class ParkingTimerService extends Service {
         db.update("cars", temp, "car_id = " + id, null);
     }
 
-    public class MyReceiver extends BroadcastReceiver {
-
-        // constructor
-        public MyReceiver() {
-
-        }
+    // Broadcast receiver for handling the actions from notification
+    public static class MyReceiver extends BroadcastReceiver {
+        SQLiteDatabase db;
+        private Context context;
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("Service", "Cancel broadcast received.");
+            this.context = context;
 
-            Bundle answerBundle = intent.getExtras();
-            int cancelId = answerBundle.getInt("cancelId");
+            if (intent.getAction().equals(ACTION_CANCEL)) {
+                Log.i("Service", "Cancel broadcast received");
 
-            stopPark(cancelId);
+                int cancelId = intent.getIntExtra("cancelId", 0);
+                loadDatabase();
+                stopPark(cancelId);
+            } else if (intent.getAction().equals(ACTION_RENEW)) {
+                Log.i("Service", "Renew broadcast received");
+            }
+        }
+
+        private void loadDatabase() {
+            try {
+                db = SQLiteDatabase.openDatabase(context.getApplicationContext().getFilesDir().getPath() +
+                        "/carDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
+                Log.i("Service", "DB loaded successfully...");
+            } catch (Exception e) {
+                Log.i("Service", "DB read error");
+                Log.i("Service", "Exception: " + e.toString());
+            }
+        }
+
+        private void stopPark(final int id) {
+            Log.i("Service", "Parking stop requested for: " + id);
+
+            ContentValues temp = new ContentValues();
+            temp.put("parkedstate", 0);
+            db.update("cars", temp, "car_id = " + id, null);
         }
     }
 
-    /*
-     * Timer runs this command
-     */
     private class _timerTask extends TimerTask {
         @Override
         public void run() {

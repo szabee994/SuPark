@@ -51,7 +51,19 @@
             android:name=".ParkingTimerService"
             android:exported="false"
             android:label="ParkingTimerService"
-            android:process=":ParkingTimerService" />
+            android:process=":ParkingTimerService" >
+        </service>
+
+        <receiver
+            android:name=".ParkingTimerService$MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="com.awt.supark.ParkingTimerService.ACTION_CANCEL" />
+                <action android:name="com.awt.supark.ParkingTimerService.ACTION_RENEW" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

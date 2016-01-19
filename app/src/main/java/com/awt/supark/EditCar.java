@@ -49,7 +49,7 @@ public class EditCar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.edit_car, container, false);
 
-        addCarButton =      (Button)         view.findViewById(R.id.DoneButton);
+        addCarButton =      (Button)        view.findViewById(R.id.DoneButton);
         deleteButton =      (Button)        view.findViewById(R.id.DeleteButton);
         cancelButton =      (Button)        view.findViewById(R.id.cancelButton);
         carName =           (EditText)      view.findViewById(R.id.carName);

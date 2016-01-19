@@ -357,9 +357,9 @@ public class ParkingDataHandler implements LocationListener {
 
                 // Saving car's state
                 String lic = act.currentLicense;
-                int id = act.carHandler.getIdByLicense(lic);
+                int id = act.CarHandler.getIdByLicense(lic);
                 if (id != -1) {
-                    act.carHandler.saveCarState(id, getZoneMaxTime(act.currentZone), currloc);
+                    act.CarHandler.saveCarState(id, getZoneMaxTime(act.currentZone), currloc);
                 }
 
                 // Saving the last used license number

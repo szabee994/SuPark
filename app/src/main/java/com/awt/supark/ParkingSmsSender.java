@@ -30,7 +30,7 @@ public class ParkingSmsSender {
     public void sendSms(String phoneNumber, int zone, String license) {
         Log.i("smsHandler", "Sending SMS.. Number: " + phoneNumber + ", Zone: " + zone);
 
-        String SENT = "SMS_SENT";
+        /*String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
         // Actual SMS message
@@ -98,9 +98,9 @@ public class ParkingSmsSender {
         context.registerReceiver(broadReceive, new IntentFilter(DELIVERED));
 
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);*/
 
-        //smsHandler.obtainMessage(0).sendToTarget();
-        //smsHandler.obtainMessage(1).sendToTarget();
+        smsHandler.obtainMessage(0).sendToTarget();
+        smsHandler.obtainMessage(1).sendToTarget();
     }
 }

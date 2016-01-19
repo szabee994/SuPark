@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    public carHandler carHandler;
+    public carHandler CarHandler;
 
     // Layout variables
     boolean     dimActive = false;          // Dim layers status
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     showTicket = true;
     int         openedLayout = 0;           // ID of the current opened
 
-    // Animation times in ms
+    // Animation timing (ms)
     int         layoutFadeOutDuration = 100;
     int         layoutFadeInDuration = 100;
     int         layoutPullUpDuration = 250;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     String currentLicense = "";
 
     /*                         sebők             dani              andi             mark
-       Zone SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
+       Pisa SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
     String[]    zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; // Will be read from DB (DB needs to be preloaded in the program)
 
     // Context
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout            licensePlate;
     TextView                licenseCity;
     TextView                licenseNum;
-    TextView tapHereText;
+    TextView                tapHereText;
 
     // Layouts
     RelativeLayout      backDimmer;
@@ -212,10 +212,10 @@ public class MainActivity extends AppCompatActivity {
         btnEtc =            (FloatingActionButton)  findViewById(R.id.buttonEtc);
         btnMap =            (FloatingActionButton)  findViewById(R.id.buttonMap);
         zonePrice =         (TextView)              findViewById(R.id.textViewZonePrice);
-        licensePlate = (LinearLayout) findViewById(R.id.licensePlate);
-        licenseCity = (TextView) findViewById(R.id.city);
-        licenseNum = (TextView) findViewById(R.id.num);
-        tapHereText = (TextView) findViewById(R.id.tapHereText);
+        licensePlate =      (LinearLayout)          findViewById(R.id.licensePlate);
+        licenseCity =       (TextView)              findViewById(R.id.city);
+        licenseNum =        (TextView)              findViewById(R.id.num);
+        tapHereText =       (TextView)              findViewById(R.id.tapHereText);
 
         // Layouts
         backDimmer =        (RelativeLayout)        findViewById(R.id.back_dimmer);
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         smsHandler.throwHandler(smsResponse);   // Initializes the message handler
 
         layoutHandler = new LayoutHandler(this);
-        carHandler =    new carHandler(this);
+        CarHandler =    new carHandler(this);
         zoneHandler =   new ZoneHandler(this);
 
         btnPark.setOnTouchListener(new View.OnTouchListener() {
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             layoutHandler.updateLocationTextButton(act);
         }
 
-        carHandler.updateLicense(act);
+        CarHandler.updateLicense(act);
 
         // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
@@ -292,12 +292,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTimerService() {
-        // Starting the background service
-        //mServiceIntent.removeExtra("stopId");
-        //if(stopId != 0) {
-        //    mServiceIntent.putExtra("stopId", stopId);
-        //}
-
         startService(mServiceIntent);
     }
 
@@ -307,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setLicense(View v, String license) {
         currentLicense = license;
-        carHandler.updateLicense(act);
+        CarHandler.updateLicense(act);
         smallButtonPressed(findViewById(R.id.buttonCars));
     }
 
