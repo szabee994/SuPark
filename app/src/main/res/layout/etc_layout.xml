@@ -194,6 +194,26 @@
                             android:onClick="showTicketListener"
                             android:text="@string/settings_show_parking_ticket"
                             android:textColor="#000000" />
+
+                        <CheckBox
+                            android:id="@+id/checkBoxAlertBefore"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:checked="true"
+                            android:enabled="true"
+                            android:onClick="alertBeforeListener"
+                            android:text="@string/settings_alert_before"
+                            android:textColor="#000000" />
+
+                        <CheckBox
+                            android:id="@+id/checkBoxAlertAfter"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:checked="true"
+                            android:enabled="true"
+                            android:onClick="alertAfterListener"
+                            android:text="@string/settings_alert_after"
+                            android:textColor="#000000" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 

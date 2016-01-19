@@ -1,5 +1,6 @@
 package com.awt.supark;
 
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,12 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Created by docto on 03/12/2015.
+ * Created by doctor on 03/12/2015.
  */
 public class carHandler {
-    Context context;
-    SQLiteDatabase db;
-    SharedPreferences sharedprefs;
+    Context             context;
+    SQLiteDatabase      db;
+    SharedPreferences   sharedprefs;
+    NotificationManager notificationManager;
 
     public carHandler(Context cont) {
         context = cont;
@@ -100,7 +102,9 @@ public class carHandler {
         db.close();
 
         // Refreshing the notifications
-        ((MainActivity) context).startTimerService();
+        notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
+        ((MainActivity) context).startTimerService(0);
     }
 
     public void updateLicense(MainActivity act) {

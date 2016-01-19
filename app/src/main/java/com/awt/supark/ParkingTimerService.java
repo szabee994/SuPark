@@ -13,10 +13,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -29,10 +34,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ParkingTimerService extends Service {
-    private static final int TIMER_PERIOD = 2000;
+    private static final int TIMER_PERIOD = 60000;
     private static final String ACTION_CANCEL = "com.awt.supark.ParkingTimerService.ACTION_CANCEL";
     private static final String ACTION_RENEW = "com.awt.supark.ParkingTimerService.ACTION_RENEW";
 
+    SharedPreferences           sharedPreferences;
     SQLiteDatabase              db;
     Context                     context;
     Cursor                      d;
@@ -40,6 +46,9 @@ public class ParkingTimerService extends Service {
     NotificationCompat.Builder  mNotification;
     Timer                       refreshTimer;
     TimerTask                   timerTask;
+    Uri                         soundUri;
+    int                         alertTime = 10;
+    boolean                     alert;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -52,6 +61,8 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "---------- Service created ----------");
 
         notificationManager = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+        soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        sharedPreferences =       PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
     @Override
@@ -60,6 +71,16 @@ public class ParkingTimerService extends Service {
         Log.i("Service", "---------- Service started ----------");
 
         loadDatabase();
+
+        // Very lame method to check if there's any extras attached - but it works.
+        try {
+            int startNewId = intent.getIntExtra("startId", 0);
+            if (startNewId > 0) {
+                requestCars();
+            }
+        } catch (Exception e) {
+            Log.i("Service", "No new startId - the service is in refreshing mode");
+        }
 
         // Checking that are there any cars in the database. If the result is true starts the timer, otherwise destroys the service.
         if(isThereAnyCars()) {
@@ -157,9 +178,15 @@ public class ParkingTimerService extends Service {
 
             Log.i("Service", "Car " + carId + " | License: " + carLicense + "\t | State: " + parkedState + " | Remaining: " + remainingTime);
 
-            if(parkedState == 1) {
-                if(remainingTime > 0) {
-                    createNotification(carId, carLicense, endTime, (remainingTime / 60) + 1, parkedTime, parkedUntil);
+            if (parkedState == 1) {
+                if (remainingTime > 0) {
+                    Log.i("Sound", "Remaining time: " + remainingTime /60);
+                    // Sending a ringing notification
+                    if (remainingTime / 60 == alertTime) {
+                        createNotification(carId, carLicense, endTime, (remainingTime / 60), parkedTime, parkedUntil, true);
+                    } else {
+                        createNotification(carId, carLicense, endTime, (remainingTime / 60), parkedTime, parkedUntil, false);
+                    }
                 } else {
                     finishNotification(carId, carLicense);
                     removeNotification(carId);
@@ -180,7 +207,7 @@ public class ParkingTimerService extends Service {
         }
     }
 
-    private void createNotification(final int id, final String licenseNum, final String formattedEndTime, final long remainingTime, final long parkedTime, final long parkedUntil) {
+    private void createNotification(final int id, final String licenseNum, final String formattedEndTime, final long remainingTime, final long parkedTime, final long parkedUntil, boolean alert) {
         try {
             // Cancel button action
             Intent cancelIntent = new Intent(ACTION_CANCEL);
@@ -199,7 +226,12 @@ public class ParkingTimerService extends Service {
             mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);       // * content text
             mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);           // * progress bar to visualize the remaining time
             mNotification.addAction(R.mipmap.ic_highlight_off_white_24dp, "Cancel", pIntentCancel);                 // * cancel button
-            mNotification.addAction(R.mipmap.ic_loop_white_24dp, "Renew", pIntentRenew);                            // * renew button
+            //mNotification.addAction(R.mipmap.ic_loop_white_24dp, "Renew", pIntentRenew);                            // * renew button
+            if(alert && sharedPreferences.getBoolean("alertBefore", true)) {
+                mNotification.setSound(soundUri);
+                mNotification.setLights(Color.RED, 3000, 3000);
+                mNotification.setVibrate(new long[] {1000, 1000});
+            }
             notificationManager.notify(id, mNotification.build());                                                  // Finally we can build the actual notification where the ID is the selected car's ID
 
         } catch (Exception e) {
@@ -219,12 +251,17 @@ public class ParkingTimerService extends Service {
     }
 
     private void finishNotification(final int id, final String licenseNum) {
-        try {
+       try {
             mNotification = new NotificationCompat.Builder(getApplicationContext());
             mNotification.setSmallIcon(R.mipmap.ic_report_problem_white_24dp);
             mNotification.setContentTitle("Parking status of " + licenseNum);
             mNotification.setContentText("Parking ticket due!");
             mNotification.setProgress(0, 0, false);
+            if (sharedPreferences.getBoolean("alertAfter", true)) {
+                mNotification.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.parkingdue));
+                mNotification.setLights(Color.RED, 3000, 3000);
+                mNotification.setVibrate(new long[] {1000, 1000, 1000});
+            }
 
             /*
              * This time we have to use a different ID for the notification
@@ -250,8 +287,9 @@ public class ParkingTimerService extends Service {
 
     // Broadcast receiver for handling the actions from notification
     public static class MyReceiver extends BroadcastReceiver {
-        SQLiteDatabase db;
-        private Context context;
+        SQLiteDatabase      db;
+        private Context     context;
+        NotificationManager notificationManager;
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -263,6 +301,9 @@ public class ParkingTimerService extends Service {
                 int cancelId = intent.getIntExtra("cancelId", 0);
                 loadDatabase();
                 stopPark(cancelId);
+
+                notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(cancelId);
             } else if (intent.getAction().equals(ACTION_RENEW)) {
                 Log.i("Service", "Renew broadcast received");
             }

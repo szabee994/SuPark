@@ -288,10 +288,11 @@ public class MainActivity extends AppCompatActivity {
         // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
         Log.i("Main", "OnCreate");
-        startTimerService();
+        startTimerService(0);
     }
 
-    public void startTimerService() {
+    public void startTimerService(int id) {
+        mServiceIntent.putExtra("startId", id);
         startService(mServiceIntent);
     }
 
@@ -448,6 +449,18 @@ public class MainActivity extends AppCompatActivity {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
         sharedprefs.edit().putBoolean("showTicket", fragment.showTicketCheck.isChecked()).apply();
         showTicket = fragment.showTicketCheck.isChecked();
+    }
+
+    public void alertBeforeListener(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("alertBefore", fragment.alertBefore.isChecked()).apply();
+        showTicket = fragment.alertBefore.isChecked();
+    }
+
+    public void alertAfterListener(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("alertAfter", fragment.alertAfter.isChecked()).apply();
+        showTicket = fragment.alertAfter.isChecked();
     }
 
     @Override

@@ -21,6 +21,8 @@ public class EtcFragment extends Fragment {
     CheckBox autoLoc;
     CheckBox lastLicense;
     CheckBox showTicketCheck;
+    CheckBox alertBefore;
+    CheckBox alertAfter;
 
     @Nullable
     @Override
@@ -32,14 +34,19 @@ public class EtcFragment extends Fragment {
         ParkingDataHandler parkhandler = new ParkingDataHandler(cont);
         parkhandler.checkForUpdate();
 
-        autoLoc = (CheckBox) view.findViewById(R.id.checkBoxAutomaticZone);
-        lastLicense = (CheckBox) view.findViewById(R.id.checkBoxRememberLicenseNumber);
-        showTicketCheck = (CheckBox) view.findViewById(R.id.checkBoxShowParkingTicket);
+        autoLoc =           (CheckBox)      view.findViewById(R.id.checkBoxAutomaticZone);
+        lastLicense =       (CheckBox)      view.findViewById(R.id.checkBoxRememberLicenseNumber);
+        showTicketCheck =   (CheckBox)      view.findViewById(R.id.checkBoxShowParkingTicket);
+        alertBefore =       (CheckBox)      view.findViewById(R.id.checkBoxAlertBefore);
+        alertAfter =        (CheckBox)      view.findViewById(R.id.checkBoxAlertAfter);
 
         SharedPreferences sharedprefs = PreferenceManager.getDefaultSharedPreferences(cont);
         autoLoc.setChecked(sharedprefs.getBoolean("autoloc", true));
         lastLicense.setChecked(sharedprefs.getBoolean("lastlicenseremember", true));
         showTicketCheck.setChecked(sharedprefs.getBoolean("showTicket", true));
+        alertBefore.setChecked(sharedprefs.getBoolean("alertBefore", true));
+        alertAfter.setChecked(sharedprefs.getBoolean("alertAfter", true));
+
 
         return view;
     }

@@ -50,6 +50,8 @@
 
     <string name="settings_title_parking">Parking</string>
     <string name="settings_show_parking_ticket">Show parking ticket confirmation</string>
+    <string name="settings_alert_before">Alert 10 minutes before ticket due</string>
+    <string name="settings_alert_after">Alert when ticket due</string>
 
     <!-- Toasts -->
     <string name="parking_data_uploaded">Parking data successfully uploaded</string>

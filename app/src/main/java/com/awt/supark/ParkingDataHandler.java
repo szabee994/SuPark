@@ -366,7 +366,7 @@ public class ParkingDataHandler implements LocationListener {
                 sharedprefs.edit().putString("lastlicense", lic).commit();
 
                 // At this point we must start or update the background service
-                act.startTimerService();
+                act.startTimerService(id);
 
                 break;
             case "error":
