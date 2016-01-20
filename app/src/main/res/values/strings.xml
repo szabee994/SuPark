@@ -2,7 +2,7 @@
     <!-- General -->
     <string name="app_name">SuPark</string>
     <string name="app_name_long">Subotica Parking</string>
-    <string name="app_version">0.7</string>
+    <string name="app_version">1.0</string>
     <string name="button_park">Park</string>
     <string name="home_text">Choose a license number</string>
     <string name="please_wait">Parking in progress.\nPlease wait...</string>
@@ -48,6 +48,7 @@
     <string name="takacs">David Takacs</string>
     <string name="andrea">Andrea Rafai</string>
 
+    <!-- Settings -->
     <string name="settings_title_parking">Parking</string>
     <string name="settings_show_parking_ticket">Show parking ticket confirmation</string>
     <string name="settings_alert_before">Alert 10 minutes before ticket due</string>
@@ -69,5 +70,34 @@
 
     <string name="hour">h</string>
     <string name="day">day</string>
+
+    <!-- Edit car -->
+    <string name="error">Error</string>
+    <string name="empty_car_or_license">Car name or license number is empty.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure">Are you sure?</string>
+
+    <!-- Car layout -->
+    <string name="new_car">New car</string>
+    <string name="edit_car">Edit car</string>
+    <string name="name">Name:</string>
+    <string name="cars_name">Car\'s name</string>
+    <string name="license_plate_preview">License plate preview:</string>
+    <string name="new_srb">New SRB</string>
+    <string name="generic">Generic</string>
+    <string name="license_number">License number:</string>
+    <string name="license_number2">License number</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
+    <string name="free">Free</string>
+    <string name="parked">Parked</string>
+
+    <!-- Parking ticket -->
+    <string name="parking_ticket">Parking Ticket</string>
+    <string name="parking_length">Parking length:</string>
+    <string name="valid_due">Valid due:</string>
+    <string name="ticket_comment">The application uses a premium rate sms to pay the parking ticket. You will get a notification before your ticket due.</string>
 
 </resources>

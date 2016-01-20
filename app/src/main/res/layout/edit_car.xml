@@ -36,7 +36,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:text="New car"
+                        android:text="@string/new_car"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large.Inverse"
                         android:layout_alignParentTop="true"
                         android:layout_alignLeft="@+id/carLicense"
@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Name:"
+                        android:text="@string/name"
                         android:id="@+id/textView3"
                         android:textColor="@color/colorPrimaryDark"
                         android:layout_marginLeft="3dp" />
@@ -60,7 +60,7 @@
                         android:layout_below="@+id/carLicense"
                         android:layout_alignLeft="@+id/carLicense"
                         android:layout_alignStart="@+id/carLicense"
-                        android:hint="Car's name"
+                        android:hint="@string/cars_name"
                         android:textColor="#000000"
                         android:textColorHint="#999999"
                         android:singleLine="true"
@@ -70,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="License plate preview:"
+                        android:text="@string/license_plate_preview"
                         android:id="@+id/textView4"
                         android:textColor="@color/colorPrimaryDark"
                         android:layout_marginTop="20dp"
@@ -126,7 +126,7 @@
                         <RadioButton
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:text="New SRB"
+                            android:text="@string/new_srb"
                             android:id="@+id/radioNewSrb"
                             android:textColor="#000000"
                             android:checked="false"
@@ -135,7 +135,7 @@
                         <RadioButton
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:text="Generic"
+                            android:text="@string/generic"
                             android:id="@+id/radioGeneric"
                             android:textColor="#000000"
                             android:layout_weight="1" />
@@ -146,7 +146,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="License number:"
+                        android:text="@string/license_number"
                         android:id="@+id/textView6"
                         android:textColor="@color/colorPrimaryDark"
                         android:layout_marginLeft="3dp" />
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/text1"
                         android:layout_centerHorizontal="true"
-                        android:hint="License number"
+                        android:hint="@string/license_number2"
                         android:textColor="#000000"
                         android:textColorHint="#999999"
                         android:singleLine="true"
@@ -182,7 +182,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delete"
+                    android:text="@string/delete"
                     android:id="@+id/DeleteButton"
                     android:visibility="gone" />
 
@@ -195,14 +195,14 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancel"
+                    android:text="@string/cancel"
                     android:id="@+id/cancelButton"
                     android:onClick="openCarFragment(null, true)" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Done"
+                    android:text="@string/done"
                     android:id="@+id/DoneButton"
                     android:layout_gravity="center_horizontal" />
             </LinearLayout>

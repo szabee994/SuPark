@@ -51,10 +51,10 @@ public class CarListFragment extends Fragment {
             // Retrieves the parking state of the car
             switch (d.getInt(d.getColumnIndex("parkedstate"))) {
                 case 0:
-                    car.setState("Free");
+                    car.setState(getResources().getString(R.string.free));
                     break;
                 case 1:
-                    car.setState("Parked");
+                    car.setState(getResources().getString(R.string.parked));
                     break;
             }
             car.setRemaining((int) (d.getLong(d.getColumnIndex("parkeduntil")) - ((System.currentTimeMillis() / 1000L))));
