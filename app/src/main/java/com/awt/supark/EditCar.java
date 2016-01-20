@@ -113,7 +113,7 @@ public class EditCar extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDeleteQuestionDialog("", "Are you sure?", v);
+                showDeleteQuestionDialog("", getResources().getString(R.string.are_you_sure), v);
             }
         });
 
@@ -231,19 +231,19 @@ public class EditCar extends Fragment {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
         alertBuilder.setTitle(title);
         alertBuilder.setMessage(content);
-        alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alertBuilder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 DeleteCar(v);
             }
         });
-        alertBuilder.setNegativeButton("No", null);
+        alertBuilder.setNegativeButton(getResources().getString(R.string.no), null);
         alertBuilder.show();
     }
 
     public void addCar(View v) {
         if (carName.getText().toString().equals("") || carLicense.getText().toString().equals("")) {
-            showErrorDialog("Error", "Car name or license number is empty.");
+            showErrorDialog(getResources().getString(R.string.error), getResources().getString(R.string.empty_car_or_license));
         }
         else {
             int numberOfCars;
