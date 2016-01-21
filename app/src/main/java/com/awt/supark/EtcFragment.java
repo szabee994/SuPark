@@ -50,7 +50,6 @@ public class EtcFragment extends Fragment {
         alertBefore.setChecked(sharedprefs.getBoolean("alertBefore", true));
         alertAfter.setChecked(sharedprefs.getBoolean("alertAfter", true));
 
-
         return view;
     }
 

@@ -1,0 +1,115 @@
+<resources>
+    - <!--
+ General 
+-->
+    <string name="app_name">SuPark</string>
+    <string name="app_name_long">Subotica Parking</string>
+    <string name="app_version">1.0</string>
+    <string name="button_park">Park</string>
+    <string name="home_text">Izaberi registarski broj</string>
+    <string name="please_wait">Parkiranje u toku.\nPlease wait...</string>
+    <string name="success">Uspesno parkiran!</string>
+    - <!--
+ Zone/Location selector stuff 
+-->
+
+
+    <string name="locating">Utvrdjena lokacija...</string>
+    <string name="selectzone">Izaberi zonu</string>
+    <string name="zone1auto">Zona 1</string>
+    <string name="zone2auto">Zona 2</string>
+    <string name="zone3auto">Zona 3</string>
+    <string name="zone4auto">Zona 4</string>
+    <string name="nozone_auto">Nisi ni u jednoj zoni!</string>
+    <string name="zone1selected">Izabrana Zona 1</string>
+    <string name="zone2selected">Izabrana Zona 2</string>
+    <string name="zone3selected">Izabrana Zona 3</string>
+    <string name="zone4selected">Izabrana Zona 4</string>
+    - <!--
+ Settings elements 
+-->
+    <string name="settings_title_languages">Jezik</string>
+    <string name="settings_phones_lang">Automatski</string>
+    <string name="settings_english">Engleski</string>
+    <string name="settings_hungarian">Madjarski</string>
+    <string name="settings_serbian">Srbski</string>
+    <string name="settings_title_general">Osnovna</string>
+    <string name="settings_auto_zone">Automatski utvrdjena zona</string>
+    <string name="settings_remember_license">Zapamti zadnju primedbu</string>
+    <string name="settings_title_about">Obsirnije</string>
+    <string name="settings_about_text1">Izradio ALPHA WOLF TEAM</string>
+    <string name="settings_about_frontend">Application frontend programming:</string>
+    <string name="settings_about_backend">Application backend programming:</string>
+    <string name="settings_about_server">Server backend programming:</string>
+    <string name="settings_about_graphics">Graficke opcije:</string>
+    <string name="settings_about_test">Testiranje:</string>
+    <string name="settings_about_managing">Rukovanje:</string>
+    <string name="borsos">Daniel Borsos</string>
+    <string name="mark">Mark Marcikic</string>
+    <string name="sebok">Szabolcs Sebok</string>
+    <string name="guci">David Guci</string>
+    <string name="feri">Ferenc Onozo</string>
+    <string name="takacs">David Takacs</string>
+    <string name="andrea">Andrea Rafai</string>
+    - <!--
+ Settings 
+-->
+    <string name="settings_title_parking">Parkiranje</string>
+    <string name="settings_show_parking_ticket">Pokazi potvrdjenu parking kartu</string>
+    <string name="settings_alert_before">Opominje se 10 minuta pre isteka karte</string>
+    <string name="settings_alert_after">Opomena po isteku parkiranja</string>
+    - <!--
+ Toasts 
+-->
+    <string name="parking_data_uploaded">Podaci o parkiranju uspesno obavljen</string>
+    <string name="parking_data_fail">Nije uspesno obavljen podatak o parkiranju</string>
+    <string name="sms_sent">SMS poslat</string>
+    <string name="sms_delivered">SMS je stigao</string>
+    <string name="sms_error_generic">Greska! Nije poruka uspesno poslato...</string>
+
+
+    <string name="sms_error_radio">Molimo iskljucite offline i probajte ponovo</string>
+
+
+    <string name="wait_for_zone">Cekajte da se zona automatski izabere, ili probajte manuelni izbor</string>
+    <string name="parking_success">Parkiranje uspesno obavljen!</string>
+    <string name="parking_cancelled">Brisano parkiranje</string>
+    - <!--
+ TODO: Remove or change this placeholder text 
+-->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hour">h</string>
+    <string name="day">day</string>
+    - <!--
+ Edit car 
+-->
+    <string name="error">Error</string>
+    <string name="empty_car_or_license">Naziv auta, ili registrajski broj prazan.</string>
+    <string name="yes">Da</string>
+    <string name="no">Ne</string>
+    <string name="are_you_sure">Jeste sigurni?</string>
+    - <!--
+ Car layout 
+-->
+    <string name="new_car">Nov auto</string>
+    <string name="edit_car">Auto editovanja</string>
+    <string name="name">Naziv:</string>
+    <string name="cars_name">Naziv automobila</string>
+    <string name="license_plate_preview">Provera registarskog broja:</string>
+    <string name="new_srb">Nov SRB</string>
+    <string name="generic">Ne</string>
+    <string name="license_number">Registarski broj:</string>
+    <string name="license_number2">Registarski broj</string>
+    <string name="cancel">Ipak ne</string>
+    <string name="done">Gotovo</string>
+    <string name="delete">Brisanje</string>
+    <string name="free">Besplatno</string>
+    <string name="parked">Parkiran</string>
+    - <!--
+ Parking ticket 
+-->
+    <string name="parking_ticket">Karta za parkiranje</string>
+    <string name="parking_length">Duzina vremena parkiranja:</string>
+    <string name="valid_due">Vazeca:</string>
+    <string name="ticket_comment">Aplikacija posalje uvecani iznos poruka prilikom kupovine parking karte. Dobijes obavestenje pre isteka parking karte.</string>
+</resources>

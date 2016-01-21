@@ -1,0 +1,103 @@
+<resources>
+    <!-- General -->
+    <string name="app_name">SuPark</string>
+    <string name="app_name_long">Subotica Parking</string>
+    <string name="app_version">1.0</string>
+    <string name="button_park">Park</string>
+    <string name="home_text">Choose a license number</string>
+    <string name="please_wait">Parking in progress.\nPlease wait...</string>
+    <string name="success">Success!</string>
+
+    <!-- Zone/Location selector stuff -->
+    <string name="locating">Locating in progress...</string>
+    <string name="selectzone">Please select zone</string>
+    <string name="zone1auto">Zone 1</string>
+    <string name="zone2auto">Zone 2</string>
+    <string name="zone3auto">Zone 3</string>
+    <string name="zone4auto">Zone 4</string>
+    <string name="nozone_auto">You\'re not in any parking zones</string>
+    <string name="zone1selected">You have selected Zone 1</string>
+    <string name="zone2selected">You have selected Zone 2</string>
+    <string name="zone3selected">You have selected Zone 3</string>
+    <string name="zone4selected">You have selected Zone 4</string>
+
+    <!-- Settings elements -->
+    <string name="settings_title_languages">Language</string>
+    <string name="settings_phones_lang">Automatic</string>
+    <string name="settings_english">English</string>
+    <string name="settings_hungarian">Magyar</string>
+    <string name="settings_serbian">Srpski</string>
+
+    <string name="settings_title_general">General</string>
+    <string name="settings_auto_zone">Automatically locate zone</string>
+    <string name="settings_remember_license">Remember last license number</string>
+
+    <string name="settings_title_about">About</string>
+    <string name="settings_about_text1">Developed by ALPHA WOLF TEAM</string>
+    <string name="settings_about_frontend">Application frontend programming:</string>
+    <string name="settings_about_backend">Application backend programming:</string>
+    <string name="settings_about_server">Server backend programming:</string>
+    <string name="settings_about_graphics">Graphics:</string>
+    <string name="settings_about_test">Testing:</string>
+    <string name="settings_about_managing">Managing:</string>
+    <string name="borsos">Daniel Borsos</string>
+    <string name="mark">Mark Marcikic</string>
+    <string name="sebok">Szabolcs Sebok</string>
+    <string name="guci">David Guci</string>
+    <string name="feri">Ferenc Onozo</string>
+    <string name="takacs">David Takacs</string>
+    <string name="andrea">Andrea Rafai</string>
+
+    <!-- Settings -->
+    <string name="settings_title_parking">Parking</string>
+    <string name="settings_show_parking_ticket">Show parking ticket confirmation</string>
+    <string name="settings_alert_before">Alert 10 minutes before ticket due</string>
+    <string name="settings_alert_after">Alert when ticket due</string>
+
+    <!-- Toasts -->
+    <string name="parking_data_uploaded">Parking data successfully uploaded</string>
+    <string name="parking_data_fail">Failed to upload parking data</string>
+    <string name="sms_sent">SMS sent</string>
+    <string name="sms_delivered">SMS delivered</string>
+    <string name="sms_error_generic">Error occurred! SMS not sent...</string>
+    <string name="sms_error_radio">Please turn off airplane mode and try again</string>
+    <string name="wait_for_zone">Wait for zone detection or choose one manually</string>
+    <string name="parking_success">Parking completed successfully</string>
+    <string name="parking_cancelled">Parking cancelled</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="hour">h</string>
+    <string name="day">day</string>
+
+    <!-- Edit car -->
+    <string name="error">Error</string>
+    <string name="empty_car_or_license">Car name or license number is empty.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure">Are you sure?</string>
+
+    <!-- Car layout -->
+    <string name="new_car">New car</string>
+    <string name="edit_car">Edit car</string>
+    <string name="name">Name:</string>
+    <string name="cars_name">Car\'s name</string>
+    <string name="license_plate_preview">License plate preview:</string>
+    <string name="new_srb">New SRB</string>
+    <string name="generic">Generic</string>
+    <string name="license_number">License number:</string>
+    <string name="license_number2">License number</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
+    <string name="free">Free</string>
+    <string name="parked">Parked</string>
+
+    <!-- Parking ticket -->
+    <string name="parking_ticket">Parking Ticket</string>
+    <string name="parking_length">Parking length:</string>
+    <string name="valid_due">Valid due:</string>
+    <string name="ticket_comment">The application uses a premium rate sms to pay the parking ticket. You will get a notification before your ticket due.</string>
+
+</resources>
