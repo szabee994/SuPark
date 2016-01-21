@@ -100,4 +100,13 @@
     <string name="valid_due">Valid due:</string>
     <string name="ticket_comment">The application uses a premium rate sms to pay the parking ticket. You will get a notification before your ticket due.</string>
 
+    <!-- Parking ticket -->
+    <string name="parking_status_of">Parking status of </string>
+    <string name="minutes_left"> minute(s) left, ticket due: </string>
+    <string name="ticket_due">Parking ticket due!</string>
+    <string name="parking_price">Parking price: </string>
+    <string name="minutes"> minutes</string>
+    <string name="zone">Zone </string>
+    <string name="park">Park</string>
+
 </resources>

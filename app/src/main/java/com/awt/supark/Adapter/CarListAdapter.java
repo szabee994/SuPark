@@ -3,6 +3,7 @@ package com.awt.supark.Adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +81,8 @@ public class CarListAdapter extends BaseAdapter {
         holder.num.setTypeface(licenseFont);
         updateLicensePlate(car.getLicens(), car.getGeneric(), holder.city, holder.num, holder.licensePlate);
         holder.state.setText(car.getState());
+
+        Log.i("State", car.getState() + "...");
 
         if (car.getState() == "Parked") {
             int time = car.getRemaining();

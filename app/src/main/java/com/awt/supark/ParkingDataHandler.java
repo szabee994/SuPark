@@ -142,10 +142,10 @@ public class ParkingDataHandler implements LocationListener {
                                 final String endTime = sdf.format(calendar.getTime()); // Parking end in HH:mm (MMM dd.)
 
                                 // Setting the values
-                                zoneText.setText("Zone " + act.currentZone);
-                                lengthText.setText(getZoneMaxTime(act.currentZone) + " minutes");
+                                zoneText.setText(context.getResources().getString(R.string.zone) + " " + act.currentZone);
+                                lengthText.setText(getZoneMaxTime(act.currentZone) + " " + context.getResources().getString(R.string.minutes));
                                 endText.setText(endTime);
-                                priceText.setText("Parking price: " + getZonePrice(act.currentZone) + " RSD");
+                                priceText.setText(context.getResources().getString(R.string.parking_price) + " " + getZonePrice(act.currentZone) + " RSD");
 
                                 // Selects the right parking zone picture
                                 switch (act.currentZone) {
@@ -159,7 +159,7 @@ public class ParkingDataHandler implements LocationListener {
                                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(act);
                                 alertDialog.setView(dialoglayout);
                                 alertDialog.setCancelable(false);
-                                alertDialog.setPositiveButton("Park", new DialogInterface.OnClickListener() {
+                                alertDialog.setPositiveButton(context.getResources().getString(R.string.park), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         // Making the layout visible
@@ -186,7 +186,7 @@ public class ParkingDataHandler implements LocationListener {
                                         });
                                     }
                                 });
-                                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                alertDialog.setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         act.parkingInit("cancel");

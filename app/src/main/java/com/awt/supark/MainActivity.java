@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout            licensePlate;
     TextView                licenseCity;
     TextView                licenseNum;
-    TextView                tapHereText;
+    LinearLayout            tapHereText;
 
     // Layouts
     RelativeLayout      backDimmer;
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         licensePlate =      (LinearLayout)          findViewById(R.id.licensePlate);
         licenseCity =       (TextView)              findViewById(R.id.city);
         licenseNum =        (TextView)              findViewById(R.id.num);
-        tapHereText =       (TextView)              findViewById(R.id.tapHereText);
+        tapHereText =       (LinearLayout)          findViewById(R.id.tapHereText);
 
         // Layouts
         backDimmer =        (RelativeLayout)        findViewById(R.id.back_dimmer);

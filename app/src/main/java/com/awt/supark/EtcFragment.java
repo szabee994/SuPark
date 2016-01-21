@@ -31,8 +31,8 @@ public class EtcFragment extends Fragment {
         Log.d("EtcFragment", "Etc activity started");
 
         Context cont = getActivity().getApplicationContext();
-        ParkingDataHandler parkhandler = new ParkingDataHandler(cont);
-        parkhandler.checkForUpdate();
+        //ParkingDataHandler parkhandler = new ParkingDataHandler(cont);
+        //parkhandler.checkForUpdate();
 
         autoLoc =           (CheckBox)      view.findViewById(R.id.checkBoxAutomaticZone);
         lastLicense =       (CheckBox)      view.findViewById(R.id.checkBoxRememberLicenseNumber);

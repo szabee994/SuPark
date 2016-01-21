@@ -111,7 +111,7 @@ public class carHandler {
         updateLicensePlate(getIdByLicense(act.currentLicense), act.licenseCity, act.licenseNum, act.licensePlate, act.tapHereText);
     }
 
-    public void updateLicensePlate(int sqlid, TextView txtCity, TextView txtNum, LinearLayout licensePlate, TextView tapHereText) {
+    public void updateLicensePlate(int sqlid, TextView txtCity, TextView txtNum, LinearLayout licensePlate, LinearLayout tapHereText) {
         txtCity.setVisibility(View.VISIBLE);
         txtNum.setVisibility(View.VISIBLE);
         licensePlate.setVisibility(View.VISIBLE);

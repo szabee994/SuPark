@@ -79,18 +79,42 @@
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="0.2"
                     android:text="@string/home_text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:visibility="invisible" />
 
-                <TextView
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_weight="0.6"
                     android:id="@+id/tapHereText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
                     android:onClick="licensePressed"
-                    android:text="Tap here to select a car"
-                    android:visibility="gone" />
+                    android:background="#1effffff"
+                    android:padding="5dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/imageView"
+                        android:src="@drawable/taphere"
+                        android:layout_gravity="center"
+                        android:onClick="licensePressed"
+                        android:layout_marginBottom="5dp" />
+
+                    <TextView
+                        android:id="@+id/tapHereText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="licensePressed"
+                        android:text="Tap here to select a car"
+                        android:visibility="visible"
+                        android:layout_gravity="center"
+                        android:textSize="20dp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/licensePlate"

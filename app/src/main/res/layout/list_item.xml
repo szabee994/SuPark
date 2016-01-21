@@ -67,7 +67,7 @@
                     android:orientation="horizontal"
                     android:paddingBottom="7dp"
                     android:paddingLeft="20dp"
-                    android:paddingRight="11dp"
+                    android:paddingRight="9dp"
                     android:paddingTop="8dp">
 
                     <TextView

@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,7 @@ public class EditCar extends Fragment {
     RadioGroup radioLicenseGroup;
     LinearLayout licensePlate;
     Context context;
+    InputFilter filter;
 
     @Nullable
     @Override
@@ -79,6 +81,7 @@ public class EditCar extends Fragment {
             carName.setText(d.getString(d.getColumnIndex("car_name")));
             licenseNum = d.getString(d.getColumnIndex("car_license"));
             carLicense.setText(licenseNum);
+
             if (d.getInt(d.getColumnIndex("isgeneric")) == 0) {
                 radioNewSrb.setChecked(true);
                 radioGeneric.setChecked(false);
@@ -90,8 +93,11 @@ public class EditCar extends Fragment {
             }
 
             deleteButton.setVisibility(View.VISIBLE);
+            if(isCarParked(editid)) {
+                deleteButton.setEnabled(false);
+            }
             TextView text = (TextView)view.findViewById(R.id.text1);
-            text.setText("Edit car");
+            text.setText(context.getResources().getString(R.string.edit_car));
             d.close();
         } else {
             radioNewSrb.setChecked(true);
@@ -124,6 +130,21 @@ public class EditCar extends Fragment {
             }
         });
 
+        // Filters the emojis and other unwanted characters
+        filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (!Character.isLetterOrDigit(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+        carName.setFilters(new InputFilter[] { filter });
+        //carLicense.setFilters(new InputFilter[] { filter });
+
 
         // License number filler
         carLicense.addTextChangedListener(new TextWatcher() {
@@ -155,13 +176,24 @@ public class EditCar extends Fragment {
     }
 
     public void radioListener() {
+        InputFilter charFilter = filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (!Character.isLetterOrDigit(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
         if (radioNewSrb.isChecked()) {
             txtCity.setVisibility(View.VISIBLE);
             licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate));
 
             updateLicensePlate(licenseNum);
-            txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(7)});
-            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
+            //txtNum.setFilters(new InputFilter[]{filter, new InputFilter.LengthFilter(7), new InputFilter.AllCaps()});
+            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), new InputFilter.AllCaps(), charFilter});
         } else if (radioGeneric.isChecked()) {
             txtCity.setVisibility(View.GONE);
             licensePlate.setBackgroundDrawable(getResources().getDrawable(R.drawable.licenseplate2));
@@ -169,8 +201,20 @@ public class EditCar extends Fragment {
             // Reset
             txtCity.setText("");
             updateLicensePlate(licenseNum);
-            txtNum.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
-            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+            //txtNum.setFilters(new InputFilter[]{filter, new InputFilter.LengthFilter(12), new InputFilter.AllCaps()});
+            carLicense.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12), new InputFilter.AllCaps(), charFilter});
+        }
+    }
+
+    public boolean isCarParked(int id) {
+        Cursor cursor = db.rawQuery("SELECT * FROM cars WHERE car_id = " + id + " AND parkedstate = 1", null);
+
+        if(cursor.getCount() == 0) {
+            cursor.close();
+            return false;
+        } else {
+            cursor.close();
+            return  true;
         }
     }
 

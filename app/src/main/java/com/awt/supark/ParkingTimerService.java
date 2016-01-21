@@ -220,10 +220,10 @@ public class ParkingTimerService extends Service {
             mNotification = new NotificationCompat.Builder(getApplicationContext());                                // Setting the notification parameters:
             mNotification.setSmallIcon(R.mipmap.ic_directions_car_white_24dp);                                      // * icon
             mNotification.setOngoing(true);                                                                         // * making it ongoing so the user can't swipe away
-            mNotification.setContentTitle("Parking status of " + licenseNum.toUpperCase());                         // * title
-            mNotification.setContentText(remainingTime + " minute(s) left, ticket due: " + formattedEndTime);       // * content text
+            mNotification.setContentTitle(getResources().getString(R.string.parking_status_of) + " " +licenseNum.toUpperCase());                         // * title
+            mNotification.setContentText(remainingTime + " " + getResources().getString(R.string.minutes_left) + " " + formattedEndTime);       // * content text
             mNotification.setProgress((int) (parkedUntil - parkedTime), (int) remainingTime * 60, false);           // * progress bar to visualize the remaining time
-            mNotification.addAction(R.mipmap.ic_highlight_off_white_24dp, "Cancel", pIntentCancel);                 // * cancel button
+            mNotification.addAction(R.mipmap.ic_highlight_off_white_24dp, getResources().getString(R.string.cancel), pIntentCancel);                 // * cancel button
 
             // Playing alert if the alerts are turned on
             if(alert && sharedPreferences.getBoolean("alertBefore", true)) {
@@ -253,8 +253,8 @@ public class ParkingTimerService extends Service {
        try {
            mNotification = new NotificationCompat.Builder(getApplicationContext());
            mNotification.setSmallIcon(R.mipmap.ic_report_problem_white_24dp);
-           mNotification.setContentTitle("Parking status of " + licenseNum);
-           mNotification.setContentText("Parking ticket due!");
+           mNotification.setContentTitle(getResources().getString(R.string.parking_status_of) + licenseNum);
+           mNotification.setContentText(getResources().getString(R.string.ticket_due));
            mNotification.setProgress(0, 0, false);
 
            // Playing alert if the alerts are turned on

@@ -60,7 +60,7 @@ public class StatsFragment extends Fragment {
             // dani baszki how dis works?
             // database stuff from here
             db = SQLiteDatabase.openDatabase(context.getFilesDir().getPath() + "/ParkingDB.db", null, SQLiteDatabase.CREATE_IF_NECESSARY);
-            Cursor d = db.rawQuery("SELECT * FROM regions", null);
+            Cursor d = db.rawQuery("SELECT * FROM regions ORDER BY zone_id ASC", null);
             String[] regionname = new String[d.getCount()];
             int[] zoneid = new int[d.getCount()];
             int[] maxparked = new int[d.getCount()];
@@ -90,7 +90,7 @@ public class StatsFragment extends Fragment {
                 regionnametext.setText(regionname[i]);
                 double ratio = (maxparked[i] == 0 ? 0 : ((double)currentparked[i] / (double)maxparked[i])*100);
                 TextView statustext = (TextView)inflate.findViewById(R.id.regionstatus);
-                statustext.setText(String.format("%.2f", ratio)); // sets precision of double to 2 digit after ,
+                statustext.setText(String.format("%.0f", ratio) + " %"); // sets precision of double to 2 digit after ,
                 ProgressBar bar = (ProgressBar)inflate.findViewById(R.id.progressBar);
                 bar.setProgress((int) ratio);
                 int green = (int)(255-(ratio*2.55));
@@ -98,10 +98,10 @@ public class StatsFragment extends Fragment {
                 bar.getIndeterminateDrawable().setColorFilter(Color.argb(255, red, green, 0), PorterDuff.Mode.MULTIPLY); //This doesn't work right
                 ImageView zone = (ImageView)inflate.findViewById(R.id.zoneimg);
                 switch (zoneid[i]){
-                    case 1: zone.setImageResource(R.drawable.zone1low); break;
-                    case 2: zone.setImageResource(R.drawable.zone2low); break;
-                    case 3: zone.setImageResource(R.drawable.zone3low); break;
-                    case 4: zone.setImageResource(R.drawable.zone4low); break;
+                    case 1: zone.setImageResource(R.drawable.zone1); break;
+                    case 2: zone.setImageResource(R.drawable.zone2); break;
+                    case 3: zone.setImageResource(R.drawable.zone3); break;
+                    case 4: zone.setImageResource(R.drawable.zone4); break;
                 }
                 //To here, it's just modifying the template layout to match region info
 
