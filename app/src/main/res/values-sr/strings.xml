@@ -1,7 +1,7 @@
 <resources>
-    - <!--
- General 
--->
+    <!--
+     General
+    -->
     <string name="app_name">SuPark</string>
     <string name="app_name_long">Subotica Parking</string>
     <string name="app_version">1.0</string>
@@ -9,9 +9,9 @@
     <string name="home_text">Izaberi registarski broj</string>
     <string name="please_wait">Parkiranje u toku.\nPlease wait...</string>
     <string name="success">Uspesno parkiran!</string>
-    - <!--
- Zone/Location selector stuff 
--->
+    <!--
+     Zone/Location selector stuff
+    -->
 
 
     <string name="locating">Utvrdjena lokacija...</string>
@@ -25,14 +25,14 @@
     <string name="zone2selected">Izabrana Zona 2</string>
     <string name="zone3selected">Izabrana Zona 3</string>
     <string name="zone4selected">Izabrana Zona 4</string>
-    - <!--
- Settings elements 
--->
+    <!--
+     Settings elements
+    -->
     <string name="settings_title_languages">Jezik</string>
     <string name="settings_phones_lang">Automatski</string>
     <string name="settings_english">Engleski</string>
     <string name="settings_hungarian">Madjarski</string>
-    <string name="settings_serbian">Srbski</string>
+    <string name="settings_serbian">Srpski</string>
     <string name="settings_title_general">Osnovna</string>
     <string name="settings_auto_zone">Automatski utvrdjena zona</string>
     <string name="settings_remember_license">Zapamti zadnju primedbu</string>
@@ -51,16 +51,16 @@
     <string name="feri">Ferenc Onozo</string>
     <string name="takacs">David Takacs</string>
     <string name="andrea">Andrea Rafai</string>
-    - <!--
- Settings 
--->
+    <!--
+     Settings
+    -->
     <string name="settings_title_parking">Parkiranje</string>
     <string name="settings_show_parking_ticket">Pokazi potvrdjenu parking kartu</string>
     <string name="settings_alert_before">Opominje se 10 minuta pre isteka karte</string>
     <string name="settings_alert_after">Opomena po isteku parkiranja</string>
-    - <!--
- Toasts 
--->
+    <!--
+     Toasts
+    -->
     <string name="parking_data_uploaded">Podaci o parkiranju uspesno obavljen</string>
     <string name="parking_data_fail">Nije uspesno obavljen podatak o parkiranju</string>
     <string name="sms_sent">SMS poslat</string>
@@ -74,23 +74,23 @@
     <string name="wait_for_zone">Cekajte da se zona automatski izabere, ili probajte manuelni izbor</string>
     <string name="parking_success">Parkiranje uspesno obavljen!</string>
     <string name="parking_cancelled">Brisano parkiranje</string>
-    - <!--
- TODO: Remove or change this placeholder text 
--->
+    <!--
+     TODO: Remove or change this placeholder text
+    -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hour">h</string>
     <string name="day">day</string>
-    - <!--
- Edit car 
--->
+    <!--
+     Edit car
+    -->
     <string name="error">Error</string>
     <string name="empty_car_or_license">Naziv auta, ili registrajski broj prazan.</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
     <string name="are_you_sure">Jeste sigurni?</string>
-    - <!--
- Car layout 
--->
+    <!--
+     Car layout
+    -->
     <string name="new_car">Nov auto</string>
     <string name="edit_car">Auto editovanja</string>
     <string name="name">Naziv:</string>
@@ -105,11 +105,15 @@
     <string name="delete">Brisanje</string>
     <string name="free">Besplatno</string>
     <string name="parked">Parkiran</string>
-    - <!--
- Parking ticket 
--->
+    <!--
+     Parking ticket
+    -->
     <string name="parking_ticket">Karta za parkiranje</string>
     <string name="parking_length">Duzina vremena parkiranja:</string>
     <string name="valid_due">Vazeca:</string>
     <string name="ticket_comment">Aplikacija posalje uvecani iznos poruka prilikom kupovine parking karte. Dobijes obavestenje pre isteka parking karte.</string>
+    <string name="zone">Zona</string>
+    <string name="parking_price">Cena parkiranje:</string>
+    <string name="parking_status_of">Status parkiranje:</string>
+    <string name="langsetting">Restart potrebno</string>
 </resources>

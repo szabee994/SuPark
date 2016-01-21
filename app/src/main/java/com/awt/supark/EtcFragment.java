@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 /**
  * Created by Mark on 2015.10.25..
@@ -24,6 +26,11 @@ public class EtcFragment extends Fragment {
     CheckBox showTicketCheck;
     CheckBox alertBefore;
     CheckBox alertAfter;
+    RadioGroup languageGroup;
+    RadioButton auto;
+    RadioButton en;
+    RadioButton hu;
+    RadioButton sr;
 
     @Nullable
     @Override
@@ -41,6 +48,11 @@ public class EtcFragment extends Fragment {
         showTicketCheck =   (CheckBox)      view.findViewById(R.id.checkBoxShowParkingTicket);
         alertBefore =       (CheckBox)      view.findViewById(R.id.checkBoxAlertBefore);
         alertAfter =        (CheckBox)      view.findViewById(R.id.checkBoxAlertAfter);
+        languageGroup = (RadioGroup) view.findViewById(R.id.languageGroup);
+        en = (RadioButton) view.findViewById(R.id.radioButtonEnglish);
+        hu = (RadioButton) view.findViewById(R.id.radioButtonHungarian);
+        sr = (RadioButton) view.findViewById(R.id.radioButtonSerbian);
+        auto = (RadioButton) view.findViewById(R.id.radioButtonAutomatic);
 
         SharedPreferences sharedprefs = PreferenceManager.getDefaultSharedPreferences(cont);
         autoLoc.setChecked(sharedprefs.getBoolean("autoloc", true));
@@ -50,10 +62,42 @@ public class EtcFragment extends Fragment {
         alertBefore.setChecked(sharedprefs.getBoolean("alertBefore", true));
         alertAfter.setChecked(sharedprefs.getBoolean("alertAfter", true));
 
+        switch (sharedprefs.getString("lang", "auto")) {
+            case "auto":
+                auto.setChecked(true);
+                break;
+            case "en":
+                en.setChecked(true);
+                break;
+            case "hu":
+                hu.setChecked(true);
+                break;
+            case "sr":
+                sr.setChecked(true);
+                break;
+        }
+
+        languageGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radioButtonAutomatic:
+                        ((MainActivity) getActivity()).setLanguage("auto");
+                        break;
+                    case R.id.radioButtonHungarian:
+                        ((MainActivity) getActivity()).setLanguage("hu");
+                        break;
+                    case R.id.radioButtonSerbian:
+                        ((MainActivity) getActivity()).setLanguage("sr");
+                        break;
+                    case R.id.radioButtonEnglish:
+                        ((MainActivity) getActivity()).setLanguage("en");
+                        break;
+                }
+            }
+        });
+
+
         return view;
-    }
-
-    public void autoLocListener(View v) {
-
     }
 }

@@ -108,5 +108,6 @@
     <string name="minutes"> minutes</string>
     <string name="zone">Zone </string>
     <string name="park">Park</string>
+    <string name="langsetting">Language settings apply on the next start.</string>
 
 </resources>

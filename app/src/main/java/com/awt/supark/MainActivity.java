@@ -3,6 +3,7 @@ package com.awt.supark;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     public carHandler CarHandler;
@@ -225,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
         showTicket =        sharedprefs.getBoolean("showTicket", true);
         debugNumbers = sharedprefs.getBoolean("debugNumbers", true);
+        setLanguage(sharedprefs.getString("lang", "auto"));
         if (lastLicense)
             currentLicense = sharedprefs.getString("lastlicense", "");
 
@@ -441,6 +445,17 @@ public class MainActivity extends AppCompatActivity {
         if (openedLayout == R.id.buttonMap) {
             MapFragment fragment = (MapFragment) fragmentManager.findFragmentById(R.id.otherContent);
             fragment.showCar();
+        }
+    }
+
+    public void setLanguage(String lang) {
+        sharedprefs.edit().putString("lang", lang).commit();
+        if (!lang.equals("auto")) {
+            Locale locale = new Locale(lang);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.locale = locale;
+            getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
         }
     }
 
