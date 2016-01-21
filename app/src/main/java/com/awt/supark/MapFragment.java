@@ -63,7 +63,7 @@ public class MapFragment extends Fragment {
                 int zoneindex = d.getColumnIndex("zone_id");
                 poly[polynum] = d.getString(polyindex);
                 polycolor[polynum] = d.getInt(zoneindex);
-                Log.i("Poly", poly[polynum]);
+                //Log.i("Poly", poly[polynum]);
                 polynum++;
             }
             d.close();
@@ -72,7 +72,7 @@ public class MapFragment extends Fragment {
             for (int i = 0; i < polynum; i++) {
                 poly[i] = poly[i].replace("POLYGON((", "");
                 poly[i] = poly[i].replace("))", "");
-                Log.i("Poly", poly[i]);
+                //Log.i("Poly", poly[i]);
                 String vertices[] = poly[i].split(",");
                 PolygonOptions polygon = new PolygonOptions();
                 for (String vertice : vertices) {

@@ -25,28 +25,28 @@
                 android:layout_height="match_parent"
                 android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
+                android:paddingBottom="@dimen/standardFragmentPadding"
                 android:paddingLeft="@dimen/standardFragmentPadding"
-                android:paddingRight="@dimen/standardFragmentPadding"
-                android:paddingBottom="@dimen/standardFragmentPadding">
+                android:paddingRight="@dimen/standardFragmentPadding">
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/cardViewLanguage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin"
+                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
+                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
+                    android:layout_marginTop="10dp"
                     android:background="#FFFFFFFF"
                     android:elevation="@dimen/standardCardElevation"
+                    android:padding="0dp"
                     android:translationZ="0dp"
                     app:cardBackgroundColor="#FFFFFFFF"
                     app:cardCornerRadius="2dp"
                     app:cardElevation="@dimen/standardCardElevation"
                     app:cardPreventCornerOverlap="true"
                     app:cardUseCompatPadding="true"
-                    app:contentPadding="10dp"
-                    android:padding="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
-                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
-                    android:layout_marginBottom="@dimen/etcLayoutCardMargin">
+                    app:contentPadding="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -102,6 +102,9 @@
                     android:id="@+id/cardGeneral"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin"
+                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
+                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
                     android:layout_marginTop="@dimen/etcLayoutCardMargin"
                     android:background="#FFFFFFFF"
                     android:elevation="@dimen/standardCardElevation"
@@ -112,10 +115,7 @@
                     app:cardElevation="@dimen/standardCardElevation"
                     app:cardPreventCornerOverlap="true"
                     app:cardUseCompatPadding="true"
-                    app:contentPadding="10dp"
-                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
-                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
-                    android:layout_marginBottom="@dimen/etcLayoutCardMargin">
+                    app:contentPadding="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -157,6 +157,9 @@
                     android:id="@+id/cardPark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin"
+                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
+                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
                     android:layout_marginTop="@dimen/etcLayoutCardMargin"
                     android:background="#FFFFFFFF"
                     android:elevation="@dimen/standardCardElevation"
@@ -167,10 +170,7 @@
                     app:cardElevation="@dimen/standardCardElevation"
                     app:cardPreventCornerOverlap="true"
                     app:cardUseCompatPadding="true"
-                    app:contentPadding="10dp"
-                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
-                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
-                    android:layout_marginBottom="@dimen/etcLayoutCardMargin">
+                    app:contentPadding="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -218,9 +218,12 @@
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
-                    android:id="@+id/cardAbout"
+                    android:id="@+id/cardDebug"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin"
+                    android:layout_marginLeft="@dimen/etcLayoutCardMargin"
+                    android:layout_marginRight="@dimen/etcLayoutCardMargin"
                     android:layout_marginTop="@dimen/etcLayoutCardMargin"
                     android:background="#FFFFFFFF"
                     android:elevation="@dimen/standardCardElevation"
@@ -231,10 +234,51 @@
                     app:cardElevation="@dimen/standardCardElevation"
                     app:cardPreventCornerOverlap="true"
                     app:cardUseCompatPadding="true"
-                    app:contentPadding="10dp"
+                    app:contentPadding="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="Debug"
+                            android:textStyle="bold"
+                            android:theme="@style/Base.TextAppearance.AppCompat.Large.Inverse" />
+
+                        <CheckBox
+                            android:id="@+id/checkBoxDebugNumbers"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:checked="true"
+                            android:enabled="true"
+                            android:onClick="toggleDebugNumbers"
+                            android:text="Use debug SMS numbers"
+                            android:textColor="#000000" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardAbout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/etcLayoutCardMargin"
                     android:layout_marginLeft="@dimen/etcLayoutCardMargin"
                     android:layout_marginRight="@dimen/etcLayoutCardMargin"
-                    android:layout_marginBottom="@dimen/etcLayoutCardMargin">
+                    android:layout_marginTop="@dimen/etcLayoutCardMargin"
+                    android:background="#FFFFFFFF"
+                    android:elevation="@dimen/standardCardElevation"
+                    android:padding="0dp"
+                    android:translationZ="0dp"
+                    app:cardBackgroundColor="#FFFFFFFF"
+                    app:cardCornerRadius="2dp"
+                    app:cardElevation="@dimen/standardCardElevation"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardUseCompatPadding="true"
+                    app:contentPadding="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"

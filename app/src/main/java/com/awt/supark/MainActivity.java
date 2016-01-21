@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     autoLoc = true;
     boolean     lastLicense = true;
     boolean     showTicket = true;
+    boolean debugNumbers = true;
     int         openedLayout = 0;           // ID of the current opened
 
     // Animation timing (ms)
@@ -54,10 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
     // String database
     String currentLicense = "";
-
-    /*                         sebők             dani              andi             mark
-       Pisa SMS numbers         ZONE1            ZONE2            ZONE3            ZONE4  */
-    String[]    zoneSmsNumDb = {"+381629775063", "+381631821336", "+381621821186", "+38166424280"}; // Will be read from DB (DB needs to be preloaded in the program)
 
     // Context
     Context     cont;
@@ -112,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     ParkingDataHandler  parkHandler;
     ParkingSmsSender    smsHandler;
     LayoutHandler       layoutHandler;
-
     // Zone finder handler
     private final Handler mHandler = new Handler() {
         @Override
@@ -138,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
     // SMS sender handler
     private final Handler smsResponse = new Handler() {
         @Override
@@ -166,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
+    String[] zoneSmsNumDb;
     // Intents
     Intent mServiceIntent;
 
@@ -229,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
         autoLoc =           sharedprefs.getBoolean("autoloc", true);
         lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
         showTicket =        sharedprefs.getBoolean("showTicket", true);
+        debugNumbers = sharedprefs.getBoolean("debugNumbers", true);
         if (lastLicense)
             currentLicense = sharedprefs.getString("lastlicense", "");
 
@@ -284,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         CarHandler.updateLicense(act);
+        setDebugNumbers();
 
         // Starting the background service
         mServiceIntent = new Intent(act, ParkingTimerService.class);
@@ -312,6 +309,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void parkingBackgroundShow() {
         layoutHandler.parkingBackgroundShow(this);
+    }
+
+    public void setDebugNumbers() {
+        if (debugNumbers) {
+            zoneSmsNumDb[0] = "+381629775063";
+            zoneSmsNumDb[1] = "+381631821336";
+            zoneSmsNumDb[2] = "+381621821186";
+            zoneSmsNumDb[3] = "+38166424280";
+        } else {
+            zoneSmsNumDb[0] = "9241";
+            zoneSmsNumDb[1] = "9242";
+            zoneSmsNumDb[2] = "9243";
+            zoneSmsNumDb[3] = "9244";
+        }
     }
 
     // Includes views from XML depending on which button was pressed
@@ -437,6 +448,13 @@ public class MainActivity extends AppCompatActivity {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
         sharedprefs.edit().putBoolean("autoloc", fragment.autoLoc.isChecked()).apply();
         autoLoc = fragment.autoLoc.isChecked();
+    }
+
+    public void toggleDebugNumbers(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("debugNumbers", fragment.debugNumbers.isChecked()).apply();
+        debugNumbers = fragment.debugNumbers.isChecked();
+        setDebugNumbers();
     }
 
     public void lastLicenseListener(View v) {
