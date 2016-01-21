@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     autoLoc = true;
     boolean     lastLicense = true;
     boolean     showTicket = true;
-    boolean debugNumbers = true;
+    boolean     debugNumbers = true;
     int         openedLayout = 0;           // ID of the current opened
 
     // Animation timing (ms)
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    String[] zoneSmsNumDb;
+    String[] zoneSmsNumDb = new String[4];
     // Intents
     Intent mServiceIntent;
 
