@@ -99,11 +99,19 @@
     <string name="parking_length">Parkolás hossza:</string>
     <string name="valid_due">Érvényes:</string>
     <string name="ticket_comment">Az alkalmazás emeltdíjas SMS-t használ a parkolás kifizetésére. Amennyiben beállította értesítést fog kapni a jegy lejárta előtt.</string>
-    <string name="zone">Zóna</string>
-    <string name="ticket_due">Parkolójegy lejárt!</string>
+    <string name="minutes">perc</string>
+    <string name="zone">Zóna </string>
+    <string name="park">Parkolás</string>
+
+    <string name="ticket_due">A parkolójegy lejárt!</string>
     <string name="parking_price">Parkolás ára:</string>
     <string name="parking_status_of">Parkolás állapota</string>
     <string name="langsetting">Újraindítás szükséges</string>
     <string name="select_license">Nincs rendszám kiválasztva!</string>
+    <string name="minutes_left">perc maradt, érvényes: </string>
+
+    <string name="tap_here2">Koppintson ide az autóválasztáshoz</string>
+
+    <string name="car_selected">Autó kiválasztva</string>
 
 </resources>

@@ -110,10 +110,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:onClick="licensePressed"
-                        android:text="Tap here to select a car"
-                        android:visibility="visible"
+                        android:text="@string/tap_here2"
                         android:layout_gravity="center"
-                        android:textSize="20dp" />
+                        android:textSize="17dp" />
+
                 </LinearLayout>
 
                 <LinearLayout

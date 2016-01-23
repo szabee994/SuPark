@@ -11,6 +11,7 @@ import android.location.Location;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by doctor on 03/12/2015.

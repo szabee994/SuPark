@@ -302,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setLicense(View v, String license) {
+        Toast.makeText(cont, getResources().getString(R.string.car_selected), Toast.LENGTH_SHORT).show();
         currentLicense = license;
         CarHandler.updateLicense(act);
         smallButtonPressed(findViewById(R.id.buttonCars));

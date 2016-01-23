@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <!-- General -->
     <string name="app_name">SuPark</string>
     <string name="app_name_long">Subotica Parking</string>
@@ -110,5 +110,9 @@
     <string name="park">Park</string>
     <string name="langsetting">Language settings apply on the next start.</string>
     <string name="select_license">No license number selected!</string>
+
+    <string name="tap_here2">Tap here to select car</string>
+
+    <string name="car_selected">Car selected</string>
 
 </resources>
