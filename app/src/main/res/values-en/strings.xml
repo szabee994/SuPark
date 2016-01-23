@@ -104,5 +104,6 @@
     <string name="parking_price">Parking price:</string>
     <string name="parking_status_of">Parking status of:</string>
     <string name="langsetting">Application restart needed</string>
+    <string name="select_license">No license number selected!</string>
 
 </resources>

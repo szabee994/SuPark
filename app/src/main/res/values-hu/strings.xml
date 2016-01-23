@@ -104,5 +104,6 @@
     <string name="parking_price">Parkolás ára:</string>
     <string name="parking_status_of">Parkolás állapota</string>
     <string name="langsetting">Újraindítás szükséges</string>
+    <string name="select_license">Nincs rendszám kiválasztva!</string>
 
 </resources>

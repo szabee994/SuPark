@@ -103,8 +103,14 @@ public class ParkingDataHandler implements LocationListener {
                 if (act.currentZone == 0) { // If there's no zone selected
                     Toast.makeText(act.cont, act.getResources().getString(R.string.wait_for_zone), Toast.LENGTH_LONG).show();
                     act.pullUpStarted = false;
+                    break;
                 }
-                else {
+                if (act.CarHandler.getIdByLicense(act.currentLicense) == -1) {
+                    Toast.makeText(act.cont, act.getResources().getString(R.string.select_license), Toast.LENGTH_LONG).show();
+                    act.pullUpStarted = false;
+                    break;
+                }
+
                     // Initializing parking process layout
                     act.parkingBackground.setBackgroundColor(act.getResources().getColor(R.color.colorPrimaryDark)); // Background resets
                     act.textParkingScreen.setText(act.getResources().getString(R.string.please_wait)); // Setting text
@@ -224,7 +230,7 @@ public class ParkingDataHandler implements LocationListener {
 
                         }
                     });
-                }
+
                 break;
             // Initialising parking cancel
             case "cancel":
@@ -343,7 +349,9 @@ public class ParkingDataHandler implements LocationListener {
             case "send":
                 Log.i("MainActivity", "Parking started");
                 act.backDisabled = true; // Disabling back button
+                //Switch these to disable SMS sending
                 act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone, act.currentLicense); // Sending the sms
+                //act.parkingInit("finish");
 
                 break;
             case "cancel":
@@ -692,7 +700,7 @@ public class ParkingDataHandler implements LocationListener {
             }catch (Exception e) {
                 Log.i("Exception", e.toString());
             }
-            //Log.i("Response",response.toString());
+            Log.i("Response", response.toString());
             //return unzipString(response.toString());
             return response.toString();
         }

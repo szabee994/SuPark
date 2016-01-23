@@ -116,4 +116,5 @@
     <string name="parking_price">Cena parkiranje:</string>
     <string name="parking_status_of">Status parkiranje:</string>
     <string name="langsetting">Restart potrebno</string>
+    <string name="select_license">Registracioni broj nije izabran!</string>
 </resources>
