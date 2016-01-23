@@ -319,20 +319,24 @@ public class EditCar extends Fragment {
     }
 
     public void editCar(View v) {
-        // Setting values
-        ContentValues values_temp = new ContentValues();
-        values_temp.put("car_name", carName.getText().toString());
-        values_temp.put("car_license", carLicense.getText().toString().toUpperCase());
-        int generic;
-        if (radioNewSrb.isChecked()) {
-            generic = 0;
+        if (carName.getText().toString().equals("") || carLicense.getText().toString().equals("")) {
+            showErrorDialog(getResources().getString(R.string.error), getResources().getString(R.string.empty_car_or_license));
         } else {
-            generic = 1;
-        }
-        values_temp.put("isgeneric", generic);
+            // Setting values
+            ContentValues values_temp = new ContentValues();
+            values_temp.put("car_name", carName.getText().toString());
+            values_temp.put("car_license", carLicense.getText().toString().toUpperCase());
+            int generic;
+            if (radioNewSrb.isChecked()) {
+                generic = 0;
+            } else {
+                generic = 1;
+            }
+            values_temp.put("isgeneric", generic);
 
-        // Inserting the new database record
-        db.update("cars", values_temp, "car_id = " + editid, null);
-        ((MainActivity)getActivity()).openCarFragment(v, -1);
+            // Inserting the new database record
+            db.update("cars", values_temp, "car_id = " + editid, null);
+            ((MainActivity) getActivity()).openCarFragment(v, -1);
+        }
     }
 }
