@@ -88,7 +88,7 @@ public class CarListAdapter extends BaseAdapter {
             int time = car.getRemaining();
             int totalMinutes = (time / 60) + 1; // Don't know why, but this was the only way that worked it out
 
-            holder.remaining.setText(Integer.toString(totalMinutes) + " minutes remaining");
+            holder.remaining.setText(Integer.toString(totalMinutes) + " " + context.getResources().getString(R.string.minutes_remaining));
             holder.remaining.setVisibility(View.VISIBLE);
             holder.buttonCancel.setVisibility(View.VISIBLE);
         } else {

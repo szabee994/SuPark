@@ -114,5 +114,6 @@
     <string name="tap_here2">Tap here to select car</string>
 
     <string name="car_selected">Car selected</string>
+    <string name="minutes_remaining">minute(s) remaining</string>
 
 </resources>

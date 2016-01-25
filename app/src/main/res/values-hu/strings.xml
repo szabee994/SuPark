@@ -113,5 +113,6 @@
     <string name="tap_here2">Koppintson ide az autóválasztáshoz</string>
 
     <string name="car_selected">Autó kiválasztva</string>
+    <string name="minutes_remaining">perc maradt</string>
 
 </resources>

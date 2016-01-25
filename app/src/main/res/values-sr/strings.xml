@@ -105,4 +105,5 @@
     <string name="select_license">Registracioni broj nije izabran!</string>
 
     <string name="tap_here2">Stisni ovde, da izaberes auto</string>
+    <string name="minutes">minuti</string>
 </resources>
