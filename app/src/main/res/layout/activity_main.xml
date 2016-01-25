@@ -85,33 +85,32 @@
                     android:visibility="invisible" />
 
                 <LinearLayout
-                    android:orientation="vertical"
+                    android:id="@+id/tapHereText"
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
                     android:layout_weight="0.6"
-                    android:id="@+id/tapHereText"
+                    android:background="#1effffff"
                     android:gravity="center"
                     android:onClick="licensePressed"
-                    android:background="#1effffff"
+                    android:orientation="vertical"
                     android:padding="5dp"
                     android:visibility="gone">
 
                     <ImageView
+                        android:id="@+id/imageView"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:id="@+id/imageView"
-                        android:src="@drawable/taphere"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="5dp"
                         android:onClick="licensePressed"
-                        android:layout_marginBottom="5dp" />
+                        android:src="@drawable/taphere" />
 
                     <TextView
                         android:id="@+id/tapHereText1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:onClick="licensePressed"
-                        android:text="@string/tap_here2"
                         android:layout_gravity="center"
+                        android:onClick="licensePressed"
                         android:textSize="17dp" />
 
                 </LinearLayout>

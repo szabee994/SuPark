@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout            licensePlate;
     TextView                licenseCity;
     TextView                licenseNum;
+    TextView tapHereText1;
     LinearLayout            tapHereText;
 
     // Layouts
@@ -214,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
         licenseCity =       (TextView)              findViewById(R.id.city);
         licenseNum =        (TextView)              findViewById(R.id.num);
         tapHereText =       (LinearLayout)          findViewById(R.id.tapHereText);
+        tapHereText1 = (TextView) findViewById(R.id.tapHereText1);
 
         // Layouts
         backDimmer =        (RelativeLayout)        findViewById(R.id.back_dimmer);
@@ -229,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
         showTicket =        sharedprefs.getBoolean("showTicket", true);
         debugNumbers = sharedprefs.getBoolean("debugNumbers", true);
         setLanguage(sharedprefs.getString("lang", "auto"));
+        tapHereText1.setText(getString(R.string.tap_here2));
         if (lastLicense)
             currentLicense = sharedprefs.getString("lastlicense", "");
 
