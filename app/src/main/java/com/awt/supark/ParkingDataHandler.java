@@ -350,8 +350,10 @@ public class ParkingDataHandler implements LocationListener {
                 Log.i("MainActivity", "Parking started");
                 act.backDisabled = true; // Disabling back button
                 //Switch these to disable SMS sending
-                act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone, act.currentLicense); // Sending the sms
-                //act.parkingInit("finish");
+                if (act.debugsendsms)
+                    act.smsHandler.sendSms(act.zoneHandler.zoneSmsNumSelector(act), act.currentZone, act.currentLicense); // Sending the sms
+                else
+                    act.parkingInit("finish");
 
                 break;
             case "cancel":

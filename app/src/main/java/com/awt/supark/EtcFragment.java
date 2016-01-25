@@ -22,6 +22,7 @@ public class EtcFragment extends Fragment {
     View view;
     CheckBox autoLoc;
     CheckBox debugNumbers;
+    CheckBox debugSendSMS;
     CheckBox lastLicense;
     CheckBox showTicketCheck;
     CheckBox alertBefore;
@@ -44,6 +45,7 @@ public class EtcFragment extends Fragment {
 
         autoLoc =           (CheckBox)      view.findViewById(R.id.checkBoxAutomaticZone);
         debugNumbers = (CheckBox) view.findViewById(R.id.checkBoxDebugNumbers);
+        debugSendSMS = (CheckBox) view.findViewById(R.id.checkBoxDebugSendSMS);
         lastLicense =       (CheckBox)      view.findViewById(R.id.checkBoxRememberLicenseNumber);
         showTicketCheck =   (CheckBox)      view.findViewById(R.id.checkBoxShowParkingTicket);
         alertBefore =       (CheckBox)      view.findViewById(R.id.checkBoxAlertBefore);
@@ -58,6 +60,7 @@ public class EtcFragment extends Fragment {
         autoLoc.setChecked(sharedprefs.getBoolean("autoloc", true));
         lastLicense.setChecked(sharedprefs.getBoolean("lastlicenseremember", true));
         debugNumbers.setChecked(sharedprefs.getBoolean("debugNumbers", true));
+        debugSendSMS.setChecked(sharedprefs.getBoolean("debugsendsms", true));
         showTicketCheck.setChecked(sharedprefs.getBoolean("showTicket", true));
         alertBefore.setChecked(sharedprefs.getBoolean("alertBefore", true));
         alertAfter.setChecked(sharedprefs.getBoolean("alertAfter", true));

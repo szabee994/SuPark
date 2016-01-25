@@ -84,7 +84,7 @@ public class CarListAdapter extends BaseAdapter {
 
         Log.i("State", car.getState() + "...");
 
-        if (car.getState() == "Parked") {
+        if (car.getState() == context.getResources().getString(R.string.parked)) {
             int time = car.getRemaining();
             int totalMinutes = (time / 60) + 1; // Don't know why, but this was the only way that worked it out
 
@@ -106,7 +106,7 @@ public class CarListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 ((MainActivity) context).CarHandler.stopPark(car.getSqlid());
-                holder.state.setText("Free");
+                holder.state.setText(context.getResources().getString(R.string.free));
                 holder.remaining.setVisibility(View.GONE);
                 holder.buttonCancel.setVisibility(View.INVISIBLE);
                 ((MainActivity) context).openCarFragment(null, false);

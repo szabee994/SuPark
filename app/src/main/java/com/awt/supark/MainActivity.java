@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     boolean     lastLicense = true;
     boolean     showTicket = true;
     boolean     debugNumbers = true;
+    boolean debugsendsms = true;
     int         openedLayout = 0;           // ID of the current opened
 
     // Animation timing (ms)
@@ -230,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
         lastLicense =       sharedprefs.getBoolean("lastlicenseremember", true);
         showTicket =        sharedprefs.getBoolean("showTicket", true);
         debugNumbers = sharedprefs.getBoolean("debugNumbers", true);
+        debugsendsms = sharedprefs.getBoolean("debugsendsms", true);
         setLanguage(sharedprefs.getString("lang", "auto"));
         tapHereText1.setText(getString(R.string.tap_here2));
         if (lastLicense)
@@ -473,6 +475,13 @@ public class MainActivity extends AppCompatActivity {
         EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
         sharedprefs.edit().putBoolean("debugNumbers", fragment.debugNumbers.isChecked()).apply();
         debugNumbers = fragment.debugNumbers.isChecked();
+        setDebugNumbers();
+    }
+
+    public void toggleDebugSendSMS(View v) {
+        EtcFragment fragment = (EtcFragment) fragmentManager.findFragmentById(R.id.otherContent);
+        sharedprefs.edit().putBoolean("debugsendsms", fragment.debugSendSMS.isChecked()).apply();
+        debugsendsms = fragment.debugSendSMS.isChecked();
         setDebugNumbers();
     }
 
