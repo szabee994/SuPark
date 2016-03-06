@@ -19,7 +19,7 @@ import com.awt.supark.R;
 import java.util.ArrayList;
 
 /**
- * Created by Mark on 2015.11.05..
+ * Created by Doctor on 2015.11.05..
  */
 public class CarListAdapter extends BaseAdapter {
     Context context;

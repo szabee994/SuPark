@@ -310,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(cont, getResources().getString(R.string.car_selected), Toast.LENGTH_SHORT).show();
         currentLicense = license;
         CarHandler.updateLicense(act);
+        sharedprefs.edit().putString("lastlicense", license).commit();
         smallButtonPressed(findViewById(R.id.buttonCars));
     }
 
